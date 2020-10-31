@@ -99,19 +99,22 @@ bool cGLSLProgram::SetTextureToUnit(int alUnit, iTexture* apTexture)
 	return true;
 }
 
-static void cGLSLProgram::SetVProfile(tString asProfile)
+tString cGLSLProgram::msForceFP;
+tString cGLSLProgram::msForceVP;
+
+void cGLSLProgram::SetVProfile(tString asProfile)
 {
 	msForceVP = asProfile;
 }
-static void cGLSLProgram::SetFProfile(tString asProfile)
+void cGLSLProgram::SetFProfile(tString asProfile)
 {
 	msForceFP = asProfile;
 }
-static tString &cGLSLProgram::GetVProfile()
+tString &cGLSLProgram::GetVProfile()
 {
 	return msForceVP;
 }
-static tString &cGLSLProgram::GetFProfile()
+tString &cGLSLProgram::GetFProfile()
 {
 	return msForceFP;
 }

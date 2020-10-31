@@ -122,7 +122,7 @@ float cAndroidTexture::GetTimeCount()
 {
 	return 0;
 }
-void cAndroidTexture::etTimeCount(float afX)
+void cAndroidTexture::SetTimeCount(float afX)
 {
 	
 }

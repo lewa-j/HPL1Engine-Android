@@ -22,6 +22,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fstream>
+#include <string>
 
 #ifdef WIN32
 #define UNICODE
@@ -63,7 +67,7 @@ void cLogWriter::Write(const tString& asMessage)
 
 	if (mpFile)
 	{
-		fprintf(mpFile, asMessage.c_str());
+		fputs(asMessage.c_str(), mpFile);
 		fflush(mpFile);
 	}
 #ifdef ANDROID
