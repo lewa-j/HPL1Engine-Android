@@ -6,9 +6,11 @@
  * For conditions of distribution and use, see copyright notice in LICENSE-tests
  */
 #include <hpl.h>
+#ifdef ANDROID
+#include <impl/AndroidGameSetup.h>
+#else
 #include <impl/SDLGameSetup.h>
-
-#include <GL/GLee.h>
+#endif
 
 #include "../Common/SimpleCamera.h"
 
@@ -266,7 +268,12 @@ int hplMain(const tString& asCommandLine)
 	iGpuProgram::SetLogDebugInformation(true);
 
 	//Init the game engine
-	gpGame = new cGame(new cSDLGameSetup(),800,600,32,false,45);
+#ifdef ANDROID
+	iLowLevelGameSetup* gameSetup = new cAndroidGameSetup();
+#else
+	iLowLevelGameSetup* gameSetup = new cSDLGameSetup();
+#endif
+	gpGame = new cGame(gameSetup, 800, 600, 32, false, 45);
 	gpGame->GetGraphics()->GetLowLevel()->SetVsyncActive(false);
 
 	//Add resources

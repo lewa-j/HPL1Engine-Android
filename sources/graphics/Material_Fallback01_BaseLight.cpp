@@ -27,7 +27,9 @@
 #include "system/String.h"
 #include "scene/Light3DSpot.h"
 
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 #include <GL/GLee.h>
+#endif
 
 namespace hpl {
 
@@ -58,7 +60,7 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
-
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 	cGLState_ATIDiffuse::cGLState_ATIDiffuse()
 		: iGLStateProgram("Internal_ATIDiffuse"), mlBind(0)
 	{
@@ -110,7 +112,7 @@ namespace hpl {
 	{
 		glDisable(GL_FRAGMENT_SHADER_ATI);
 	}
-
+#endif
 	//-----------------------------------------------------------------------
 
 	cGLState_Bump::cGLState_Bump()
@@ -139,7 +141,7 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
-
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 	cGLState_ATIBump::cGLState_ATIBump()
 		: iGLStateProgram("Internal_ATIBump"), mlBind(0)
 	{
@@ -190,7 +192,7 @@ namespace hpl {
 	{
 		glDisable(GL_FRAGMENT_SHADER_ATI);
 	}
-
+#endif
 	//-----------------------------------------------------------------------
 
 	cGLState_Spot::cGLState_Spot()
@@ -207,7 +209,7 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
-
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 	cGLState_ATISpot::cGLState_ATISpot()
 		: iGLStateProgram("Internal_ATISpot"), mlBind(0)
 	{
@@ -260,15 +262,16 @@ namespace hpl {
 	{
 		glDisable(GL_FRAGMENT_SHADER_ATI);
 	}
-
+#endif
 	//-----------------------------------------------------------------------
 	static cGLState_Diffuse gDiffuseGLState;
-	static cGLState_ATIDiffuse gATIDiffuseGLState;
 	static cGLState_Bump gBumpGLState;
+	static cGLState_Spot gSpotGLState;
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
+	static cGLState_ATIDiffuse gATIDiffuseGLState;
 	static cGLState_ATIBump gATIBumpGLState;
 	static cGLState_ATISpot gATISpotGLState;
-	static cGLState_Spot gSpotGLState;
-
+#endif
 	//-----------------------------------------------------------------------
 
 	iMaterial_Fallback01_BaseLight::iMaterial_Fallback01_BaseLight(
@@ -283,13 +286,14 @@ namespace hpl {
 		gDiffuseGLState.SetUp(mpLowLevelGraphics);
 		gBumpGLState.SetUp(mpLowLevelGraphics);
 		gSpotGLState.SetUp(mpLowLevelGraphics);
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 		if(mpLowLevelGraphics->GetCaps(eGraphicCaps_GL_ATIFragmentShader))
 		{
 			gATISpotGLState.SetUp(mpLowLevelGraphics);
 			gATIBumpGLState.SetUp(mpLowLevelGraphics);
 			gATIDiffuseGLState.SetUp(mpLowLevelGraphics);
 		}
-
+#endif
 		mbUseNormalMap = abNormalMap;
 		mbUseSpecular = abSpecular;
 
@@ -327,6 +331,7 @@ namespace hpl {
 		//											"main",	eGpuProgramType_Fragment);
 		if(mbUseNormalMap)
 		{
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 			if(mpLowLevelGraphics->GetCaps(eGraphicCaps_GL_ATIFragmentShader))
 			{
 				mvFragPrograms[eBaseLightProgram_Point1] = &gATIBumpGLState;
@@ -335,6 +340,7 @@ namespace hpl {
 				mvFragPrograms[eBaseLightProgram_Spot2] =  &gATISpotGLState;
 			}
 			else
+#endif
 			{
 				mvFragPrograms[eBaseLightProgram_Point1] = &gBumpGLState;
 				mvFragPrograms[eBaseLightProgram_Spot1] =  &gBumpGLState;
@@ -350,6 +356,7 @@ namespace hpl {
 		}
 		else
 		{
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 			if(mpLowLevelGraphics->GetCaps(eGraphicCaps_GL_ATIFragmentShader))
 			{
 				mvFragPrograms[eBaseLightProgram_Point1] = &gATIDiffuseGLState;
@@ -358,6 +365,7 @@ namespace hpl {
 				mvFragPrograms[eBaseLightProgram_Spot2] =  &gATISpotGLState;
 			}
 			else
+#endif
 			{
 				mvFragPrograms[eBaseLightProgram_Point1] = &gDiffuseGLState;
 				mvFragPrograms[eBaseLightProgram_Spot1] =  &gDiffuseGLState;

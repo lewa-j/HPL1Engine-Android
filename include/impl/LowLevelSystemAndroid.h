@@ -16,51 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#pragma once
+#ifndef HPL_LOWLEVELSYSTEM_ANDROID_H
+#define HPL_LOWLEVELSYSTEM_ANDROID_H
 
 #include "system/LowLevelSystem.h"
+#include "impl/LowLevelSystemCommon.h"
+
 #include <angelscript.h>
 
 namespace hpl
 {
-//------------------------------------------------------
+	class cLowLevelSystemAndroid : public iLowLevelSystem
+	{
+	public:
+		cLowLevelSystemAndroid();
+		~cLowLevelSystemAndroid();
 
-class cLogWriter
-{
-public:
-	cLogWriter(const tWString& asDefaultFile);
-	~cLogWriter();
+		void SetWindowCaption(const tString &asName);
 
-	void Write(const tString& asMessage);
-	void Clear();
+		unsigned long GetTime();
+		cDate GetDate();
 
-	void SetFileName(const tWString& asFile);
+		iScript* CreateScript(const tString& asName);
 
-private:
-	void ReopenFile();
+		bool AddScriptFunc(const tString& asFuncDecl, void* pFunc, int callConv);
+		bool AddScriptVar(const tString& asVarDecl, void *pVar);
 
-	FILE* mpFile;
-	tWString msFileName;
-};
+		void Sleep ( const unsigned int alMillisecs );
 
-//------------------------------------------------------
-
-class cScriptOutput// : public  asIOutputStream
-{
-public:
-	cScriptOutput() : msMessage("") {}
-	~cScriptOutput() {}
-
-	void AddMessage(const asSMessageInfo* msg);
-	void Display();
-	void Clear();
-
-private:
-	tString msMessage;
-};
-
-//------------------------------------------------------
-
-cDate DateFromGMTIme(struct tm* apClock);
-
+	private:
+		asIScriptEngine *mpScriptEngine;
+		cScriptOutput *mpScriptOutput;
+		int mlHandleCount;
+	};
 }
+#endif // HPL_LOWLEVELSYSTEM_ANDROID_H
+

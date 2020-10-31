@@ -28,7 +28,9 @@
 #include "scene/Light3DSpot.h"
 #include "system/LowLevelSystem.h"
 
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 #include <GL/GLee.h>
+#endif
 
 namespace hpl {
 
@@ -59,7 +61,7 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
-
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 	cGLStateTwoUnits_ATIDiffuse::cGLStateTwoUnits_ATIDiffuse()
 		: iGLStateProgram("Internal_TwoUnit_ATIDiffuse"), mlBind(0)
 	{
@@ -111,7 +113,7 @@ namespace hpl {
 	{
 		glDisable(GL_FRAGMENT_SHADER_ATI);
 	}
-
+#endif
 
 	//-----------------------------------------------------------------------
 
@@ -130,7 +132,9 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 	static cGLStateTwoUnits_Diffuse gDiffuseGLState;
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 	static cGLStateTwoUnits_ATIDiffuse gATIDiffuseGLState;
+#endif
 	static cGLStateTwoUnits_Spot gSpotGLState;
 
 	//-----------------------------------------------------------------------
@@ -145,12 +149,12 @@ namespace hpl {
 	{
 		gDiffuseGLState.SetUp(mpLowLevelGraphics);
 		gSpotGLState.SetUp(mpLowLevelGraphics);
-
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 		if(mpLowLevelGraphics->GetCaps(eGraphicCaps_GL_ATIFragmentShader))
 		{
 			gATIDiffuseGLState.SetUp(mpLowLevelGraphics);
 		}
-
+#endif
 		mbIsTransperant = false;
 		mbIsGlowing= false;
 		mbUsesLights = true;
@@ -184,7 +188,7 @@ namespace hpl {
 		///////////////////////////////////////////
 		//Load the light pass fragment program
 		//Point
-
+#ifdef HPL_USE_ATI_FRAGMENT_SHADER
 		if(mpLowLevelGraphics->GetCaps(eGraphicCaps_GL_ATIFragmentShader))
 		{
 			mvFragPrograms[eBaseLightProgram_Point1] = &gATIDiffuseGLState;
@@ -193,6 +197,7 @@ namespace hpl {
 			mvFragPrograms[eBaseLightProgram_Spot2] =  NULL;//hplNew( cGLStateTwoUnits_Spot, (mpLowLevelGraphics) );
 		}
 		else
+#endif
 		{
 			mvFragPrograms[eBaseLightProgram_Point1] = &gDiffuseGLState;
 			mvFragPrograms[eBaseLightProgram_Spot1] =  &gDiffuseGLState;
