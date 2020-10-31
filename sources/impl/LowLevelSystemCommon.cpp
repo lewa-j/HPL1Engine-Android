@@ -29,6 +29,10 @@
 #include <shlobj.h>
 #endif
 
+#ifdef ANDROID
+#include <android/log.h>
+#endif
+
 namespace hpl
 {
 
@@ -62,6 +66,9 @@ void cLogWriter::Write(const tString& asMessage)
 		fprintf(mpFile, asMessage.c_str());
 		fflush(mpFile);
 	}
+#ifdef ANDROID
+	__android_log_print(ANDROID_LOG_INFO, "HPL1", "%s", asMessage.c_str());
+#endif
 }
 
 void cLogWriter::Clear()
@@ -88,12 +95,17 @@ void cLogWriter::ReopenFile()
 {
 	if (mpFile) fclose(mpFile);
 
-
-#ifdef WIN32
-	mpFile = _wfopen(msFileName.c_str(), _W("w"));
-#else
-	mpFile = fopen(cString::To8Char(msFileName).c_str(), "w");
-#endif
+	#ifdef WIN32
+		mpFile = _wfopen(msFileName.c_str(), _W("w"));
+	#else
+	#ifdef ANDROID
+		static const char* storage = getenv("EXTERNAL_STORAGE");
+		tString sPath = storage + tString("/hpl1/") + cString::To8Char(msFileName);
+		mpFile = fopen(sPath.c_str(), "w");
+	#else
+		mpFile = fopen(cString::To8Char(msFileName).c_str(), "w");
+	#endif
+	#endif
 }
 
 //-----------------------------------------------------------------------
