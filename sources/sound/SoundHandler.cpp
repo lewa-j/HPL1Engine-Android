@@ -281,18 +281,18 @@ namespace hpl {
 
 	iSoundChannel* cSoundHandler::PlayStream(const tString& asFileName,bool abLoop,float afVolume,bool ab3D, eSoundDest aEffectType)
 	{
-		if(asFileName == "")return NULL;
+		if(asFileName == "")return nullptr;
 
 		iSoundData* pData = mpResources->GetSoundManager()->CreateSoundData(asFileName,true,abLoop);
 		if(pData==NULL){
 			Error("Couldn't load stream '%s'\n",asFileName.c_str());
-			return false;
+			return nullptr;
 		}
 
 		iSoundChannel *pSound = pData->CreateChannel(256);
 		if(!pSound){
 			Error("Can't create sound channel for '%s'\n",asFileName.c_str());
-			return NULL;
+			return nullptr;
 		}
 
 		//If it is silent do everything as normal except stop the sound at start.
