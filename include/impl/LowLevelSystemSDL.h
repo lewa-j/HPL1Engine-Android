@@ -20,46 +20,13 @@
 #define HPL_LOWLEVELSYSTEM_SDL_H
 
 #include "system/LowLevelSystem.h"
+#include "impl/LowLevelSystemCommon.h"
 #include <angelscript.h>
 #include <stdio.h>
 
-namespace hpl {
+namespace hpl
+{
 
-	//------------------------------------------------------
-
-	class cLogWriter
-	{
-	public:
-		cLogWriter(const tWString& asDefaultFile);
-		~cLogWriter();
-
-		void Write(const tString& asMessage);
-		void Clear();
-
-		void SetFileName(const tWString& asFile);
-
-	private:
-		void ReopenFile();
-
-		FILE *mpFile;
-		tWString msFileName;
-	};
-
-	//------------------------------------------------------
-
-	class cScriptOutput// : public  asIOutputStream
-	{
-	public:
-		cScriptOutput() : msMessage("") {}
-		~cScriptOutput(){}
-
-		void AddMessage(const asSMessageInfo *msg);
-		void Display();
-		void Clear();
-
-	private:
-		tString msMessage;
-	};
 
 	//------------------------------------------------------
 

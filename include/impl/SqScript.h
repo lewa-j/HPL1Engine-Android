@@ -20,7 +20,7 @@
 #define HPL_SQ_SCRIPT_H
 
 #include "system/Script.h"
-#include "impl/LowLevelSystemSDL.h"
+#include "impl/LowLevelSystemCommon.h"
 #include <angelscript.h>
 
 
