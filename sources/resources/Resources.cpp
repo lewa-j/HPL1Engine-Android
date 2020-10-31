@@ -334,7 +334,12 @@ namespace hpl {
 
 	bool cResources::LoadResourceDirsFile(const tString &asFile)
 	{
-		TiXmlDocument* pXmlDoc = hplNew( TiXmlDocument, (asFile.c_str()) );
+#ifdef ANDROID
+		static const char* storage = getenv("EXTERNAL_STORAGE");
+		TiXmlDocument* pXmlDoc = hplNew(TiXmlDocument, ((storage + tString("/hpl1/") + asFile).c_str()));
+#else
+		TiXmlDocument* pXmlDoc = hplNew(TiXmlDocument, (asFile.c_str()));
+#endif
 		if(pXmlDoc->LoadFile()==false)
 		{
 			Error("Couldn't load XML file '%s'!\n",asFile.c_str());

@@ -55,6 +55,11 @@ namespace hpl {
 		//Make the path with only "/" and lower case.
 		asPath = cString::ToLowerCase(cString::ReplaceCharTo(asPath,"\\","/"));
 
+		#ifdef ANDROID
+		static const char* storage = getenv("EXTERNAL_STORAGE");
+		asPath = storage + tString("/hpl1/") + asPath;
+		#endif
+
 		tStringSetIt it = m_setLoadedDirs.find(asPath);
 		//If the path is not allready added, add it!
 		if(it==m_setLoadedDirs.end())
