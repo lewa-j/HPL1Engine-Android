@@ -343,14 +343,14 @@ namespace hpl {
 				}
 			}
 
-			pTex->SetFrameTime(fFrameTime);
-			pTex->SetAnimMode(animMode);
-
-			if(pTex==NULL){
+			if (pTex == nullptr) {
 				hplDelete(pDoc);
 				hplDelete(pMat);
-				return NULL;
+				return nullptr;
 			}
+
+			pTex->SetFrameTime(fFrameTime);
+			pTex->SetAnimMode(animMode);
 
 			pTex->SetWrapS(wrap);
 			pTex->SetWrapT(wrap);
