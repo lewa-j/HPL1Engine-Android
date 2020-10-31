@@ -21,6 +21,7 @@
 
 #ifdef WIN32
 #pragma comment(lib, "angelscript.lib")
+#pragma comment(lib, "legacy_stdio_definitions.lib")
 #define UNICODE
 #include <windows.h>
 #include <shlobj.h>
