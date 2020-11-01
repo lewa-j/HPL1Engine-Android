@@ -23,7 +23,6 @@
 #include <stdarg.h>
 #include <time.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <fstream>
 #include <string>
 
@@ -31,6 +30,8 @@
 #define UNICODE
 #include <windows.h>
 #include <shlobj.h>
+#else
+#include <unistd.h>
 #endif
 
 #ifdef ANDROID

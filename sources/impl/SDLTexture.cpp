@@ -18,6 +18,7 @@
  */
 #include "impl/SDLTexture.h"
 #include "impl/SDLBitmap2D.h"
+#include "impl/GLHelpers.h"
 
 #include "system/LowLevelSystem.h"
 #include "math/Math.h"
@@ -202,7 +203,7 @@ namespace hpl {
 				Warning("Texture '%s' does not have a pow2 size!\n",msName.c_str());
 			}
 
-			GLenum GLTarget = mpGfxSDL->GetGLTextureTargetEnum(mTarget);
+			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 			glEnable(GLTarget);
 			glBindTexture(GLTarget, mvTextureHandles[0]);
@@ -435,7 +436,7 @@ namespace hpl {
 		mFilter = aFilter;
 		if(mbContainsData)
 		{
-			GLenum GLTarget = mpGfxSDL->GetGLTextureTargetEnum(mTarget);
+			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 			glEnable(GLTarget);
 			for(size_t i=0; i < mvTextureHandles.size(); ++i)
@@ -469,7 +470,7 @@ namespace hpl {
 
 		mfAnisotropyDegree = afX;
 
-		GLenum GLTarget = mpGfxSDL->GetGLTextureTargetEnum(mTarget);
+		GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 		glEnable(GLTarget);
 		for(size_t i=0; i < mvTextureHandles.size(); ++i)
@@ -488,7 +489,7 @@ namespace hpl {
 	{
 		if(mbContainsData)
 		{
-			GLenum GLTarget = mpGfxSDL->GetGLTextureTargetEnum(mTarget);
+			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 			glEnable(GLTarget);
 			for(size_t i=0; i < mvTextureHandles.size(); ++i)
@@ -508,7 +509,7 @@ namespace hpl {
 	{
 		if(mbContainsData)
 		{
-			GLenum GLTarget = mpGfxSDL->GetGLTextureTargetEnum(mTarget);
+			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 			glEnable(GLTarget);
 			for(size_t i=0; i < mvTextureHandles.size(); ++i)
@@ -528,7 +529,7 @@ namespace hpl {
 	{
 		if(mbContainsData)
 		{
-			GLenum GLTarget = mpGfxSDL->GetGLTextureTargetEnum(mTarget);
+			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 			glEnable(GLTarget);
 			for(size_t i=0; i < mvTextureHandles.size(); ++i)
@@ -690,7 +691,7 @@ namespace hpl {
 
 	GLenum cSDLTexture::InitCreation(int alHandleIdx)
 	{
-		GLenum GLTarget = mpGfxSDL->GetGLTextureTargetEnum(mTarget);
+		GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 		glEnable(GLTarget);
 		glBindTexture(GLTarget, mvTextureHandles[alHandleIdx]);
