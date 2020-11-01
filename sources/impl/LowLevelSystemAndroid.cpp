@@ -34,8 +34,50 @@
 
 extern int hplMain(const hpl::tString &asCommandLine);
 
+void droid_handle_cmd(struct android_app* app, int32_t cmd)
+{
+	switch (cmd)
+	{
+		case APP_CMD_INIT_WINDOW:
+			// The window is being shown, get it ready.
+			hpl::gpAWindow = app->window;
+			if (app->window != nullptr) {
+				//init display
+			}
+			break;
+		case APP_CMD_TERM_WINDOW:
+			// The window is being hidden or closed, clean it up.
+			hpl::gpAWindow = nullptr;
+			//destroy display
+			break;
+		default:
+			break;
+	}
+}
+
 void android_main(android_app *app)
 {
+	app->onAppCmd = droid_handle_cmd;
+	
+	//wait until we have window
+	int ident;
+	int events;
+	struct android_poll_source* source;
+	while ((ident=ALooper_pollAll(-1, nullptr, &events,(void**)&source)) >= 0)
+	{
+		if (source != nullptr)
+		{
+			source->process(app, source);
+		}
+		if (app->destroyRequested != 0)
+		{
+			//stop engine
+			return;
+		}
+		if(hpl::gpAWindow)
+			break;
+	}
+	
 	hpl::tString cmdline = "";
 	/*for (int i=1; i < argc; i++) {
 		if (cmdline.length()>0) {
@@ -49,6 +91,8 @@ void android_main(android_app *app)
 }
 namespace hpl
 {
+	ANativeWindow *gpAWindow = nullptr;
+	
 	cLowLevelSystemAndroid::cLowLevelSystemAndroid()
 	{
 		//mpScriptEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);

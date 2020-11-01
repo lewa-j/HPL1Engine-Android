@@ -22,23 +22,27 @@
 #include "graphics/LowLevelGraphics.h"
 #include "math/MathTypes.h"
 
+#include <android/native_window.h>
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+
 namespace hpl
 {
 	class cLowLevelGraphicsAndroid : public iLowLevelGraphics
 	{
 	public:
-		cLowLevelGraphicsAndroid();
+		cLowLevelGraphicsAndroid(ANativeWindow *apAWindow);
 		~cLowLevelGraphicsAndroid();
 
 		bool Init(	int alWidth, int alHeight, int alBpp, int abFullscreen, int alMultisampling,
 					const tString& asWindowCaption);
 		
-		int GetCaps(eGraphicCaps aType){return 0;}
+		int GetCaps(eGraphicCaps aType);
 		void ShowCursor(bool abX){}
-		void SetVsyncActive(bool abX){}
-		void SetMultisamplingActive(bool abX){}
-		void SetGammaCorrection(float afX){}
-		float GetGammaCorrection(){return 1;}
+		void SetVsyncActive(bool abX);
+		void SetMultisamplingActive(bool abX);
+		void SetGammaCorrection(float afX);
+		float GetGammaCorrection();
 
 		int GetMultisampling(){ return mlMultisampling;}
 
@@ -87,50 +91,50 @@ namespace hpl
 		void DestroyOcclusionQuery(iOcclusionQuery *apQuery){}
 
 		// CLEARING THE FRAMEBUFFER
-		void ClearScreen(){}
+		void ClearScreen();
 
-		void SetClearColor(const cColor& aCol){}
-		void SetClearDepth(float afDepth){}
-		void SetClearStencil(int alVal){}
+		void SetClearColor(const cColor& aCol);
+		void SetClearDepth(float afDepth);
+		void SetClearStencil(int alVal);
 
-		void SetClearColorActive(bool abX){}
-		void SetClearDepthActive(bool abX){}
-		void SetClearStencilActive(bool abX){}
+		void SetClearColorActive(bool abX);
+		void SetClearDepthActive(bool abX);
+		void SetClearStencilActive(bool abX);
 
-		void SetColorWriteActive(bool abR,bool abG,bool abB,bool abA){}
-		void SetDepthWriteActive(bool abX){}
+		void SetColorWriteActive(bool abR,bool abG,bool abB,bool abA);
+		void SetDepthWriteActive(bool abX);
 
-		void SetCullActive(bool abX){}
-		void SetCullMode(eCullMode aMode){}
+		void SetCullActive(bool abX);
+		void SetCullMode(eCullMode aMode);
 
 		//DEPTH
-		void SetDepthTestActive(bool abX){}
-		void SetDepthTestFunc(eDepthTestFunc aFunc){}
+		void SetDepthTestActive(bool abX);
+		void SetDepthTestFunc(eDepthTestFunc aFunc);
 
 		//ALPHA
-		void SetAlphaTestActive(bool abX){}
-		void SetAlphaTestFunc(eAlphaTestFunc aFunc,float afRef){}
+		void SetAlphaTestActive(bool abX);
+		void SetAlphaTestFunc(eAlphaTestFunc aFunc,float afRef);
 
 		//STENCIL
-		void SetStencilActive(bool abX){}
+		void SetStencilActive(bool abX);
 		void SetStencil(eStencilFunc aFunc,int alRef, unsigned int aMask,
-				eStencilOp aFailOp,eStencilOp aZFailOp,eStencilOp aZPassOp){}
+				eStencilOp aFailOp,eStencilOp aZFailOp,eStencilOp aZPassOp);
 		void SetStencilTwoSide(eStencilFunc aFrontFunc,eStencilFunc aBackFunc,
 				int alRef, unsigned int aMask,
 				eStencilOp aFrontFailOp,eStencilOp aFrontZFailOp,eStencilOp aFrontZPassOp,
-				eStencilOp aBackFailOp,eStencilOp aBackZFailOp,eStencilOp aBackZPassOp){}
-		void SetStencilTwoSide(bool abX){}
+				eStencilOp aBackFailOp,eStencilOp aBackZFailOp,eStencilOp aBackZPassOp);
+		void SetStencilTwoSide(bool abX);
 
 
 		//SCISSOR
-		void SetScissorActive(bool abX){}
-		void SetScissorRect(const cRect2l &aRect){}
+		void SetScissorActive(bool abX);
+		void SetScissorRect(const cRect2l &aRect);
 
 		//BLENDING
-		void SetBlendActive(bool abX){}
-		void SetBlendFunc(eBlendFunc aSrcFactor, eBlendFunc aDestFactor){}
+		void SetBlendActive(bool abX);
+		void SetBlendFunc(eBlendFunc aSrcFactor, eBlendFunc aDestFactor);
 		void SetBlendFuncSeparate(eBlendFunc aSrcFactorColor, eBlendFunc aDestFactorColor,
-			eBlendFunc aSrcFactorAlpha, eBlendFunc aDestFactorAlpha){}
+			eBlendFunc aSrcFactorAlpha, eBlendFunc aDestFactorAlpha);
 
 
 		// TEXTURE
@@ -192,21 +196,29 @@ namespace hpl
 		void CopyContextToTexure(iTexture* apTex, const cVector2l &avPos,
 			const cVector2l &avSize, const cVector2l &avTexOffset=0){}
 		void SetRenderTarget(iTexture* pTex){}
-		bool RenderTargetHasZBuffer(){return false;}
+		bool RenderTargetHasZBuffer(){return true;}
 		void FlushRenderTarget(){}
 
-		void FlushRendering(){}
-		void SwapBuffers(){}
+		void FlushRendering();
+		void SwapBuffers();
 		
 		//Platform specific
 		iBitmap2D* CreateBitmap2DFromData(uint8_t *data,int w, int h, int n,const tString& asType);
-		
+		void SetupGL();
+	
 	private:
 		cVector2l mvScreenSize;
 		cVector2f mvVirtualSize;
 		int mlMultisampling;
 		int mlBpp;
 		
+		ANativeWindow *mpAWindow;
+		EGLDisplay mEglDisplay;
+		EGLConfig mEglConfig;
+		EGLContext mEglContext;
+		EGLSurface mEglSurface;
+		int mSwapInterval;
+
 		//Vertex Array variables
 		//The vertex arrays used:
 		float* mpVertexArray;
@@ -233,6 +245,8 @@ namespace hpl
 		//Texture
 		iTexture* mpCurrentTexture[MAX_TEXTUREUNITS];
 
+		//gl extensions
+		bool EXT_texture_filter_anisotropic;
 	};
 }
 #endif // HPL_LOWLEVELGRAPHICS_ANDROID_H

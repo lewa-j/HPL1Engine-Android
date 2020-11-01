@@ -14,6 +14,7 @@ sources/impl/AndroidGameSetup.cpp \
 sources/impl/AndroidTexture.cpp \
 sources/impl/GLSLProgram.cpp \
 sources/impl/VertexBufferGLES.cpp \
+sources/impl/GLHelpers.cpp \
 sources/impl/MeshLoaderCollada.cpp \
 sources/impl/MeshLoaderColladaHelpers.cpp \
 sources/impl/MeshLoaderColladaLoader.cpp \
@@ -212,8 +213,8 @@ LOCAL_CPPFLAGS += -g -ggdb -D_DEBUG
 LOCAL_CPPFLAGS += -Wno-extern-c-compat -Wno-switch -Wno-undefined-var-template -Wno-delete-non-virtual-dtor -Wno-ignored-attributes
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include $(LOCAL_PATH)/dependencies
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
-LOCAL_EXPORT_LDFLAGS := -lGLESv2
-#LOCAL_EXPORT_LDLIBS :=
+#LOCAL_EXPORT_LDFLAGS :=
+LOCAL_EXPORT_LDLIBS := -lEGL -lGLESv2
 LOCAL_STATIC_LIBRARIES := android_native_app_glue
 LOCAL_THIN_ARCHIVE := true
 include $(BUILD_STATIC_LIBRARY)

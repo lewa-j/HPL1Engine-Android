@@ -302,7 +302,7 @@ namespace hpl {
 	{
 		if(mTarget != eTextureTarget_2D && mTarget != eTextureTarget_Rect) return;
 
-		glTexSubImage2D(TextureTargetToGL(mTarget),alLevel,avOffset.x,avOffset.y, avSize.x,avSize.y,
+		glTexSubImage2D(GetGLTextureTargetEnum(mTarget),alLevel,avOffset.x,avOffset.y, avSize.x,avSize.y,
 						ColorFormatToGL(aDataFormat),GL_UNSIGNED_BYTE,apPixelData);
 	}
 

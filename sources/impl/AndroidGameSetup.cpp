@@ -30,7 +30,7 @@ namespace hpl
 	cAndroidGameSetup::cAndroidGameSetup()
 	{
 		mpLowLevelSystem = hplNew( cLowLevelSystemAndroid, () );
-		mpLowLevelGraphics = hplNew( cLowLevelGraphicsAndroid,() );
+		mpLowLevelGraphics = hplNew( cLowLevelGraphicsAndroid,(gpAWindow) );
 		mpLowLevelInput = hplNew( cLowLevelInputAndroid,(mpLowLevelGraphics) );
 		mpLowLevelResources = hplNew( cLowLevelResourcesAndroid,((cLowLevelGraphicsAndroid *)mpLowLevelGraphics) );
 		mpLowLevelSound	= hplNew( cLowLevelSoundNull,() );

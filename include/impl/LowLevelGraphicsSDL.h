@@ -33,15 +33,8 @@
 #include "impl/SDLPixelFormat.h"
 #include "math/MathTypes.h"
 
-
-
-namespace hpl {
-
-	//-------------------------------------------------
-
-	GLenum ColorFormatToGL(eColorDataFormat aFormat);
-
-	GLenum TextureTargetToGL(eTextureTarget aTarget);
+namespace hpl
+{
 
 	//-------------------------------------------------
 
@@ -235,8 +228,6 @@ namespace hpl {
 
 		void SetupGL();
 
-		GLenum GetGLTextureTargetEnum(eTextureTarget aType);
-
 	private:
 		cVector2l mvScreenSize;
 		cVector2f mvVirtualSize;
@@ -301,31 +292,11 @@ namespace hpl {
 		void InitCG();
 		void ExitCG();
 
-
 		//Batch helper
 		void SetUpBatchArrays();
 
-		//Depth helper
-		GLenum GetGLDepthTestFuncEnum(eDepthTestFunc aType);
-
-		//Alpha Helper
-		GLenum GetGLAlphaTestFuncEnum(eAlphaTestFunc aType);
-
-		//Stencil helper
-		GLenum GetGLStencilFuncEnum(eStencilFunc aType);
-		GLenum GetGLStencilOpEnum(eStencilOp aType);
-
 		//Matrix Helper
 		void SetMatrixMode(eMatrix mType);
-
-		//Texture helper
-		GLenum GetGLTextureParamEnum(eTextureParam aType);
-		GLenum GetGLTextureOpEnum(eTextureOp aType);
-		GLenum GetGLTextureFuncEnum(eTextureFunc aType);
-		GLenum GetGLTextureSourceEnum(eTextureSource aType);
-
-		//Blend helper
-		GLenum GetGLBlendEnum(eBlendFunc aType);
 
 		//Vtx helper
 		void SetVtxBatchStates(tVtxBatchFlag aFlags);

@@ -23,9 +23,12 @@
 #include "impl/LowLevelSystemCommon.h"
 
 #include <angelscript.h>
+#include <android/native_window.h>
 
 namespace hpl
 {
+	extern ANativeWindow *gpAWindow;
+	
 	class cLowLevelSystemAndroid : public iLowLevelSystem
 	{
 	public:
