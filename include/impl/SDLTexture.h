@@ -88,8 +88,6 @@ namespace hpl {
 		GLenum InitCreation(int alHandleIdx);
 		void PostCreation(GLenum aGLTarget);
 
-		GLenum GetGLWrap(eTextureWrap aMode);
-
 		void GetSettings(cSDLBitmap2D* apSrc, int &alChannels, GLenum &aFormat);
 
 		tUIntVec mvTextureHandles;

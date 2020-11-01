@@ -45,6 +45,36 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
+	GLenum GetGLTextureTargetEnum(eTextureTarget aType)
+	{
+		switch (aType)
+		{
+		case eTextureTarget_1D:		return GL_TEXTURE_1D;
+		case eTextureTarget_2D:		return GL_TEXTURE_2D;
+		case eTextureTarget_Rect:	return GL_TEXTURE_RECTANGLE_NV;
+		case eTextureTarget_CubeMap:	return GL_TEXTURE_CUBE_MAP_ARB;
+		case eTextureTarget_3D:		return GL_TEXTURE_3D;
+		}
+		return 0;
+	}
+
+	//-----------------------------------------------------------------------
+
+	GLenum GetGLWrapEnum(eTextureWrap aMode)
+	{
+		switch (aMode)
+		{
+		case eTextureWrap_Clamp: return GL_CLAMP;
+		case eTextureWrap_Repeat: return GL_REPEAT;
+		case eTextureWrap_ClampToEdge: return GL_CLAMP_TO_EDGE;
+		case eTextureWrap_ClampToBorder: return GL_CLAMP_TO_BORDER;
+		}
+
+		return GL_REPEAT;
+	}
+
+	//-----------------------------------------------------------------------
+
 	GLenum GetGLBlendEnum(eBlendFunc aType)
 	{
 		switch(aType)
@@ -89,7 +119,7 @@ namespace hpl
 		}
 		return 0;
 	}
-#endif
+
 	//-----------------------------------------------------------------------
 
 	GLenum GetGLTextureOpEnum(eTextureOp aType)
@@ -105,7 +135,7 @@ namespace hpl
 	}
 
 	//-----------------------------------------------------------------------
-#ifndef ANDROID
+
 	GLenum GetGLTextureSourceEnum(eTextureSource aType)
 	{
 		switch(aType)
@@ -117,24 +147,9 @@ namespace hpl
 		}
 		return 0;
 	}
-#endif
-	//-----------------------------------------------------------------------
-
-	GLenum GetGLTextureTargetEnum(eTextureTarget aType)
-	{
-		switch(aType)
-		{
-		case eTextureTarget_1D:		return GL_TEXTURE_1D;
-		case eTextureTarget_2D:		return GL_TEXTURE_2D;
-		case eTextureTarget_Rect:	return GL_TEXTURE_RECTANGLE_NV;
-		case eTextureTarget_CubeMap:	return GL_TEXTURE_CUBE_MAP_ARB;
-		case eTextureTarget_3D:		return GL_TEXTURE_3D;
-		}
-		return 0;
-	}
 
 	//-----------------------------------------------------------------------
-#ifndef ANDROID
+
 	GLenum GetGLTextureFuncEnum(eTextureFunc aType)
 	{
 		switch(aType)

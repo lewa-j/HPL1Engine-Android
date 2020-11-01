@@ -245,7 +245,7 @@ namespace hpl {
 		GLenum GLTarget = InitCreation(0);
 
 		int lChannels = alChannels;
-		GLenum format =0;
+		GLenum format = 0;
 		switch(lChannels)
 		{
 		case 1: format = GL_LUMINANCE; break;
@@ -496,7 +496,7 @@ namespace hpl {
 			{
 				glBindTexture(GLTarget, mvTextureHandles[i]);
 
-				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_S,GetGLWrap(aMode));
+				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_S,GetGLWrapEnum(aMode));
 			}
 
 			glDisable(GLTarget);
@@ -516,7 +516,7 @@ namespace hpl {
 			{
 				glBindTexture(GLTarget, mvTextureHandles[i]);
 
-				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_T,GetGLWrap(aMode));
+				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_T,GetGLWrapEnum(aMode));
 			}
 
 			glDisable(GLTarget);
@@ -536,7 +536,7 @@ namespace hpl {
 			{
 				glBindTexture(GLTarget, mvTextureHandles[i]);
 
-				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_R,GetGLWrap(aMode));
+				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_R,GetGLWrapEnum(aMode));
 			}
 
 			glDisable(GLTarget);
@@ -581,7 +581,7 @@ namespace hpl {
 		return false;
 		}*/
 
-		GLenum GLTarget =InitCreation(alHandleIdx);
+		GLenum GLTarget = InitCreation(alHandleIdx);
 
 		cSDLBitmap2D *pBitmapSrc = static_cast<cSDLBitmap2D*>(pBmp);
 
@@ -761,22 +761,6 @@ namespace hpl {
 			aFormat = GL_ALPHA;
 		}
 	}
-
-	//-----------------------------------------------------------------------
-
-	GLenum cSDLTexture::GetGLWrap(eTextureWrap aMode)
-	{
-		switch(aMode)
-		{
-		case eTextureWrap_Clamp: return GL_CLAMP;
-		case eTextureWrap_Repeat: return GL_REPEAT;
-		case eTextureWrap_ClampToEdge: return GL_CLAMP_TO_EDGE;
-		case eTextureWrap_ClampToBorder: return GL_CLAMP_TO_BORDER;
-		}
-
-		return GL_REPEAT;
-	}
-
 
 	//-----------------------------------------------------------------------
 

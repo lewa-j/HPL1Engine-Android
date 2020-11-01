@@ -27,6 +27,7 @@ namespace hpl
 
 	GLenum ColorFormatToGL(eColorDataFormat aFormat);
 	GLenum GetGLTextureTargetEnum(eTextureTarget aType);
+	GLenum GetGLWrapEnum(eTextureWrap aMode);
 
 	//Depth helper
 	GLenum GetGLDepthTestFuncEnum(eDepthTestFunc aType);
