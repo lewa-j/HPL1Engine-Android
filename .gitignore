@@ -5,3 +5,14 @@
 /*.xcodeproj/*.pbxuser
 /assets/*.log
 /assets/core/cache/*collcach
+*.dll
+*.exe
+*.pdb
+*.lib
+.vs/
+*.o
+*.o.d
+*.so
+*.a
+*.class
+*.dex
