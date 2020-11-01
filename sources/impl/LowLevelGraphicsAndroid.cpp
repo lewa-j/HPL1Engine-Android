@@ -45,6 +45,9 @@ namespace hpl
 		for(int i=0;i<MAX_TEXTUREUNITS;i++)
 			mpCurrentTexture[i] = NULL;
 
+		for(int i=0;i<eMatrix_LastEnum;i++)
+			mMatrixStack[i].push(cMatrixf::Identity);
+		
 		mbClearColor = true;
 		mbClearDepth = true;
 		mbClearStencil = false;
@@ -457,6 +460,67 @@ namespace hpl
 		eglSwapBuffers(mEglDisplay, mEglSurface);
 	}
 
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::PushMatrix(eMatrix aMtxType)
+	{
+		mMatrixStack[aMtxType].push(mMatrixStack[aMtxType].top());
+	}
+
+	void cLowLevelGraphicsAndroid::PopMatrix(eMatrix aMtxType)
+	{
+		mMatrixStack[aMtxType].pop();
+	}
+
+	void cLowLevelGraphicsAndroid::SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA)
+	{
+		//TODO transpose here or on load?
+		mMatrixStack[aMtxType].top() = a_mtxA.GetTranspose();
+	}
+
+	void cLowLevelGraphicsAndroid::SetIdentityMatrix(eMatrix aMtxType)
+	{
+		mMatrixStack[aMtxType].top() = cMatrixf::Identity;
+	}
+
+	void cLowLevelGraphicsAndroid::TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos)
+	{
+		cMatrixf &r = mMatrixStack[aMtxType].top();
+		cMatrixf m = r;
+		for(int i=0;i<4;i++)
+			r.m[3][i] = m.m[0][i] * avPos.x + m.m[1][i] * avPos.y + m.m[2][i] * avPos.z + m.m[3][i];
+	}
+
+	/**
+	 * \todo fix so that there are X, Y , Z versions of this one.
+	 * \param aMtxType
+	 * \param &avRot
+	 */
+	void cLowLevelGraphicsAndroid::RotateMatrix(eMatrix aMtxType, const cVector3f &avRot)
+	{
+		//TODO its unused anyway
+		//mMatrixStack[aMtxType].top().Rotate(avRot);
+	}
+
+	void cLowLevelGraphicsAndroid::ScaleMatrix(eMatrix aMtxType, const cVector3f &avScale)
+	{
+		cMatrixf &r = mMatrixStack[aMtxType].top();
+		cMatrixf m = r;
+		for(int i=0;i<3;i++)
+			for(int j=0;j<4;j++)
+				r.m[i][j] = m.m[i][j] * avScale.v[i];
+	}
+
+	void cLowLevelGraphicsAndroid::SetOrthoProjection(const cVector2f& avSize, float afMin, float afMax)
+	{
+		cMatrixf &r = mMatrixStack[eMatrix_Projection].top();
+		r.m[0][0] = 2.0f / avSize.x;
+		r.m[1][1] = 2.0f / -avSize.y;
+		r.m[2][2] = -2.0f / (afMax - afMin);
+		r.m[3][0] = -1.0f;
+		r.m[3][1] = 1.0f;
+		r.m[3][2] = - (afMax + afMin) / (afMax - afMin);
+	}
 	
 	void cLowLevelGraphicsAndroid::ClearScreen()
 	{

@@ -22,6 +22,7 @@
 #include "graphics/LowLevelGraphics.h"
 #include "math/MathTypes.h"
 
+#include <stack>
 #include <android/native_window.h>
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
@@ -72,17 +73,17 @@ namespace hpl
 
 		/////////// MATRIX METHODS /////////////////////////
 
-		void PushMatrix(eMatrix aMtxType){}
-		void PopMatrix(eMatrix aMtxType){}
-		void SetIdentityMatrix(eMatrix aMtxType){}
+		void PushMatrix(eMatrix aMtxType);
+		void PopMatrix(eMatrix aMtxType);
+		void SetIdentityMatrix(eMatrix aMtxType);
 
-		void SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA){}
+		void SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA);
 
-		void TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos){}
-		void RotateMatrix(eMatrix aMtxType, const cVector3f &avRot){}
-		void ScaleMatrix(eMatrix aMtxType, const cVector3f &avScale){}
+		void TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos);
+		void RotateMatrix(eMatrix aMtxType, const cVector3f &avRot);
+		void ScaleMatrix(eMatrix aMtxType, const cVector3f &avScale);
 
-		void SetOrthoProjection(const cVector2f& avSize, float afMin, float afMax){}
+		void SetOrthoProjection(const cVector2f& avSize, float afMin, float afMax);
 
 		/////////// DRAWING METHODS /////////////////////////
 
@@ -218,6 +219,9 @@ namespace hpl
 		EGLContext mEglContext;
 		EGLSurface mEglSurface;
 		int mSwapInterval;
+
+		//matrix stack
+		std::stack<cMatrixf> mMatrixStack[eMatrix_LastEnum];
 
 		//Vertex Array variables
 		//The vertex arrays used:
