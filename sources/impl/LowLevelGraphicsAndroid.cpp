@@ -28,6 +28,13 @@
 
 namespace hpl
 {
+	#define eVtxAttr_Position	(0)
+	#define eVtxAttr_Normal		(1)
+	#define eVtxAttr_Color0		(2)
+	#define eVtxAttr_Texture0	(3)
+	#define eVtxAttr_Texture1	(4)
+	#define eVtxAttr_Texture2	(5)
+
 	cLowLevelGraphicsAndroid::cLowLevelGraphicsAndroid(ANativeWindow *apAWindow)
 	{
 		mpAWindow = apAWindow;
@@ -704,7 +711,6 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
-
 	void cLowLevelGraphicsAndroid::SetBlendFuncSeparate(eBlendFunc aSrcFactorColor, eBlendFunc aDestFactorColor,
 		eBlendFunc aSrcFactorAlpha, eBlendFunc aDestFactorAlpha)
 	{
@@ -714,6 +720,184 @@ namespace hpl
 								GetGLBlendEnum(aDestFactorAlpha));
 	}
 
+	//-----------------------------------------------------------------------
 	
+	void cLowLevelGraphicsAndroid::AddVertexToBatch(const cVertex *apVtx)
+	{
+		//Coord
+		mpVertexArray[mlVertexCount + 0] =	apVtx->pos.x;
+		mpVertexArray[mlVertexCount + 1] =	apVtx->pos.y;
+		mpVertexArray[mlVertexCount + 2] =	apVtx->pos.z;
+		//Color
+		mpVertexArray[mlVertexCount + 3] =	apVtx->col.r;
+		mpVertexArray[mlVertexCount + 4] =	apVtx->col.g;
+		mpVertexArray[mlVertexCount + 5] =	apVtx->col.b;
+		mpVertexArray[mlVertexCount + 6] =	apVtx->col.a;
+		//Texture coord
+		mpVertexArray[mlVertexCount + 7] =	apVtx->tex.x;
+		mpVertexArray[mlVertexCount + 8] =	apVtx->tex.y;
+		mpVertexArray[mlVertexCount + 9] =	apVtx->tex.z;
+		//Normal coord
+		mpVertexArray[mlVertexCount + 10] =	apVtx->norm.x;
+		mpVertexArray[mlVertexCount + 11] =	apVtx->norm.y;
+		mpVertexArray[mlVertexCount + 12] =	apVtx->norm.z;
+
+		mlVertexCount += mlBatchStride;
+
+		if(mlVertexCount/mlBatchStride >= mlBatchArraySize)
+		{
+			//Make the array larger.
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::AddVertexToBatch(const cVertex *apVtx, const cVector3f* avTransform)
+	{
+		//Coord
+		mpVertexArray[mlVertexCount + 0] =	apVtx->pos.x+avTransform->x;
+		mpVertexArray[mlVertexCount + 1] =	apVtx->pos.y+avTransform->y;
+		mpVertexArray[mlVertexCount + 2] =	apVtx->pos.z+avTransform->z;
+		//Color
+		mpVertexArray[mlVertexCount + 3] =	apVtx->col.r;
+		mpVertexArray[mlVertexCount + 4] =	apVtx->col.g;
+		mpVertexArray[mlVertexCount + 5] =	apVtx->col.b;
+		mpVertexArray[mlVertexCount + 6] =	apVtx->col.a;
+		//Texture coord
+		mpVertexArray[mlVertexCount + 7] =	apVtx->tex.x;
+		mpVertexArray[mlVertexCount + 8] =	apVtx->tex.y;
+		mpVertexArray[mlVertexCount + 9] =	apVtx->tex.z;
+		//Normal coord
+		mpVertexArray[mlVertexCount + 10] =	apVtx->norm.x;
+		mpVertexArray[mlVertexCount + 11] =	apVtx->norm.y;
+		mpVertexArray[mlVertexCount + 12] =	apVtx->norm.z;
+
+		mlVertexCount += mlBatchStride;
+
+		if(mlVertexCount/mlBatchStride >= mlBatchArraySize)
+		{
+			//Make the array larger.
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::AddVertexToBatch_Size2D(const cVertex *apVtx, const cVector3f* avTransform,
+		const cColor* apCol,const float& mfW, const float& mfH)
+	{
+		//Coord
+		mpVertexArray[mlVertexCount + 0] =	avTransform->x + mfW;
+		mpVertexArray[mlVertexCount + 1] =	avTransform->y + mfH;
+		mpVertexArray[mlVertexCount + 2] =	avTransform->z;
+		//Color
+		mpVertexArray[mlVertexCount + 3] =	apCol->r;
+		mpVertexArray[mlVertexCount + 4] =	apCol->g;
+		mpVertexArray[mlVertexCount + 5] =	apCol->b;
+		mpVertexArray[mlVertexCount + 6] =	apCol->a;
+		//Texture coord
+		mpVertexArray[mlVertexCount + 7] =	apVtx->tex.x;
+		mpVertexArray[mlVertexCount + 8] =	apVtx->tex.y;
+		mpVertexArray[mlVertexCount + 9] =	apVtx->tex.z;
+
+		mlVertexCount += mlBatchStride;
+
+		if(mlVertexCount/mlBatchStride >= mlBatchArraySize)
+		{
+			//Make the array larger.
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::AddVertexToBatch_Raw(	const cVector3f& avPos, const cColor &aColor,
+														const cVector3f& avTex)
+	{
+		//Coord
+		mpVertexArray[mlVertexCount + 0] =	avPos.x;
+		mpVertexArray[mlVertexCount + 1] =	avPos.y;
+		mpVertexArray[mlVertexCount + 2] =	avPos.z;
+		//Color
+		mpVertexArray[mlVertexCount + 3] =	aColor.r;
+		mpVertexArray[mlVertexCount + 4] =	aColor.g;
+		mpVertexArray[mlVertexCount + 5] =	aColor.b;
+		mpVertexArray[mlVertexCount + 6] =	aColor.a;
+		//Texture coord
+		mpVertexArray[mlVertexCount + 7] =	avTex.x;
+		mpVertexArray[mlVertexCount + 8] =	avTex.y;
+		mpVertexArray[mlVertexCount + 9] =	avTex.z;
+
+		mlVertexCount += mlBatchStride;
+	}
+
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::AddIndexToBatch(int alIndex)
+	{
+		mpIndexArray[mlIndexCount] = alIndex;
+		mlIndexCount++;
+
+		if(mlIndexCount>=mlBatchArraySize)
+		{
+			//Make the array larger.
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear)
+	{
+		SetVtxBatchStates(aTypeFlags);
+		SetUpBatchArrays();
+
+		glDrawElements(GL_TRIANGLES,mlIndexCount,GL_UNSIGNED_INT, mpIndexArray);
+
+		if(abAutoClear){
+			mlIndexCount = 0;
+			mlVertexCount = 0;
+			for(int i=0;i<MAX_TEXTUREUNITS;i++)
+				mlTexCoordArrayCount[i]=0;
+		}
+	}
+
+	void cLowLevelGraphicsAndroid::ClearBatch()
+	{
+		mlIndexCount = 0;
+		mlVertexCount = 0;
+	}
+	
+	//-----------------------------------------------------------------------
+	
+	void cLowLevelGraphicsAndroid::SetUpBatchArrays()
+	{
+		//Set the arrays
+		glVertexAttribPointer(eVtxAttr_Position, 3, GL_FLOAT, false, sizeof(float)*mlBatchStride, mpVertexArray);
+		glVertexAttribPointer(eVtxAttr_Color0, 4, GL_FLOAT, false, sizeof(float)*mlBatchStride, &mpVertexArray[3]);
+		glVertexAttribPointer(eVtxAttr_Normal, 3, GL_FLOAT, false, sizeof(float)*mlBatchStride, &mpVertexArray[10]);
+
+		glVertexAttribPointer(eVtxAttr_Texture0, 3, GL_FLOAT, false, sizeof(float)*mlBatchStride, &mpVertexArray[7]);
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::SetVtxBatchStates(tVtxBatchFlag aFlags)
+	{
+		if(aFlags & eVtxBatchFlag_Position)
+			glEnableVertexAttribArray( eVtxAttr_Position );
+		else glDisableVertexAttribArray( eVtxAttr_Position );
+
+		if(aFlags & eVtxBatchFlag_Color0)
+			glEnableVertexAttribArray( eVtxAttr_Color0 );
+		else glDisableVertexAttribArray( eVtxAttr_Color0 );
+
+		if(aFlags & eVtxBatchFlag_Normal)
+			glEnableVertexAttribArray( eVtxAttr_Normal );
+		else glDisableVertexAttribArray( eVtxAttr_Normal );
+
+		if(aFlags & eVtxBatchFlag_Texture0)
+			glEnableVertexAttribArray( eVtxAttr_Texture0 );
+		else glDisableVertexAttribArray( eVtxAttr_Texture0 );
+	}
+
 }
 

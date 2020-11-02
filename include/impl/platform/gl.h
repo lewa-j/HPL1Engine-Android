@@ -24,6 +24,10 @@
 #define GL_INCR_WRAP_EXT 			GL_INCR_WRAP
 #define GL_DECR_WRAP_EXT 			GL_DECR_WRAP
 
+//hack
+#define GL_CLAMP GL_CLAMP_TO_EDGE
+#define GL_CLAMP_TO_BORDER GL_CLAMP_TO_EDGE
+
 #else
 #include <GL/GLee.h>
 #endif

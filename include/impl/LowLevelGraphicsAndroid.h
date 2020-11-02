@@ -162,24 +162,24 @@ namespace hpl
 		void DrawQuad(const tVertexVec &avVtx,const float afZ,const cColor &aCol){}
 		void DrawQuadMultiTex(const tVertexVec &avVtx,const tVector3fVec &avExtraUvs){}
 
-		void AddVertexToBatch(const cVertex *apVtx){}
-		void AddVertexToBatch(const cVertex *apVtx, const cVector3f* avTransform){}
+		void AddVertexToBatch(const cVertex *apVtx);
+		void AddVertexToBatch(const cVertex *apVtx, const cVector3f* avTransform);
 		void AddVertexToBatch(const cVertex *apVtx, const cMatrixf* aMtx){}
 
 		void AddVertexToBatch_Size2D(const cVertex *apVtx, const cVector3f* avTransform,
-										const cColor* apCol,const float& mfW, const float& mfH){}
+										const cColor* apCol,const float& mfW, const float& mfH);
 
 		void AddVertexToBatch_Raw(	const cVector3f& avPos, const cColor &aColor,
-									const cVector3f& avTex){}
+									const cVector3f& avTex);
 
 
 		void AddTexCoordToBatch(unsigned int alUnit,const cVector3f *apCoord){}
 		void SetBatchTextureUnitActive(unsigned int alUnit,bool abActive){}
 
-		void AddIndexToBatch(int alIndex){}
+		void AddIndexToBatch(int alIndex);
 
-		void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true){}
-		void ClearBatch(){}
+		void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true);
+		void ClearBatch();
 
 		//PRIMITIVES
 		void DrawLine(const cVector3f& avBegin, const cVector3f& avEnd, cColor aCol){}
@@ -236,6 +236,10 @@ namespace hpl
 		unsigned int mlTexCoordArrayCount[MAX_TEXTUREUNITS];
 
 		unsigned int mlBatchArraySize;
+		
+		//Batch helper
+		void SetUpBatchArrays();
+		void SetVtxBatchStates(tVtxBatchFlag aFlags);
 
 		//Clearing
 		bool mbClearColor;
