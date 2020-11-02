@@ -20,7 +20,7 @@
 #include "system/LowLevelSystem.h"
 #include "math/Math.h"
 
-#include <GL/GLee.h>
+#include "impl/platform/gl.h"
 
 #include <string.h>
 
@@ -447,19 +447,19 @@ namespace hpl {
 		/// TEXTURE 0 /////////////////////////
 		if(aFlags & eVertexFlag_Texture0)
 		{
-			glClientActiveTextureARB(GL_TEXTURE0_ARB);
+			glClientActiveTexture(GL_TEXTURE0);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY );
 			int idx =  cMath::Log2ToInt(eVertexFlag_Texture0);
 			glTexCoordPointer(kvVertexElements[idx],GL_FLOAT,sizeof(float)*kvVertexElements[idx],&mvVertexArray[idx][0] );
 		}
 		else {
-			glClientActiveTextureARB(GL_TEXTURE0_ARB);
+			glClientActiveTexture(GL_TEXTURE0);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY );
 		}
 
 		/// TEXTURE 1 /////////////////////////
 		if(aFlags & eVertexFlag_Texture1){
-			glClientActiveTextureARB(GL_TEXTURE1_ARB);
+			glClientActiveTexture(GL_TEXTURE1);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY );
 			int idx =  cMath::Log2ToInt(eVertexFlag_Texture1);
 
@@ -469,43 +469,43 @@ namespace hpl {
 				glTexCoordPointer(kvVertexElements[idx],GL_FLOAT,sizeof(float)*kvVertexElements[idx],&mvVertexArray[idx][0] );
 		}
 		else {
-			glClientActiveTextureARB(GL_TEXTURE1_ARB);
+			glClientActiveTexture(GL_TEXTURE1);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY );
 		}
 
 		/// TEXTURE 2 /////////////////////////
 		if(aFlags & eVertexFlag_Texture2){
-			glClientActiveTextureARB(GL_TEXTURE2_ARB);
+			glClientActiveTexture(GL_TEXTURE2);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY );
 			int idx =  cMath::Log2ToInt(eVertexFlag_Texture2);
 			glTexCoordPointer(kvVertexElements[idx],GL_FLOAT,sizeof(float)*kvVertexElements[idx],&mvVertexArray[idx][0] );
 		}
 		else {
-			glClientActiveTextureARB(GL_TEXTURE2_ARB);
+			glClientActiveTexture(GL_TEXTURE2);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY );
 		}
 
 		/// TEXTURE 3 /////////////////////////
 		if(aFlags & eVertexFlag_Texture3){
-			glClientActiveTextureARB(GL_TEXTURE3_ARB);
+			glClientActiveTexture(GL_TEXTURE3);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY );
 			int idx =  cMath::Log2ToInt(eVertexFlag_Texture3);
 			glTexCoordPointer(kvVertexElements[idx],GL_FLOAT,sizeof(float)*kvVertexElements[idx],&mvVertexArray[idx][0] );
 		}
 		else {
-			glClientActiveTextureARB(GL_TEXTURE3_ARB);
+			glClientActiveTexture(GL_TEXTURE3);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY );
 		}
 
 		/// TEXTURE 4 /////////////////////////
 		if(aFlags & eVertexFlag_Texture4){
-			glClientActiveTextureARB(GL_TEXTURE4_ARB);
+			glClientActiveTexture(GL_TEXTURE4);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY );
 			int idx =  cMath::Log2ToInt(eVertexFlag_Texture4);
 			glTexCoordPointer(kvVertexElements[idx],GL_FLOAT,sizeof(float)*kvVertexElements[idx],&mvVertexArray[idx][0] );
 		}
 		else {
-			glClientActiveTextureARB(GL_TEXTURE4_ARB);
+			glClientActiveTexture(GL_TEXTURE4);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY );
 		}
 	}

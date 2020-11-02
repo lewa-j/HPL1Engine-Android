@@ -29,7 +29,7 @@
 #include "system/LowLevelSystem.h"
 
 #ifdef HPL_USE_ATI_FRAGMENT_SHADER
-#include <GL/GLee.h>
+#include "impl/platform/gl.h"
 #endif
 
 namespace hpl {

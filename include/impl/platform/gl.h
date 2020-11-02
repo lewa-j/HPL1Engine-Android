@@ -29,7 +29,20 @@
 #define GL_CLAMP_TO_BORDER GL_CLAMP_TO_EDGE
 
 #else
-#include <GL/GLee.h>
+#ifdef _WIN32
+#define APIENTRY __stdcall
 #endif
+#include <impl/glad/glad.h>
+
+#if defined(WIN32)
+#undef APIENTRY
+#include <impl/glad/glad_wgl.h>
+
+#elif defined(__linux__)
+#include <impl/glad/glad_glx.h>
+#endif
+
+#endif
+
 
 #endif //HPL_GL_H

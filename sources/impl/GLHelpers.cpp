@@ -36,8 +36,8 @@ namespace hpl
 		case eColorDataFormat_RGB:		return GL_RGB;
 		case eColorDataFormat_RGBA:		return GL_RGBA;
 		case eColorDataFormat_ALPHA:	return GL_ALPHA;
-		case eColorDataFormat_BGR:		return GL_BGR_EXT;
-		case eColorDataFormat_BGRA:		return GL_BGRA_EXT;
+		case eColorDataFormat_BGR:		return GL_BGR;
+		case eColorDataFormat_BGRA:		return GL_BGRA;
 		};
 
 		return 0;
@@ -51,8 +51,8 @@ namespace hpl
 		{
 		case eTextureTarget_1D:		return GL_TEXTURE_1D;
 		case eTextureTarget_2D:		return GL_TEXTURE_2D;
-		case eTextureTarget_Rect:	return GL_TEXTURE_RECTANGLE_NV;
-		case eTextureTarget_CubeMap:	return GL_TEXTURE_CUBE_MAP_ARB;
+		case eTextureTarget_Rect:	return GL_TEXTURE_RECTANGLE;
+		case eTextureTarget_CubeMap:	return GL_TEXTURE_CUBE_MAP;
 		case eTextureTarget_3D:		return GL_TEXTURE_3D;
 		}
 		return 0;
@@ -100,21 +100,21 @@ namespace hpl
 	{
 		switch(aType)
 		{
-		case eTextureParam_ColorFunc:		return GL_COMBINE_RGB_ARB;
-		case eTextureParam_AlphaFunc:		return GL_COMBINE_ALPHA_ARB;
-		case eTextureParam_ColorSource0:	return GL_SOURCE0_RGB_ARB;
-		case eTextureParam_ColorSource1:	return GL_SOURCE1_RGB_ARB;
-		case eTextureParam_ColorSource2:	return GL_SOURCE2_RGB_ARB;
-		case eTextureParam_AlphaSource0:	return GL_SOURCE0_ALPHA_ARB;
-		case eTextureParam_AlphaSource1:	return GL_SOURCE1_ALPHA_ARB;
-		case eTextureParam_AlphaSource2:	return GL_SOURCE2_ALPHA_ARB;
-		case eTextureParam_ColorOp0:		return GL_OPERAND0_RGB_ARB;
-		case eTextureParam_ColorOp1:		return GL_OPERAND1_RGB_ARB;
-		case eTextureParam_ColorOp2:		return GL_OPERAND2_RGB_ARB;
-		case eTextureParam_AlphaOp0:		return GL_OPERAND0_ALPHA_ARB;
-		case eTextureParam_AlphaOp1:		return GL_OPERAND1_ALPHA_ARB;
-		case eTextureParam_AlphaOp2:		return GL_OPERAND2_ALPHA_ARB;
-		case eTextureParam_ColorScale:		return GL_RGB_SCALE_ARB;
+		case eTextureParam_ColorFunc:		return GL_COMBINE_RGB;
+		case eTextureParam_AlphaFunc:		return GL_COMBINE_ALPHA;
+		case eTextureParam_ColorSource0:	return GL_SOURCE0_RGB;
+		case eTextureParam_ColorSource1:	return GL_SOURCE1_RGB;
+		case eTextureParam_ColorSource2:	return GL_SOURCE2_RGB;
+		case eTextureParam_AlphaSource0:	return GL_SOURCE0_ALPHA;
+		case eTextureParam_AlphaSource1:	return GL_SOURCE1_ALPHA;
+		case eTextureParam_AlphaSource2:	return GL_SOURCE2_ALPHA;
+		case eTextureParam_ColorOp0:		return GL_OPERAND0_RGB;
+		case eTextureParam_ColorOp1:		return GL_OPERAND1_RGB;
+		case eTextureParam_ColorOp2:		return GL_OPERAND2_RGB;
+		case eTextureParam_AlphaOp0:		return GL_OPERAND0_ALPHA;
+		case eTextureParam_AlphaOp1:		return GL_OPERAND1_ALPHA;
+		case eTextureParam_AlphaOp2:		return GL_OPERAND2_ALPHA;
+		case eTextureParam_ColorScale:		return GL_RGB_SCALE;
 		case eTextureParam_AlphaScale:		return GL_ALPHA_SCALE;
 		}
 		return 0;
@@ -141,9 +141,9 @@ namespace hpl
 		switch(aType)
 		{
 		case eTextureSource_Texture:	return GL_TEXTURE;
-		case eTextureSource_Constant:	return GL_CONSTANT_ARB;
-		case eTextureSource_Primary:	return GL_PRIMARY_COLOR_ARB;
-		case eTextureSource_Previous:	return GL_PREVIOUS_ARB;
+		case eTextureSource_Constant:	return GL_CONSTANT;
+		case eTextureSource_Primary:	return GL_PRIMARY_COLOR;
+		case eTextureSource_Previous:	return GL_PREVIOUS;
 		}
 		return 0;
 	}
@@ -157,11 +157,11 @@ namespace hpl
 		case eTextureFunc_Modulate:		return GL_MODULATE;
 		case eTextureFunc_Replace:		return GL_REPLACE;
 		case eTextureFunc_Add:			return GL_ADD;
-		case eTextureFunc_Substract:	return GL_SUBTRACT_ARB;
-		case eTextureFunc_AddSigned:	return GL_ADD_SIGNED_ARB;
-		case eTextureFunc_Interpolate:	return GL_INTERPOLATE_ARB;
-		case eTextureFunc_Dot3RGB:		return GL_DOT3_RGB_ARB;
-		case eTextureFunc_Dot3RGBA:		return GL_DOT3_RGBA_ARB;
+		case eTextureFunc_Substract:	return GL_SUBTRACT;
+		case eTextureFunc_AddSigned:	return GL_ADD_SIGNED;
+		case eTextureFunc_Interpolate:	return GL_INTERPOLATE;
+		case eTextureFunc_Dot3RGB:		return GL_DOT3_RGB;
+		case eTextureFunc_Dot3RGBA:		return GL_DOT3_RGBA;
 		}
 		return 0;
 	}
@@ -232,8 +232,8 @@ namespace hpl
 		case eStencilOp_Increment:		return GL_INCR;
 		case eStencilOp_Decrement:		return GL_DECR;
 		case eStencilOp_Invert:			return GL_INVERT;
-		case eStencilOp_IncrementWrap:	return GL_INCR_WRAP_EXT;
-		case eStencilOp_DecrementWrap:	return GL_DECR_WRAP_EXT;
+		case eStencilOp_IncrementWrap:	return GL_INCR_WRAP;
+		case eStencilOp_DecrementWrap:	return GL_DECR_WRAP;
 		}
 		return 0;
 	}

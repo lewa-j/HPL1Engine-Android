@@ -148,7 +148,7 @@ namespace hpl {
 		{
 			cSDLBitmap2D *pSrc = static_cast<cSDLBitmap2D*>((*avBitmaps)[i]);
 
-			GLenum target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + i;
+			GLenum target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
 
 			int lChannels;
 			GLenum format;
@@ -574,13 +574,6 @@ namespace hpl {
 			return false;
 		}
 
-		//For some reason checking for ARB texture is not working on radeon cards.
-		/*if(mTarget == eTextureTarget_Rect && !GLEE_ARB_texture_rectangle)
-		{
-		Error("Rectangle texture target not supported\n");
-		return false;
-		}*/
-
 		GLenum GLTarget = InitCreation(alHandleIdx);
 
 		cSDLBitmap2D *pBitmapSrc = static_cast<cSDLBitmap2D*>(pBmp);
@@ -737,7 +730,7 @@ namespace hpl {
 		{
 			if(sType == "tga")
 			{
-				aFormat = GL_BGRA_EXT;
+				aFormat = GL_BGRA;
 			}
 			else
 			{
@@ -749,7 +742,7 @@ namespace hpl {
 		{
 			if(sType == "tga")
 			{
-				aFormat = GL_BGR_EXT;
+				aFormat = GL_BGR;
 			}
 			else
 			{
