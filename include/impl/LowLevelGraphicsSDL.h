@@ -131,10 +131,6 @@ namespace hpl
 
 		//STENCIL
 		void SetStencilActive(bool abX);
-		/*void SetStencilTwoSideActive(bool abX);
-		void SetStencilFace(eStencilFace aFace);
-		void SetStencilFunc(eStencilFunc aFunc,int alRef, unsigned int aMask);
-		void SetStencilOp(eStencilOp aFailOp,eStencilOp aZFailOp,eStencilOp aZPassOp);*/
 		void SetStencil(eStencilFunc aFunc,int alRef, unsigned int aMask,
 				eStencilOp aFailOp,eStencilOp aZFailOp,eStencilOp aZPassOp);
 		void SetStencilTwoSide(eStencilFunc aFrontFunc,eStencilFunc aBackFunc,
@@ -196,7 +192,6 @@ namespace hpl
 		void AddIndexToBatch(int alIndex);
 
 		void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true);
-		void FlushQuadBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true);
 		void ClearBatch();
 
 		//PRIMITIVES

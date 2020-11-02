@@ -179,7 +179,6 @@ namespace hpl
 		void AddIndexToBatch(int alIndex){}
 
 		void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true){}
-		void FlushQuadBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true){}
 		void ClearBatch(){}
 
 		//PRIMITIVES

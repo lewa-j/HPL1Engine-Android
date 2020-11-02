@@ -144,18 +144,16 @@ namespace hpl {
 			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
 			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 1);
 			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
+			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
 			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 3);
-
-			/*apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
-			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 3);
-			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);*/
+			apLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
 
 			lIdxAdd+=4;
 		}
 
 		do
 		{
-			apLowLevelGraphics->FlushQuadBatch(mpMaterial->GetBatchFlags(eMaterialRenderType_Diffuse),false);
+			apLowLevelGraphics->FlushTriBatch(mpMaterial->GetBatchFlags(eMaterialRenderType_Diffuse),false);
 		}
 		while(mpMaterial->NextPass(eMaterialRenderType_Diffuse));
 

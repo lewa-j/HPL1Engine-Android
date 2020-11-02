@@ -323,10 +323,6 @@ namespace hpl {
 
 		//STENCIL
 		virtual void SetStencilActive(bool abX)=0;
-		/*virtual void SetStencilTwoSideActive(bool abX)=0;
-		virtual void SetStencilFace(eStencilFace aFace)=0;
-		virtual void SetStencilFunc(eStencilFunc aFunc,int alRef, unsigned int aMask)=0;
-		virtual void SetStencilOp(eStencilOp aFailOp,eStencilOp aZFailOp,eStencilOp aZPassOp)=0;*/
 		virtual void SetStencil(eStencilFunc aFunc,int alRef, unsigned int aMask,
 						eStencilOp aFailOp,eStencilOp aZFailOp,eStencilOp aZPassOp)=0;
 		virtual void SetStencilTwoSide(eStencilFunc aFrontFunc,eStencilFunc aBackFunc,
@@ -392,7 +388,6 @@ namespace hpl {
 		//Index array, vtxArray, etc perhaps?
 
 		virtual void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true)=0;
-		virtual void FlushQuadBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true)=0;
 		virtual void ClearBatch()=0;
 
 		//some primitive:

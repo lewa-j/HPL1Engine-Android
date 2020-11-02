@@ -239,8 +239,12 @@ namespace hpl {
 																	0,0);
 					}
 
-					for(int i=0;i<4;i++)
-						mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + i);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 1);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 3);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
 				}
 				else
 				{
@@ -248,8 +252,13 @@ namespace hpl {
 					{
 						mpLowLevelGraphics->AddVertexToBatch(pObj->mpObject->GetVtxPtr(i),
 																&pObj->mvTransform);
-						mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + i);
 					}
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 1);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 3);
+					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
 				}
 				lIdxAdd+=(int)pObj->mpObject->GetVertexVec()->size();
 
@@ -275,7 +284,7 @@ namespace hpl {
 
 			do
 			{
-				mpLowLevelGraphics->FlushQuadBatch(pPrevMat->GetBatchFlags(eMaterialRenderType_Diffuse),false);
+				mpLowLevelGraphics->FlushTriBatch(pPrevMat->GetBatchFlags(eMaterialRenderType_Diffuse),false);
 			}
 			while(pPrevMat->NextPass(eMaterialRenderType_Diffuse));
 

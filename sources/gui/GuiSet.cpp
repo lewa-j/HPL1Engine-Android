@@ -913,8 +913,12 @@ namespace hpl {
 						vtx.tex);
 				}
 
-				for(int i=0;i<4;i++)
-					pLowLevelGraphics->AddIndexToBatch(lIdxAdd + i);
+				pLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
+				pLowLevelGraphics->AddIndexToBatch(lIdxAdd + 1);
+				pLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
+				pLowLevelGraphics->AddIndexToBatch(lIdxAdd + 2);
+				pLowLevelGraphics->AddIndexToBatch(lIdxAdd + 3);
+				pLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
 
 				lIdxAdd += 4;
 
@@ -939,7 +943,7 @@ namespace hpl {
 
 			//////////////////////////////
 			// Render batch
-			pLowLevelGraphics->FlushQuadBatch(	eVtxBatchFlag_Position | eVtxBatchFlag_Texture0 |
+			pLowLevelGraphics->FlushTriBatch(	eVtxBatchFlag_Position | eVtxBatchFlag_Texture0 |
 												eVtxBatchFlag_Color0,false);
 			pLowLevelGraphics->ClearBatch();
 			lIdxAdd=0;

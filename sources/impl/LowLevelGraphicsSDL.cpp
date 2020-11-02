@@ -1483,23 +1483,6 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
-	void cLowLevelGraphicsSDL::FlushQuadBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear)
-	{
-		SetVtxBatchStates(aTypeFlags);
-		SetUpBatchArrays();
-
-		glDrawElements(GL_QUADS,mlIndexCount,GL_UNSIGNED_INT, mpIndexArray);
-
-		if(abAutoClear){
-			mlIndexCount = 0;
-			mlVertexCount = 0;
-			for(int i=0;i<MAX_TEXTUREUNITS;i++)
-				mlTexCoordArrayCount[i]=0;
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
 	void cLowLevelGraphicsSDL::ClearBatch()
 	{
 		mlIndexCount = 0;
