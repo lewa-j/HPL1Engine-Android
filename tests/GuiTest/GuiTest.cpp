@@ -7,12 +7,13 @@
  */
 #include <hpl.h>
 
-
+#ifdef ANDROID
+#include <impl/AndroidGameSetup.h>
+#else
 #include <impl/SDLGameSetup.h>
+#endif
 
 #include "../Common/SimpleCamera.h"
-
-#include <conio.h>
 
 using namespace hpl;
 
@@ -67,7 +68,7 @@ public:
 	//--------------------------------------------------
 
 
-	cSimpleUpdate() : iUpdateable("SimpleUPdate")
+	cSimpleUpdate() : iUpdateable("SimpleUpdate")
 	{
 		////////////////////////////////
 		//Scene Init
@@ -148,7 +149,7 @@ public:
 		//mpFrmBase = mpMainSet->CreateWidgetFrame(cVector3f(0,0,0),cVector2f(800,600),false);
 
 		//Window
-		mpWndMain = mpMainSet->CreateWidgetWindow(cVector3f(0,0,0),cVector2f(600,400),_W(""),NULL);//,mpFrmBase);
+		mpWndMain = mpMainSet->CreateWidgetWindow(cVector3f(10,40,0),cVector2f(600,400),_W(""),NULL);//,mpFrmBase);
 		mpWndMain->SetText(_W("My Window"));
 
 		//Window Frame
@@ -333,8 +334,15 @@ private:
 
 int hplMain(const tString &asCommandline)
 {
+	iResourceBase::SetLogCreateAndDelete(true);
+	iGpuProgram::SetLogDebugInformation(true);
+
 	//Init the game engine
-	iLowLevelGameSetup *pSetup = hplNew(cSDLGameSetup,());
+#ifdef ANDROID
+	iLowLevelGameSetup* pSetup = hplNew(cAndroidGameSetup,());
+#else
+	iLowLevelGameSetup* pSetup = hplNew(cSDLGameSetup,());
+#endif
 	gpGame = hplNew(cGame, (pSetup,800,600,32,false,45) );
 	gpGame->GetGraphics()->GetLowLevel()->SetVsyncActive(false);
 

@@ -6,12 +6,13 @@
  * For conditions of distribution and use, see copyright notice in LICENSE-tests
  */
 #include <hpl.h>
+#ifdef ANDROID
+#include <impl/AndroidGameSetup.h>
+#else
 #include <impl/SDLGameSetup.h>
-
-#pragma comment(lib, "HPL.lib")
+#endif
 
 #include "SceneCamera.h"
-
 
 using namespace hpl;
 
@@ -42,10 +43,9 @@ public:
 		mpWorld = gpGame->GetResources()->GetMeshLoaderHandler()->LoadWorld("maps/maptest0_complex.dae",0);
 		//mpWorld = gpGame->GetResources()->GetMeshLoaderHandler()->LoadWorld("maps/simple.dae");
 		//mpWorld = gpGame->GetResources()->GetMeshLoaderHandler()->LoadWorld("maps/testlevel2.dae");
+		gpGame->GetScene()->SetWorld3D(mpWorld);
 
 		gpGame->GetInput()->AddAction(new cActionKeyboard("Shadows",gpGame->GetInput(),eKey_1));
-
-		gpGame->GetScene()->SetWorld3D(mpWorld);
 
 		//Create crate
 		/*cMeshEntity *pEntity;
@@ -63,7 +63,7 @@ public:
 		pBody->SetMass(1);
 		pBody->CreateNode()->AddEntity(pEntity);*/
 
-		mpFont = gpGame->GetResources()->GetFontManager()->CreateFontData("verdana.ttf");
+		mpFont = gpGame->GetResources()->GetFontManager()->CreateFontData("viewer.fnt");
 	}
 
 	~cSimpleUpdate()
@@ -147,7 +147,7 @@ public:
 
 	void OnPostSceneDraw()
 	{
-		//return;
+		return;
 		cCamera3D *pCam = static_cast<cCamera3D*>(gpGame->GetScene()->GetCamera());
 		mpLowLevelGraphics->SetMatrix(eMatrix_ModelView, pCam->GetViewMatrix());
 
@@ -221,12 +221,18 @@ private:
 	int mlTested,mlPreTested;
 };
 
-
-
-int WINAPI WinMain(	HINSTANCE hInstance,  HINSTANCE hPrevInstance,LPSTR	lpCmdLine, int nCmdShow)
+int hplMain(const tString &asCommandLine)
 {
+	iResourceBase::SetLogCreateAndDelete(true);
+	iGpuProgram::SetLogDebugInformation(true);
+
 	//Init the game engine
-	gpGame = new cGame(new cSDLGameSetup(),800,600,32,false,45);
+#ifdef ANDROID
+	iLowLevelGameSetup* pSetup = hplNew(cAndroidGameSetup,());
+#else
+	iLowLevelGameSetup* pSetup = hplNew(cSDLGameSetup,());
+#endif
+	gpGame = new cGame(pSetup,1024,576,32,false,45);
 	gpGame->GetGraphics()->GetLowLevel()->SetVsyncActive(false);
 
 	//Add resources
@@ -247,4 +253,6 @@ int WINAPI WinMain(	HINSTANCE hInstance,  HINSTANCE hPrevInstance,LPSTR	lpCmdLin
 	//Delete the engine
 	delete gpGame;
 	delete gpCameraUpdate;
+
+	return 0;
 }

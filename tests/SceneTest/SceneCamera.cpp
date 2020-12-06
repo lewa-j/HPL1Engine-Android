@@ -7,8 +7,7 @@
  */
 #include "SceneCamera.h"
 
-cSceneCamera::cSceneCamera(cGame *apGame, float afSpeed,cVector3f avStartPos,bool abShowFPS)  : iUpdateable("SceneCamera")
-	: iUpdateable("SimpleCamera")
+cSceneCamera::cSceneCamera(cGame *apGame, float afSpeed,cVector3f avStartPos,bool abShowFPS) : iUpdateable("SceneCamera")
 {
 	mpGame = apGame;
 	mfSpeed = afSpeed;
@@ -50,7 +49,7 @@ cSceneCamera::cSceneCamera(cGame *apGame, float afSpeed,cVector3f avStartPos,boo
 	//mpCharBody->SetGravityActive(false);
 
 	if(abShowFPS)
-		mpFont = mpGame->GetResources()->GetFontManager()->CreateFontData("verdana",12,32,128);
+		mpFont = mpGame->GetResources()->GetFontManager()->CreateFontData("viewer.fnt",12,32,128);
 	else
 		mpFont = NULL;
 }
@@ -104,9 +103,9 @@ void cSceneCamera::OnDraw()
 {
 	if(mpFont)
 	{
-		mpFont->Draw(cVector2f(5,5),12,cColor(1,1),eFontAlign_Left,"FPS: %.1f",mpGame->GetFPS());
-		mpFont->Draw(cVector2f(5,17),12,cColor(1,1),eFontAlign_Left,
-					"Vel: %s", mpCharBody->GetForceVelocity().ToString().c_str());
+		mpFont->Draw(cVector2f(5,15),12,cColor(1,1),eFontAlign_Left,_W("FPS: %.1f"),mpGame->GetFPS());
+		mpFont->Draw(cVector2f(5,27),12,cColor(1,1),eFontAlign_Left,
+					_W("Vel: %s"), cString::To16Char(mpCharBody->GetForceVelocity().ToString()).c_str());
 	}
 }
 
