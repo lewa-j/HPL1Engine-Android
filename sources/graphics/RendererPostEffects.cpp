@@ -54,9 +54,9 @@ namespace hpl {
 		///////////////////////////////////////////
 		// Create screen buffers
 		Log(" Creating screen buffers size %s\n",mvScreenSize.ToString().c_str());
-		for(int i=0;i<2;i++)
+		if(mpLowLevelGraphics->GetCaps(eGraphicCaps_TextureTargetRectangle))
 		{
-			if(mpLowLevelGraphics->GetCaps(eGraphicCaps_TextureTargetRectangle))
+			for(int i=0;i<2;i++)
 			{
 				mpScreenBuffer[i] = mpLowLevelGraphics->CreateTexture(cVector2l(
 					(int)mvScreenSize.x,(int)mvScreenSize.y),32,cColor(0,0,0,0),false,
@@ -71,13 +71,13 @@ namespace hpl {
 				}
 				mpScreenBuffer[i]->SetWrapS(eTextureWrap_ClampToEdge);
 				mpScreenBuffer[i]->SetWrapT(eTextureWrap_ClampToEdge);
-
 			}
-			else
-			{
-				mpScreenBuffer[i] = NULL;
-				Error("Texture rectangle not supported. Posteffects will be turned off.");
-			}
+		}
+		else
+		{
+			mpScreenBuffer[0] = NULL;
+			mpScreenBuffer[1] = NULL;
+			Error("Texture rectangle not supported. Posteffects will be turned off.");
 		}
 
 		///////////////////////////////////////////
