@@ -187,6 +187,49 @@ namespace hpl
 	}
 	
 	
+		void CreateMessageBoxW (eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap)
+	{
+		wchar_t text[2048];
+
+		if (fmt == NULL)
+			return;
+		vswprintf(text, 2047, fmt, ap);
+
+		tWString sMess = _W("");
+
+		//TODO proper message box
+		sMess += asCaption;
+		sMess +=_W("\n\n");
+		sMess += text;
+		Error("%ls\n\n%ls",asCaption,text);
+	}
+
+	void CreateMessageBoxW ( eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, ...)
+	{
+		va_list ap;
+
+		if (fmt == NULL)
+			return;
+		va_start(ap, fmt);
+		CreateMessageBoxW (eType, asCaption, fmt, ap);
+		va_end(ap);
+	}
+
+	void CreateMessageBoxW ( const wchar_t* asCaption, const wchar_t *fmt, ...)
+	{
+		va_list ap;
+		if (fmt == NULL)
+			return;
+		va_start(ap, fmt);
+		CreateMessageBoxW( eMsgBoxType_Default, asCaption, fmt, ap );
+		va_end(ap);
+	}
+	
+	void SetWindowCaption(const tString &asName)
+	{
+		//TODO Implement
+	}
+	
 	typedef long long unsigned int longtime_t;
 	unsigned long GetApplicationTime()
 	{
