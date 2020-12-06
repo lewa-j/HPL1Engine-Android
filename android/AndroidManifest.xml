@@ -9,6 +9,7 @@
 				android:hardwareAccelerated="true">
         <activity android:name="android.app.NativeActivity"
                   android:label="HPL1 Test"
+				  android:screenOrientation="sensorLandscape"
 				android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize">
 			<meta-data android:name="android.app.lib_name"
 						android:value="hpl1game" />
