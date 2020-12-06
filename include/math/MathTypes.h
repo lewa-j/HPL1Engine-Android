@@ -257,11 +257,12 @@ namespace hpl {
 
 	typedef cMatrix<float> cMatrixf;
 	//-Wundefined-var-template
+#ifndef _MSC_VER 
 	template <>
 	const cMatrixf cMatrixf::Identity;
 	template <>
 	const cMatrixf cMatrixf::Zero;
-
+#endif
 	typedef std::vector<cMatrixf> tMatrixfVec;
 	typedef tMatrixfVec::iterator tMatrixfVecIt;
 
