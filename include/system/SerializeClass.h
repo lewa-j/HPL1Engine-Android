@@ -55,6 +55,7 @@ namespace hpl {
 
 	#define eSerializeType_WString		(14)
 
+	#define eSerializeType_Float64		(15)
 
 	#define eSerializeType_Class		(100)
 

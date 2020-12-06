@@ -437,6 +437,13 @@ namespace hpl {
 				return msTempCharArray; break;
 			}
 
+			/////////// FLOAT 64 ////////////////////////////////
+			case eSerializeType_Float64:
+			{
+				sprintf(msTempCharArray, "%f", PointerValue(pVal,double));
+				return msTempCharArray; break;
+			}
+
 			/////////// STRING ////////////////////////////////
 			case eSerializeType_String:
 			{
@@ -567,6 +574,12 @@ namespace hpl {
 			case eSerializeType_Float32:
 			{
 				PointerValue(pVal,float) = cString::ToFloat(asVal,0);
+				break;
+			}
+			////////// FLOAT 64 ////////////////////////////////
+			case eSerializeType_Float64:
+			{
+				PointerValue(pVal, double) = cString::ToDouble(asVal, 0);
 				break;
 			}
 			////////// STRING ////////////////////////////////
@@ -1112,6 +1125,7 @@ namespace hpl {
 			case eSerializeType_Bool:		return sizeof(bool);
 			case eSerializeType_Int32:		return sizeof(int);
 			case eSerializeType_Float32:	return sizeof(float);
+			case eSerializeType_Float64:	return sizeof(double);
 			case eSerializeType_String:		return sizeof(tString);
 			case eSerializeType_Vector2l:	return sizeof(cVector2l);
 			case eSerializeType_Vector2f:	return sizeof(cVector2f);

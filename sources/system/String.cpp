@@ -380,6 +380,15 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	double cString::ToDouble(const char* asString, double afDefault)
+	{
+		if (asString == NULL)return afDefault;
+
+		return atof(asString);
+	}
+
+	//-----------------------------------------------------------------------
+
 	bool cString::ToBool(const char* asString, bool abDefault)
 	{
 		if(asString==NULL)return abDefault;

@@ -123,6 +123,7 @@ namespace hpl {
 		static int ToInt(const char* asString,int alDefault);
 		static bool ToBool(const char* asString, bool abDefault);
 		static float ToFloat(const char* asString, float afDefault);
+		static double ToDouble(const char* asString, double afDefault);
 		static cColor ToColor(const char* asString, const cColor& aDefault);
 		static cVector2f ToVector2f(const char* asString, const cVector2f& avDefault);
 		static cVector3f ToVector3f(const char* asString, const cVector3f& avDefault);
