@@ -1,16 +1,11 @@
-HPL1 Engine Source Code
+HPL1 Engine Android Port
 =======================
 
 Yes, here it is at last the Engine that made the Penumbra Series.
 
-Read through the TODO file for various known things that should be cleaned up / fixed.
+Still WIP
 
-Included are project files for Xcode, Visual Studio 2003 and Cmake (for Linux)
-
-Contributing Code
------------------
-We encourage everyone to contribute code to this project, so just sign up for a github account, create a fork and hack away at the codebase. We will start an Open Source forum on the Frictional Games forums as a place to talk about changes and to submit patches from your forks.
-
+Penumbra code found [here](https://github.com/lewa-j/PenumbraOverture)
 
 License Information
 -------------------
