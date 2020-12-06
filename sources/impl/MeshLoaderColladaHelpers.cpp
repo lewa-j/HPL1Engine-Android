@@ -1498,8 +1498,10 @@ namespace hpl {
 						{
 							DataVec[i].mlVtx = vIndexArray[lTriangleAdd + i*lTriElements + Geometry.mlPosIdxNum];
 							DataVec[i].mlNorm = vIndexArray[lTriangleAdd + i*lTriElements + Geometry.mlNormIdxNum];
-							if(Geometry.mlTexIdxNum >= 0)
-								DataVec[i].mlTex = vIndexArray[lTriangleAdd + i*lTriElements + Geometry.mlTexIdxNum];
+							if (Geometry.mlTexIdxNum >= 0)
+								DataVec[i].mlTex = vIndexArray[lTriangleAdd + i * lTriElements + Geometry.mlTexIdxNum];
+							else
+								DataVec[i].mlTex = 0;
 						}
 					}
 
@@ -1538,8 +1540,15 @@ namespace hpl {
 			SplitVertices(Geometry,Geometry.mvExtraVtxVec,Geometry.mvVertexVec,Geometry.mvIndexVec);
 			Geometry.Clear();
 
+
 			////////////////////////////////////
 			//Create Tangents
+			Geometry.mvTangents.resize(Geometry.mvVertexVec.size() * 4);
+			if (Geometry.mlTexIdxNum < 0) {
+				//Can't generate tangents without texcoords
+				memset(Geometry.mvTangents.data(), 0, Geometry.mvTangents.size() * sizeof(float));
+				continue;
+			}
 			tFloatVec vPosVec;  vPosVec.resize(Geometry.mvVertexVec.size() *4);
 			tFloatVec vNormVec; vNormVec.resize(Geometry.mvVertexVec.size() *3);
 			tFloatVec vTexVec;  vTexVec.resize(Geometry.mvVertexVec.size() *3);
@@ -1572,7 +1581,6 @@ namespace hpl {
 			}
 
 			//Creates tangents
-			Geometry.mvTangents.resize(Geometry.mvVertexVec.size() *4);
 			cMath::CreateTriTangentVectors( &Geometry.mvTangents[0],
 						&Geometry.mvIndexVec[0], (int)Geometry.mvIndexVec.size(),
 						&vPosVec[0],4, &vTexVec[0],&vNormVec[0],
