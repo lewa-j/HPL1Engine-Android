@@ -35,6 +35,7 @@ namespace hpl {
 	class iEntityCallback
 	{
 	public:
+		virtual ~iEntityCallback(){}
 		virtual void OnTransformUpdate(iEntity3D * apEntity)=0;
 	};
 

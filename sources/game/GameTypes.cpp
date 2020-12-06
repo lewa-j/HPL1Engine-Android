@@ -28,7 +28,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cScriptVar::cScriptVar()
+	cScriptVar::cScriptVar() : msName(), mlVal()
 	{
 
 	}

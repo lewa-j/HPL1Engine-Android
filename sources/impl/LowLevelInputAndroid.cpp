@@ -76,11 +76,11 @@ namespace hpl
 
 		//Keyboard specific
 		bool KeyIsDown(eKey aKey){return false;}
-		cKeyPress GetKey(){}
+		cKeyPress GetKey(){return {};}
 		bool KeyIsPressed(){return false;}
-		eKeyModifier GetModifier(){}
-		tString KeyToString(eKey){}
-		eKey StringToKey(tString){}
+		eKeyModifier GetModifier(){return 0;}
+		tString KeyToString(eKey){return "";}
+		eKey StringToKey(tString){return eKey_NONE;}
 
 	private:
 		eKeyModifier mModifier;

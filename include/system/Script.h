@@ -23,7 +23,7 @@
 #include <angelscript.h>
 
 #ifdef __GNUC__
-	#ifdef __ppc__
+	#ifndef _WIN32
 		#define __stdcall
 	#else
 		#define __stdcall __attribute__((stdcall))

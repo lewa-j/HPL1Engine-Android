@@ -40,7 +40,7 @@ namespace hpl {
 		struct stat statbuf;
 		if (fstat(fileno(pFile), &statbuf) == -1) {
 			return 0;
-		};
+		}
 		return ((long)statbuf.st_size);
 	}
 
@@ -51,7 +51,7 @@ namespace hpl {
 			return !string[0];
 
 	  case _W('*') :
-			return patiMatch(pattern+1, string) || string[0] && patiMatch(pattern, string+1);
+			return patiMatch(pattern+1, string) || (string[0] && patiMatch(pattern, string+1));
 
 	  case _W('?') :
 			return string[0] && patiMatch(pattern+1, string+1);

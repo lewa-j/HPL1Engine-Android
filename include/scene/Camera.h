@@ -35,7 +35,7 @@ namespace hpl {
 	class iCamera
 	{
 	public:
-
+		virtual ~iCamera(){}
 		virtual void SetModelViewMatrix(iLowLevelGraphics* apLowLevel)=0;
 		virtual void SetProjectionMatrix(iLowLevelGraphics* apLowLevel)=0;
 		virtual cVector3f GetEyePosition()=0;
