@@ -125,7 +125,7 @@ namespace hpl {
 		}
 
 		if(avBitmaps->size()<6){
-			Error("Only %d bitmaps supplied for creation of cube map, 6 needed.",avBitmaps->size());
+			Error("Only %d bitmaps supplied for creation of cube map, 6 needed.\n",avBitmaps->size());
 			return false;
 		}
 

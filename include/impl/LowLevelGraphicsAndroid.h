@@ -138,12 +138,12 @@ namespace hpl
 
 
 		// TEXTURE
-		void SetTexture(unsigned int alUnit,iTexture* apTex){}
-		void SetActiveTextureUnit(unsigned int alUnit){}
-		void SetTextureEnv(eTextureParam aParam, int alVal){}
-		void SetTextureConstantColor(const cColor &aColor){}
+		void SetTexture(unsigned int alUnit,iTexture* apTex);
+		void SetActiveTextureUnit(unsigned int alUnit);
+		void SetTextureEnv(eTextureParam aParam, int alVal);
+		void SetTextureConstantColor(const cColor &aColor);
 
-		void SetColor(const cColor &aColor){}
+		void SetColor(const cColor &aColor);
 
 		// POLYGONS
 		iVertexBuffer* CreateVertexBuffer(tVertexFlag aFlags, eVertexBufferDrawType aDrawType,
@@ -239,6 +239,8 @@ namespace hpl
 		//Batch helper
 		void SetUpBatchArrays();
 		void SetVtxBatchStates(tVtxBatchFlag aFlags);
+
+		iTexture *mDefaultTexture;
 
 		//Clearing
 		bool mbClearColor;

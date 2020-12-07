@@ -41,13 +41,14 @@ namespace hpl
 		bool Create(unsigned int alWidth, unsigned int alHeight, cColor aCol);
 
 		bool CreateFromArray(unsigned char *apPixelData, int alChannels, const cVector3l &avSize);
+
 		void SetPixels2D(	int alLevel, const cVector2l& avOffset, const cVector2l& avSize,
 							eColorDataFormat aDataFormat, void *apPixelData);
 
 
-		float GetGamma();
-		void SetGamma(float afGamma);
-		int GetHandle();
+		float GetGamma(){return 0;}
+		void SetGamma(float afGamma){}
+		int GetHandle(){return (int) mvTextureHandles[0];}
 
 		void SetFilter(eTextureFilter aFilter);
 		void SetAnisotropyDegree(float afX);
@@ -71,15 +72,11 @@ namespace hpl
 		unsigned int GetTextureHandle();
 
 	private:
-		/*bool CreateFromBitmapToHandle(iBitmap2D* pBmp, int alHandleIdx);
+		bool CreateFromBitmapToHandle(iBitmap2D* pBmp, int alHandleIdx);
 
-		GLenum InitCreation(int alHandleIdx);
-		void PostCreation(GLenum aGLTarget);
+		unsigned int InitCreation(int alHandleIdx);
+		void PostCreation(unsigned int aGLTarget);
 
-		GLenum GetGLWrap(eTextureWrap aMode);
-
-		void GetSettings(cSDLBitmap2D* apSrc, int &alChannels, GLenum &aFormat);
-		*/
 		tUIntVec mvTextureHandles;
 		bool mbContainsData;
 		cLowLevelGraphicsAndroid* mpGfx;

@@ -234,6 +234,8 @@ namespace hpl
 */
 		///// END BATCH ARRAY STUFF ///////////////
 
+		mDefaultTexture = CreateTexture({1,1},32,cColor(1,1),false,eTextureType_Normal,eTextureTarget_2D);
+
 		//Show some info
 		Log("  Max texture image units: %d\n",GetCaps(eGraphicCaps_MaxTextureImageUnits));
 		Log("  Max texture coord units: %d\n",GetCaps(eGraphicCaps_MaxTextureCoordUnits));
@@ -727,6 +729,51 @@ namespace hpl
 								GetGLBlendEnum(aDestFactorColor),
 								GetGLBlendEnum(aSrcFactorAlpha),
 								GetGLBlendEnum(aDestFactorAlpha));
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::SetTexture(unsigned int alUnit,iTexture* apTex)
+	{
+		if(apTex == NULL){
+			apTex = mDefaultTexture;
+		}
+
+		if(apTex == mpCurrentTexture[alUnit])
+			return;
+
+		GLenum NewTarget = 0;
+		if(apTex)
+			NewTarget = GetGLTextureTargetEnum(apTex->GetTarget());
+		GLenum LastTarget = 0;
+		if(mpCurrentTexture[alUnit])
+			LastTarget = GetGLTextureTargetEnum(mpCurrentTexture[alUnit]->GetTarget());
+
+		glActiveTexture(GL_TEXTURE0 + alUnit);
+
+		glBindTexture(NewTarget, apTex->GetCurrentLowlevelHandle());
+
+		mpCurrentTexture[alUnit] = apTex;
+	}
+
+	void cLowLevelGraphicsAndroid::SetActiveTextureUnit(unsigned int alUnit)
+	{
+		glActiveTexture(GL_TEXTURE0 + alUnit);
+	}
+
+	void cLowLevelGraphicsAndroid::SetTextureEnv(eTextureParam aParam, int alVal)
+	{
+
+	}
+
+	void cLowLevelGraphicsAndroid::SetTextureConstantColor(const cColor &aColor)
+	{
+
+	}
+
+	void cLowLevelGraphicsAndroid::SetColor(const cColor &aColor)
+	{
+
 	}
 
 	//-----------------------------------------------------------------------
