@@ -22,6 +22,7 @@
 #include "system/SystemTypes.h"
 #include "math/MathTypes.h"
 #include "graphics/GPUProgram.h"
+#include "impl/platform/gl.h"
 
 namespace hpl
 {

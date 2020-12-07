@@ -25,7 +25,6 @@
 #include <stack>
 #include <android/native_window.h>
 #include <EGL/egl.h>
-#include <GLES2/gl2.h>
 
 namespace hpl
 {
@@ -251,9 +250,6 @@ namespace hpl
 
 		//Texture
 		iTexture* mpCurrentTexture[MAX_TEXTUREUNITS];
-
-		//gl extensions
-		bool EXT_texture_filter_anisotropic;
 	};
 }
 #endif // HPL_LOWLEVELGRAPHICS_ANDROID_H

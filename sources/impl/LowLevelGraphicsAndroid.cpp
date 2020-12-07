@@ -24,8 +24,6 @@
 #include "impl/VertexBufferGLES.h"
 #include "impl/GLHelpers.h"
 
-#include <GLES2/gl2ext.h>
-
 namespace hpl
 {
 	#define eVtxAttr_Position	(0)
@@ -41,8 +39,8 @@ namespace hpl
 		
 		mlBatchArraySize = 20000;
 		mlVertexCount = 0;
-		mlIndexCount =0;
-		mlMultisampling =0;
+		mlIndexCount = 0;
+		mlMultisampling = 0;
 
 		mvVirtualSize.x = 800;
 		mvVirtualSize.y = 600;
@@ -71,13 +69,6 @@ namespace hpl
 			mbTexCoordArrayActive[i] = false;
 			mlTexCoordArrayCount[i]=0;
 		}
-
-		//Init extra stuff
-		//InitCG();
-
-		//TTF_Init();
-		
-		EXT_texture_filter_anisotropic = false;
 	}
 	
 	static const bool egl_log = true;
@@ -182,16 +173,18 @@ namespace hpl
 		eglGetConfigAttrib(mEglDisplay, mEglConfig, EGL_BUFFER_SIZE , &mlBpp);
 		Log(" Setting video mode: %d x %d - %d bpp\n", mvScreenSize.x, mvScreenSize.y, mlBpp);
 
-		/*Log(" Init Glee...");
-		if(GLeeInit())
+		mvVirtualSize.y = mvVirtualSize.x/(mvScreenSize.x/(float)mvScreenSize.y);
+		
+		Log(" Init glad...");
+		if(gladLoadGLES2Loader((GLADloadproc)eglGetProcAddress))
 		{
 			Log("OK\n");
 		}
 		else
 		{
 			Log("ERROR!\n");
-			Error(" Couldn't init glee!\n");
-		}*/
+			Error(" Couldn't init glad!\n");
+		}
 
 		//Turn off cursor as default
 		ShowCursor(false);
@@ -209,11 +202,6 @@ namespace hpl
 	void cLowLevelGraphicsAndroid::SetupGL()
 	{
 		//Inits GL stuff
-		//Extensions
-		const char *extString = (const char *)glGetString(GL_EXTENSIONS);
-		if(strstr(extString, "GL_EXT_texture_filter_anisotropic")){
-			EXT_texture_filter_anisotropic = true;
-		}
 		
 		//Set clear color.
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -300,14 +288,14 @@ namespace hpl
 		//Texture Anisotropy
 		case eGraphicCaps_AnisotropicFiltering:
 			{
-				if(EXT_texture_filter_anisotropic) return 1;
+				if(GLAD_GL_EXT_texture_filter_anisotropic) return 1;
 				else return 0;
 			}
 
 		//Texture Anisotropy
 		case eGraphicCaps_MaxAnisotropicFiltering:
 			{
-				if(!EXT_texture_filter_anisotropic) return 0;
+				if(!GLAD_GL_EXT_texture_filter_anisotropic) return 0;
 
 				float fMax;
 				glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&fMax);
@@ -335,6 +323,27 @@ namespace hpl
 				//return 0;
 				return 1;
 			}
+		
+		//GL NV register combiners
+		case eGraphicCaps_GL_NVRegisterCombiners:
+			{
+				return 0;
+			}
+
+		//GL NV register combiners Max stages
+		case eGraphicCaps_GL_NVRegisterCombiners_MaxStages:
+			{
+				return 0;
+			}
+
+		//GL ATI Fragment Shader
+		case eGraphicCaps_GL_ATIFragmentShader:
+			{
+				return 0;
+			}
+
+		default:
+			return 0;
 		}
 
 		return 0;

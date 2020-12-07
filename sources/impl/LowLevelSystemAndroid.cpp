@@ -187,7 +187,7 @@ namespace hpl
 	}
 	
 	
-		void CreateMessageBoxW (eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap)
+	void CreateMessageBoxW (eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap)
 	{
 		wchar_t text[2048];
 

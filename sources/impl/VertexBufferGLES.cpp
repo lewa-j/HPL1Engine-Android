@@ -19,10 +19,9 @@
 #include "impl/VertexBufferGLES.h"
 #include "system/LowLevelSystem.h"
 #include "math/Math.h"
+#include "impl/platform/gl.h"
 
 #include <memory.h>
-
-#include <GLES2/gl2.h>
 
 namespace hpl
 {

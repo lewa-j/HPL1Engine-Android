@@ -20,6 +20,7 @@ sources/impl/MeshLoaderColladaHelpers.cpp \
 sources/impl/MeshLoaderColladaLoader.cpp \
 sources/impl/SqScript.cpp \
 sources/impl/stdstring.cpp \
+sources/impl/glad.c \
 sources/impl/platform/posix.cpp \
 sources/impl/tinyXml/tinystr.cpp sources/impl/tinyXml/tinyxml.cpp sources/impl/tinyXml/tinyxmlerror.cpp sources/impl/tinyXml/tinyxmlparser.cpp \
 sources/ai/AI.cpp \

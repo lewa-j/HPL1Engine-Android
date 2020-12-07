@@ -18,6 +18,7 @@
  */
 
 #include "impl/AndroidTexture.h"
+#include "impl/platform/gl.h"
 
 namespace hpl
 {
