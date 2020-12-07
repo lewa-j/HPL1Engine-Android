@@ -71,49 +71,54 @@ namespace hpl
 	{
 		cAndroidBitmap2D* pBmp = static_cast<cAndroidBitmap2D*>(apDest);
 
-		/*SDL_Rect rect;
-		rect.x = avDestPos.x;
-		rect.y = avDestPos.y;
+		int lDestSize = pBmp->GetNumChannels();
+		int lSrcSize = GetNumChannels();
 
-		int lDestSize = pBmp->GetSurface()->format->BytesPerPixel;
-		int lSrcSize = mpSurface->format->BytesPerPixel;
+		unsigned char* destBuffer = (unsigned char*)pBmp->GetRawData();
+		unsigned char* srcBuffer = (unsigned char*)GetRawData();
 
-		unsigned char* destBuffer = (unsigned char*)pBmp->GetSurface()->pixels;
-		unsigned char* srcBuffer = (unsigned char*)mpSurface->pixels;
-
-		SDL_BlitSurface(mpSurface, NULL, pBmp->GetSurface(),&rect);
-
-		//do this little hack to set the alpha to a correct value.
-		//stupid SDL always sets it to 255..
-		if(lDestSize!=4 || lSrcSize!=4)return;
 
 		for(unsigned int y=0;y<mlHeight;y++)
 			for(unsigned int x=0;x<mlWidth;x++)
 			{
 				unsigned char* destPix = &destBuffer[((y + avDestPos.y)*pBmp->GetWidth() +
 													(x + avDestPos.x)) * lDestSize];
-
 				unsigned char* srcPix = &srcBuffer[(y*mlWidth + x) * lSrcSize];
 
-				destPix[3] = srcPix[3];
+				destPix[0] = srcPix[0];
+				destPix[1] = srcPix[1];
+				destPix[2] = srcPix[2];
+				if(lDestSize==4 && lSrcSize==4)
+					destPix[3] = srcPix[3];
 			}
-		*/
 	}
 
 	//-----------------------------------------------------------------------
 
 	void cAndroidBitmap2D::FillRect(const cRect2l &aRect, const cColor &aColor)
 	{
-		/*SDL_Rect rect;
+		cRect2l rect;
 		rect.x = aRect.x;
 		rect.y = aRect.y;
 		rect.w = aRect.w<=0?mlWidth:aRect.w;
 		rect.h = aRect.h<=0?mlHeight:aRect.h;
 
-		unsigned int col = SDL_MapRGBA(mpSDLPixelFmt32,(int)(aColor.r*255.0f),(int)(aColor.g*255.0f),
+		cColor col((int)(aColor.r*255.0f),(int)(aColor.g*255.0f),
 										(int)(aColor.b*255.0f),(int)(aColor.a*255.0f));
+		int lDestSize = GetNumChannels();
+		unsigned char* destBuffer = (unsigned char*)GetRawData();
 
-		SDL_FillRect(mpSurface, &rect,col);*/
+		for(unsigned int y=rect.y; y<rect.y+rect.h; y++)
+			for(unsigned int x=rect.x; x<rect.x+rect.w; x++)
+			{
+				unsigned char* destPix = &destBuffer[(y*GetWidth() + x) * lDestSize];
+
+				destPix[0] = col.r;
+				destPix[1] = col.g;
+				destPix[2] = col.b;
+				if(lDestSize==4)
+					destPix[3] = col.a;
+			}
 	}
 
 	//-----------------------------------------------------------------------
