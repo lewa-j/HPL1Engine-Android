@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2010 - Frictional Games
+ * Copyright (C) 2020 - lewa_j
  *
  * This file is part of HPL1 Engine.
  *
@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "impl/SDLFontData.h"
-#include "graphics/GraphicsDrawer.h"
-#include "system/LowLevelSystem.h"
-#include "impl/SDLBitmap2D.h"
+#include "impl/AndroidFontData.h"
+#include "impl/AndroidBitmap2D.h"
+#include "graphics/LowLevelGraphics.h"
 #include "impl/tinyXML/tinyxml.h"
 
-namespace hpl {
-
+namespace hpl
+{
 
 	//////////////////////////////////////////////////////////////////////////
 	// CONSTRUCTORS
@@ -31,11 +30,19 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cSDLFontData::cSDLFontData(const tString &asName,iLowLevelGraphics* apLowLevelGraphics)
+
+	cAndroidFontData::cAndroidFontData(const tString &asName, iLowLevelGraphics* apLowLevelGraphics)
 		: iFontData(asName,apLowLevelGraphics)
 	{
+		
+	}
 
+	//-----------------------------------------------------------------------
 
+	
+	cAndroidFontData::~cAndroidFontData()
+	{
+		
 	}
 
 	//-----------------------------------------------------------------------
@@ -46,7 +53,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	bool cSDLFontData::CreateFromBitmapFile(const tString &asFileName)
+	bool cAndroidFontData::CreateFromBitmapFile(const tString &asFileName)
 	{
 		tString sPath = cString::GetFilePath(asFileName);
 
@@ -82,7 +89,7 @@ namespace hpl {
 
 		////////////////////////////////////////////
 		// Load bitmaps
-		std::vector<cSDLBitmap2D *> vBitmaps;
+		std::vector<cAndroidBitmap2D *> vBitmaps;
 
 		TiXmlElement *pPagesRootElem = pRootElem->FirstChildElement("pages");
 
@@ -92,7 +99,7 @@ namespace hpl {
 			tString sFileName = pPageElem->Attribute("file");
 			tString sFilePath = cString::SetFilePath(sFileName,sPath);
 
-			cSDLBitmap2D *pBitmap = static_cast<cSDLBitmap2D*>(mpLowLevelResources->LoadBitmap2D(sFilePath));
+			cAndroidBitmap2D *pBitmap = static_cast<cAndroidBitmap2D*>(mpLowLevelResources->LoadBitmap2D(sFilePath));
 			if(pBitmap==NULL)
 			{
 				Error("Couldn't load bitmap %s for FNT file '%s'\n",sFilePath.c_str(),asFileName.c_str());
@@ -126,25 +133,26 @@ namespace hpl {
 			int lPage = cString::ToInt(pCharElem->Attribute("page"),0);
 
 			//Get the bitmap where the character graphics is
-			cSDLBitmap2D *pSourceBitmap = vBitmaps[lPage];
+			cAndroidBitmap2D *pSourceBitmap = vBitmaps[lPage];
 
 			//Create a bitmap for the character.
 			cVector2l vSize(lW, lH);
-			cSDLBitmap2D *pBmp = static_cast<cSDLBitmap2D*>(mpLowLevelGraphics->CreateBitmap2D(vSize,32));
+			cAndroidBitmap2D *pBmp = static_cast<cAndroidBitmap2D*>(mpLowLevelGraphics->CreateBitmap2D(vSize,32));
 
 			//Copy from source to character bitmap
-			SDL_Rect srcRect;
-			srcRect.x = lX; srcRect.y = lY;
-			srcRect.w = lW; srcRect.h = lH;
-			SDL_BlitSurface(pSourceBitmap->GetSurface(),&srcRect, pBmp->GetSurface(), NULL);
+			int srcSize = pSourceBitmap->GetNumChannels();
+			unsigned char* srcBuffer = (unsigned char*)pSourceBitmap->GetRawData();
+			int lBmpSize = pBmp->GetNumChannels();
+			unsigned char* PixBuffer = (unsigned char*)pBmp->GetRawData();
 
-			int lBmpSize = pBmp->GetSurface()->format->BytesPerPixel;
-			unsigned char* PixBuffer = (unsigned char*)pBmp->GetSurface()->pixels;
-
-			//Set proper alpha (dunno if this is needed)
-			for(unsigned int y=0;y<pBmp->GetHeight();y++)
-				for(unsigned int x=0;x<pBmp->GetWidth();x++) {
-					unsigned char* Pix = &PixBuffer[y*pBmp->GetWidth()*lBmpSize + x*lBmpSize];
+			for(unsigned int y=0;y<lH;y++)
+				for(unsigned int x=0;x<lW;x++) {
+					uint8_t *Pix = &PixBuffer[(y*lW + x)*lBmpSize];
+					uint8_t *src = &srcBuffer[((lY+y)*pSourceBitmap->GetWidth()+lX+x)*srcSize];
+					Pix[0] = src[0];
+					Pix[1] = src[1];
+					Pix[2] = src[2];
+					//Set proper alpha (dunno if this is needed)
 					Pix[3] = Pix[0];
 				}
 
@@ -157,8 +165,6 @@ namespace hpl {
 			hplDelete(pBmp);
 		}
 
-
-
 		//Destroy bitmaps
 		STLDeleteAll(vBitmaps);
 
@@ -169,106 +175,13 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	bool cSDLFontData::CreateFromFontFile(const tString &asFileName, int alSize, unsigned short alFirstChar,
-		unsigned short alLastChar)
+	bool cAndroidFontData::CreateFromFontFile(const tString &asFileName, int alSize,unsigned short alFirstChar,
+								unsigned short alLastChar)
 	{
-		cGlyph* pGlyph=NULL;
-
-		mlFirstChar = alFirstChar;
-		mlLastChar = alLastChar;
-
-		TTF_Font* pFont = TTF_OpenFont(asFileName.c_str(), alSize);
-		if(pFont==NULL){
-			Error("Error when opening '%s': %s\n",asFileName.c_str(),TTF_GetError());
-			return false;
-		}
-
-		//Create bitmaps from all of the characters and create
-		//Images from those.
-		for(int i=alFirstChar; i<=alLastChar;i++)
-		{
-			unsigned short lUniCode = i;
-			/*char c = (char)i;
-
-			if(c == 'ö')lUniCode = 'o';
-			else if(c == 'Ö')lUniCode = 'O';*/
-
-			pGlyph = RenderGlyph(pFont, lUniCode, alSize);
-			AddGlyph(pGlyph);
-		}
-
-		//Get the properties
-		mfHeight = (float)TTF_FontHeight(pFont);
-
-		mvSizeRatio = 1;
-
-		//Cleanup
-		TTF_CloseFont(pFont);
-
-		return true;
-	}
-
-	//-----------------------------------------------------------------------
-
-	//////////////////////////////////////////////////////////////////////////
-	// PRIVATE METHODS
-	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
-
-	cGlyph* cSDLFontData::RenderGlyph(TTF_Font* apFont,unsigned short aChar, int alFontSize)
-	{
-		//If the font is saved to disk, then load the bitmap from disk instead.
-
-		cVector2l vMin;
-		cVector2l vMax;
-		int lAdvance=0;
-
-		TTF_GlyphMetrics(apFont, aChar, &vMin.x, &vMax.x, &vMin.y, &vMax.y, &lAdvance);
-
-		//Create the bitmap we want to draw upon
-		cVector2l vSize = vMax - vMin;
-		cSDLBitmap2D *pBmp = static_cast<cSDLBitmap2D*>(mpLowLevelGraphics->CreateBitmap2D(vSize,32));
-
-		pBmp->FillRect(cRect2l(),cColor(0,1));
-
-		//create a surface with the glyph
-		SDL_Color Col;Col.r=255;Col.g=255;Col.b=255;
-		SDL_Surface* pGlyphSurface = TTF_RenderGlyph_Blended(apFont,aChar,Col);
-
-		//Blit the surface using blending. This way it should create a nice
-		//b&w image where the font is white.
-		SDL_SetAlpha(pBmp->GetSurface(),0,0);
-		SDL_SetAlpha(pGlyphSurface,SDL_SRCALPHA,0);
-		SDL_BlitSurface(pGlyphSurface, NULL, pBmp->GetSurface(),NULL);
-		SDL_SetAlpha(pBmp->GetSurface(),0,0);
-
-		//Set the alpha of the bitmap to the average color.
-		//So we get some alpha bledning.
-		int lBmpSize = pBmp->GetSurface()->format->BytesPerPixel;
-		unsigned char* PixBuffer = (unsigned char*)pBmp->GetSurface()->pixels;
-
-		for(unsigned int y=0;y<pBmp->GetHeight();y++)
-			for(unsigned int x=0;x<pBmp->GetWidth();x++)
-			{
-				unsigned char* Pix = &PixBuffer[y*pBmp->GetWidth()*lBmpSize +
-					x*lBmpSize];
-
-				Pix[3] = Pix[0];
-			}
-
-		//Create the Glyph
-		int lHeight = TTF_FontHeight(apFont);
-		cVector2l vOffset = cVector2l(vMin.x, alFontSize - vMax.y);//(lHeight - vSize.y) - vMin.y);
-
-		cGlyph* pGlyph = CreateGlyph(pBmp,vOffset,vSize,alFontSize,lAdvance);
-
-		hplDelete(pBmp);
-		SDL_FreeSurface(pGlyphSurface);
-
-		return pGlyph;
+		return false;
 	}
 
 	//-----------------------------------------------------------------------
 
 }
+

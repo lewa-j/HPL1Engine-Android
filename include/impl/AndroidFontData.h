@@ -26,20 +26,17 @@ namespace hpl
 	class cAndroidFontData : public iFontData
 	{
 	public:
-		cAndroidFontData(const tString &asName, iLowLevelGraphics* apLowLevelGraphics)
-		 : iFontData(asName,apLowLevelGraphics)
-		{}
-		~cAndroidFontData(){}
+		cAndroidFontData(const tString &asName, iLowLevelGraphics* apLowLevelGraphics);
+		~cAndroidFontData();
 
 		bool CreateFromFontFile(const tString &asFileName, int alSize,unsigned short alFirstChar,
-								unsigned short alLastChar)
-		{return false;}
-		bool CreateFromBitmapFile(const tString &asFileName)
-		{return false;}
+								unsigned short alLastChar);
+		bool CreateFromBitmapFile(const tString &asFileName);
 
 	private:
 		//cGlyph* RenderGlyph(TTF_Font* apFont,unsigned short aChar, int alFontSize);
 	};
 
-};
+}
 #endif // HPL_ANDROID_FONTDATA_H
+

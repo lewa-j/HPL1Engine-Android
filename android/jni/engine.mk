@@ -10,6 +10,7 @@ sources/impl/LowLevelResourcesAndroid.cpp \
 sources/impl/LowLevelSystemAndroid.cpp \
 sources/impl/LowLevelSystemCommon.cpp \
 sources/impl/AndroidBitmap2D.cpp \
+sources/impl/AndroidFontData.cpp \
 sources/impl/AndroidGameSetup.cpp \
 sources/impl/AndroidTexture.cpp \
 sources/impl/GLSLProgram.cpp \
