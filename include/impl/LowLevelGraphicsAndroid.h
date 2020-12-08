@@ -28,6 +28,7 @@
 
 namespace hpl
 {
+
 	class cLowLevelGraphicsAndroid : public iLowLevelGraphics
 	{
 	public:

@@ -17,6 +17,7 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "impl/VertexBufferGLES.h"
+#include "graphics/LowLevelGraphics.h"
 #include "system/LowLevelSystem.h"
 #include "math/Math.h"
 #include "impl/platform/gl.h"
@@ -509,15 +510,60 @@ namespace hpl
 
 		return kvVertexElements[idx];
 	}
+
 	//-----------------------------------------------------------------------
 
 	void cVertexBufferGLES::SetVertexStates(tVertexFlag aFlags)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER,0);
+		if(aFlags & eVertexFlag_Position){
+			glEnableVertexAttribArray( eVtxAttr_Position );
+			int idx = cMath::Log2ToInt(eVertexFlag_Position);
+			glBindBuffer(GL_ARRAY_BUFFER,mvArrayHandle[idx]);
+			glVertexAttribPointer(eVtxAttr_Position, kvVertexElements[idx], GL_FLOAT, false, 0, 0);
+		}else{
+			glDisableVertexAttribArray( eVtxAttr_Position );
+		}
+
+		if(aFlags & eVertexFlag_Color0){
+			glEnableVertexAttribArray( eVtxAttr_Color0 );
+			int idx = cMath::Log2ToInt(eVertexFlag_Color0);
+			glBindBuffer(GL_ARRAY_BUFFER,mvArrayHandle[idx]);
+			glVertexAttribPointer(eVtxAttr_Color0, kvVertexElements[idx], GL_FLOAT, false, 0, 0);
+		}else{
+			glDisableVertexAttribArray( eVtxAttr_Color0 );
+		}
+
+		if(aFlags & eVertexFlag_Normal){
+			glEnableVertexAttribArray( eVtxAttr_Normal );
+			int idx = cMath::Log2ToInt(eVertexFlag_Normal);
+			glBindBuffer(GL_ARRAY_BUFFER,mvArrayHandle[idx]);
+			glVertexAttribPointer(eVtxAttr_Normal, 3, GL_FLOAT, false, 0, 0);
+		}else{
+			glDisableVertexAttribArray( eVtxAttr_Normal );
+		}
+
+		if(aFlags & eVertexFlag_Texture0){
+			glEnableVertexAttribArray( eVtxAttr_Texture0 );
+			int idx = cMath::Log2ToInt(eVertexFlag_Texture0);
+			glBindBuffer(GL_ARRAY_BUFFER,mvArrayHandle[idx]);
+			glVertexAttribPointer(eVtxAttr_Texture0, kvVertexElements[idx], GL_FLOAT, false, 0, 0);
+		}else{
+			glDisableVertexAttribArray( eVtxAttr_Texture0 );
+		}
+
+		if(aFlags & eVertexFlag_Texture1){
+			glEnableVertexAttribArray( eVtxAttr_Tangent );
+			int idx = cMath::Log2ToInt(eVertexFlag_Texture1);
+			glBindBuffer(GL_ARRAY_BUFFER,mvArrayHandle[idx]);
+			if(mbTangents)
+				glVertexAttribPointer(eVtxAttr_Tangent, 4, GL_FLOAT, false, 0, 0);
+			else
+				glVertexAttribPointer(eVtxAttr_Tangent, kvVertexElements[idx], GL_FLOAT, false, 0, 0);
+		}else{
+			glDisableVertexAttribArray( eVtxAttr_Tangent );
+		}
 	}
 
 	//-----------------------------------------------------------------------
 
 }
-
-

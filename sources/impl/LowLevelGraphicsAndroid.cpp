@@ -26,12 +26,6 @@
 
 namespace hpl
 {
-	#define eVtxAttr_Position	(0)
-	#define eVtxAttr_Normal		(1)
-	#define eVtxAttr_Color0		(2)
-	#define eVtxAttr_Texture0	(3)
-	#define eVtxAttr_Texture1	(4)
-	#define eVtxAttr_Texture2	(5)
 
 	cLowLevelGraphicsAndroid::cLowLevelGraphicsAndroid(ANativeWindow *apAWindow)
 	{

@@ -197,6 +197,12 @@ namespace hpl {
 
 	#define kMaxClipPlanes (6)
 
+	#define eVtxAttr_Position	(0)
+	#define eVtxAttr_Normal		(1)
+	#define eVtxAttr_Color0		(2)
+	#define eVtxAttr_Texture0	(3)
+	#define eVtxAttr_Tangent	(4)
+
 	class iFontData;
 	class iOcclusionQuery;
 
