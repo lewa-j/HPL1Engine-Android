@@ -146,9 +146,15 @@ namespace hpl {
 
 	bool cPhysics::LoadSurfaceData(const tString& asFile, cHaptic *apHaptic)
 	{
+#ifdef ANDROID
+		static const char* storage = getenv("EXTERNAL_STORAGE");
+		tString sPath = storage + tString("/hpl1/") + asFile;
+#else
+		const tString& sPath = asFile;
+#endif
 		//////////////////////////////////
 		//Open document
-		TiXmlDocument* pXmlDoc = hplNew( TiXmlDocument, (asFile.c_str()) );
+		TiXmlDocument* pXmlDoc = hplNew( TiXmlDocument, (sPath.c_str()) );
 		if(pXmlDoc->LoadFile()==false)
 		{
 			Error("Couldn't load XML file '%s'!\n",asFile.c_str());

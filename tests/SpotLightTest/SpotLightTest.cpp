@@ -269,9 +269,9 @@ int hplMain(const tString& asCommandLine)
 
 	//Init the game engine
 #ifdef ANDROID
-	iLowLevelGameSetup* gameSetup = new cAndroidGameSetup();
+	iLowLevelGameSetup* gameSetup = hplNew(cAndroidGameSetup,());
 #else
-	iLowLevelGameSetup* gameSetup = new cSDLGameSetup();
+	iLowLevelGameSetup* gameSetup = hplNew(cSDLGameSetup,());
 #endif
 	gpGame = new cGame(gameSetup, 800, 600, 32, false, 45);
 	gpGame->GetGraphics()->GetLowLevel()->SetVsyncActive(false);

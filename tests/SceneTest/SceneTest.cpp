@@ -39,11 +39,14 @@ public:
 
 		//Setup physics
 		gpGame->GetPhysics()->LoadSurfaceData("materials.cfg");
-
+#if 0
 		mpWorld = gpGame->GetResources()->GetMeshLoaderHandler()->LoadWorld("maps/maptest0_complex.dae",0);
 		//mpWorld = gpGame->GetResources()->GetMeshLoaderHandler()->LoadWorld("maps/simple.dae");
 		//mpWorld = gpGame->GetResources()->GetMeshLoaderHandler()->LoadWorld("maps/testlevel2.dae");
 		gpGame->GetScene()->SetWorld3D(mpWorld);
+#else
+		mpWorld = gpGame->GetScene()->LoadWorld3D("maptest0_complex.dae", false, 0);
+#endif
 
 		gpGame->GetInput()->AddAction(new cActionKeyboard("Shadows",gpGame->GetInput(),eKey_1));
 
