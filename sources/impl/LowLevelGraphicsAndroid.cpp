@@ -23,6 +23,7 @@
 #include "impl/GLSLProgram.h"
 #include "impl/VertexBufferGLES.h"
 #include "impl/GLHelpers.h"
+#include "math/Math.h"
 
 namespace hpl
 {
@@ -227,6 +228,14 @@ namespace hpl
 		glDisableClientState(GL_EDGE_FLAG_ARRAY);
 */
 		///// END BATCH ARRAY STUFF ///////////////
+
+		static const char* storage = getenv("EXTERNAL_STORAGE");
+		tString shadersPath = storage + tString("/hpl1/core/shaders/");
+
+		mSimpleShader = CreateGpuProgram("Simple", eGpuProgramType_Linked );
+		mSimpleShader->CreateFromFiles(shadersPath+"Simple.vs", shadersPath+"Simple.fs");
+
+		mSimpleShader->Bind();
 
 		mDefaultTexture = CreateTexture({1,1},32,cColor(1,1),false,eTextureType_Normal,eTextureTarget_2D);
 
@@ -902,6 +911,11 @@ namespace hpl
 
 	void cLowLevelGraphicsAndroid::FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear)
 	{
+		mSimpleShader->Bind();
+		cMatrixf mtx = cMath::MatrixMul(mMatrixStack[eMatrix_Projection].top(),
+				mMatrixStack[eMatrix_ModelView].top());
+		mSimpleShader->SetMatrixf("worldViewProj", mtx);
+
 		SetVtxBatchStates(aTypeFlags);
 		SetUpBatchArrays();
 

@@ -70,6 +70,9 @@ public:
 
 	cSimpleUpdate() : iUpdateable("SimpleUpdate")
 	{
+		//gpGame->SetRenderOnce(true);
+		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_LogRendering);
+
 		////////////////////////////////
 		//Scene Init
 		mpGui = gpGame->GetGui();

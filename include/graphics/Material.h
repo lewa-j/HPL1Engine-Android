@@ -378,7 +378,7 @@ namespace hpl {
 		eMaterialType mType;
 		eMaterialPicture mPicture;
 
-		iGpuProgram *mpProgram[2][kMaxProgramNum];
+		iGpuProgram *mpProgram[eGpuProgramType_LastEnum][kMaxProgramNum];
 
 		int mlPassCount;
 

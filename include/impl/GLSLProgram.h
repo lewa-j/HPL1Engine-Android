@@ -22,6 +22,7 @@
 #include "system/SystemTypes.h"
 #include "math/MathTypes.h"
 #include "graphics/GPUProgram.h"
+#include "graphics/LowLevelGraphics.h"
 #include "impl/platform/gl.h"
 
 namespace hpl
@@ -38,7 +39,8 @@ namespace hpl
 
 		tString GetProgramName();
 
-		bool CreateFromFile(const tString& asFile, const tString& asEntry="main");
+		bool CreateFromFile(const tString& asFile, const tString& asEntry);
+		bool CreateFromFiles(const tString& asFileVertex, const tString& asFileFragment);
 
 		void Bind();
 		void UnBind();
@@ -58,19 +60,12 @@ namespace hpl
 
 		/// GLSL SPECIFIC //////////////////////
 
-		static void SetVProfile(tString asProfile);
-		static void SetFProfile(tString asProfile);
-		static tString &GetVProfile();
-		static tString &GetFProfile();
-
 	protected:
+		bool Create(const char *vt, const char *ft);
 
 		tString msName;
 		tString msFile;
-		tString msEntry;
-
-		static tString msForceFP;
-		static tString msForceVP;
+		int mId;
 	};
 };
 #endif // HPL_GLSLPROGRAM_H

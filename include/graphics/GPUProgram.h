@@ -32,6 +32,7 @@ namespace hpl {
 	{
 		eGpuProgramType_Vertex,
 		eGpuProgramType_Fragment,
+		eGpuProgramType_Linked,
 		eGpuProgramType_LastEnum
 	};
 
@@ -71,6 +72,8 @@ namespace hpl {
 		 * \return
 		 */
 		virtual bool CreateFromFile(const tString& asFile, const tString& asEntry)=0;
+
+		virtual bool CreateFromFiles(const tString& asFileVertex, const tString& asFileFragment){return false;}
 
 		/**
 		 * Bind the program to the GPU

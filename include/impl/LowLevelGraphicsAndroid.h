@@ -241,6 +241,7 @@ namespace hpl
 		void SetUpBatchArrays();
 		void SetVtxBatchStates(tVtxBatchFlag aFlags);
 
+		iGpuProgram *mSimpleShader;
 		iTexture *mDefaultTexture;
 
 		//Clearing
