@@ -486,8 +486,7 @@ namespace hpl
 
 	void cLowLevelGraphicsAndroid::SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA)
 	{
-		//TODO transpose here or on load?
-		mMatrixStack[aMtxType].top() = a_mtxA.GetTranspose();
+		mMatrixStack[aMtxType].top() = a_mtxA;
 	}
 
 	void cLowLevelGraphicsAndroid::SetIdentityMatrix(eMatrix aMtxType)
@@ -500,7 +499,7 @@ namespace hpl
 		cMatrixf &r = mMatrixStack[aMtxType].top();
 		cMatrixf m = r;
 		for(int i=0;i<4;i++)
-			r.m[3][i] = m.m[0][i] * avPos.x + m.m[1][i] * avPos.y + m.m[2][i] * avPos.z + m.m[3][i];
+			r.m[i][3] = m.m[i][0] * avPos.x + m.m[i][1] * avPos.y + m.m[i][2] * avPos.z + m.m[i][3];
 	}
 
 	/**
@@ -520,20 +519,22 @@ namespace hpl
 		cMatrixf m = r;
 		for(int i=0;i<3;i++)
 			for(int j=0;j<4;j++)
-				r.m[i][j] = m.m[i][j] * avScale.v[i];
+				r.m[j][i] = m.m[j][i] * avScale.v[i];
 	}
 
 	void cLowLevelGraphicsAndroid::SetOrthoProjection(const cVector2f& avSize, float afMin, float afMax)
 	{
 		cMatrixf &r = mMatrixStack[eMatrix_Projection].top();
+		r = cMatrixf::Identity;
 		r.m[0][0] = 2.0f / avSize.x;
 		r.m[1][1] = 2.0f / -avSize.y;
 		r.m[2][2] = -2.0f / (afMax - afMin);
-		r.m[3][0] = -1.0f;
-		r.m[3][1] = 1.0f;
-		r.m[3][2] = - (afMax + afMin) / (afMax - afMin);
+		r.m[0][3] = -1.0f;
+		r.m[1][3] = 1.0f;
+		r.m[2][3] = - (afMax + afMin) / (afMax - afMin);
+		r.m[3][3] = 1;
 	}
-	
+
 	void cLowLevelGraphicsAndroid::ClearScreen()
 	{
 		GLbitfield bitmask=0;
@@ -551,10 +552,12 @@ namespace hpl
 	{
 		glClearColor(aCol.r, aCol.g, aCol.b, aCol.a);
 	}
+
 	void cLowLevelGraphicsAndroid::SetClearDepth(float afDepth)
 	{
 		glClearDepthf(afDepth);
 	}
+
 	void cLowLevelGraphicsAndroid::SetClearStencil(int alVal)
 	{
 		glClearStencil(alVal);
@@ -566,10 +569,12 @@ namespace hpl
 	{
 		mbClearColor=abX;
 	}
+
 	void cLowLevelGraphicsAndroid::SetClearDepthActive(bool abX)
 	{
 		mbClearDepth=abX;
 	}
+
 	void cLowLevelGraphicsAndroid::SetClearStencilActive(bool abX)
 	{
 		mbClearStencil=abX;
