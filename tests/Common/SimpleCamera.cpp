@@ -100,7 +100,7 @@ void cSimpleCamera::OnDraw()
 
 	if(mpFont)
 	{
-		mpGuiSet->DrawFont( _W("FPS: ")+ cString::ToStringW(mpGame->GetFPS()), mpFont,cVector3f(5,5,5),14,cColor(1,1),
+		mpGuiSet->DrawFont( _W("FPS: ")+ cString::ToStringW(mpGame->GetFPS()), mpFont,cVector3f(5,15,5),14,cColor(1,1),
 			eFontAlign_Left,eGuiMaterial_FontNormal);
 	}
 }

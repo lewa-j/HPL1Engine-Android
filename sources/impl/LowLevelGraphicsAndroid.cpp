@@ -496,11 +496,15 @@ namespace hpl
 	void cLowLevelGraphicsAndroid::SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA)
 	{
 		mMatrixStack[aMtxType].top() = a_mtxA;
+
+		UploadShaderMatrix();
 	}
 
 	void cLowLevelGraphicsAndroid::SetIdentityMatrix(eMatrix aMtxType)
 	{
 		mMatrixStack[aMtxType].top() = cMatrixf::Identity;
+
+		UploadShaderMatrix();
 	}
 
 	void cLowLevelGraphicsAndroid::TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos)
@@ -912,9 +916,7 @@ namespace hpl
 	void cLowLevelGraphicsAndroid::FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear)
 	{
 		mSimpleShader->Bind();
-		cMatrixf mtx = cMath::MatrixMul(mMatrixStack[eMatrix_Projection].top(),
-				mMatrixStack[eMatrix_ModelView].top());
-		mSimpleShader->SetMatrixf("worldViewProj", mtx);
+		UploadShaderMatrix();
 
 		SetVtxBatchStates(aTypeFlags);
 		SetUpBatchArrays();
@@ -966,6 +968,14 @@ namespace hpl
 		if(aFlags & eVtxBatchFlag_Texture0)
 			glEnableVertexAttribArray( eVtxAttr_Texture0 );
 		else glDisableVertexAttribArray( eVtxAttr_Texture0 );
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::UploadShaderMatrix()
+	{
+		cMatrixf mtx = cMath::MatrixMul(mMatrixStack[eMatrix_Projection].top(),mMatrixStack[eMatrix_ModelView].top());
+		mSimpleShader->SetMatrixf("worldViewProj",mtx);
 	}
 
 }

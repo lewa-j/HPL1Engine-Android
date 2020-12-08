@@ -207,6 +207,8 @@ namespace hpl
 		void SetupGL();
 	
 	private:
+		void UploadShaderMatrix();
+
 		cVector2l mvScreenSize;
 		cVector2f mvVirtualSize;
 		int mlMultisampling;
