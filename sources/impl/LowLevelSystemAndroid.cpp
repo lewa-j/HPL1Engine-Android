@@ -26,6 +26,7 @@
 #include <android_native_app_glue.h>
 
 #include "impl/LowLevelSystemAndroid.h"
+#include "impl/LowLevelInputAndroid.h"
 #include "impl/SqScript.h"
 #include "system/String.h"
 
@@ -55,9 +56,51 @@ static void droid_handle_cmd(android_app* app, int32_t cmd)
 	}
 }
 
+static int32_t droid_handle_input(android_app* app, AInputEvent* event)
+{
+	using namespace hpl;
+	cLowLevelInputAndroid* pInput = (cLowLevelInputAndroid*)app->userData;
+	if(!pInput)
+		return 0;
+	cAndroidInputEvent outEvent{};
+	int it = AInputEvent_getType(event);
+	int isrc = AInputEvent_getSource(event);
+	if (it == AINPUT_EVENT_TYPE_KEY)
+	{
+		outEvent.type = eAInputType_Key;
+		outEvent.key = AKeyEvent_getKeyCode(event);
+		outEvent.action = AKeyEvent_getAction(event);
+		outEvent.modifiers = AKeyEvent_getMetaState(event);
+		//TODO unicode character
+		pInput->AddEvent(outEvent);
+		return 1;
+	}
+	else if (it == AINPUT_EVENT_TYPE_MOTION)
+	{
+		if(isrc == AINPUT_SOURCE_TOUCHSCREEN)
+			outEvent.type = eAInputType_Touch;
+		else if(isrc == AINPUT_SOURCE_MOUSE || isrc == AINPUT_SOURCE_MOUSE_RELATIVE){
+			outEvent.type = eAInputType_Mouse;
+			outEvent.key = AMotionEvent_getButtonState(event);
+		}else
+			return 0;
+		outEvent.action = AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK;
+		outEvent.x = AMotionEvent_getX(event, 0);
+		outEvent.y = AMotionEvent_getY(event, 0);
+		//TODO Multitouch
+		//AMotionEvent_getPointerCount
+		//AMotionEvent_getPointerId
+		pInput->AddEvent(outEvent);
+		return 1;
+	}
+
+	return 0;
+}
+
 void android_main(android_app *app)
 {
 	app->onAppCmd = droid_handle_cmd;
+	app->onInputEvent = droid_handle_input;
 
 	//wait until we have window
 	int ident;
@@ -90,6 +133,21 @@ void android_main(android_app *app)
 	hpl::gpAndroidApp = app;
 	int r = hplMain(cmdline);
 	__android_log_print(ANDROID_LOG_INFO,"HPL1test","hplMain returned %d\n",r);
+
+	ANativeActivity_finish(app->activity);
+
+	while ((ident=ALooper_pollAll(-1, nullptr, &events,(void**)&source)) >= 0)
+	{
+		if (source != nullptr)
+		{
+			source->process(app, source);
+		}
+		if (app->destroyRequested != 0)
+		{
+			//stop engine
+			return;
+		}
+	}
 }
 
 namespace hpl

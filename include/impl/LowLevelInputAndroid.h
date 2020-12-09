@@ -20,10 +20,33 @@
 #define HPL_LOWLEVELINPUT_ANDROID_H
 
 #include "input/LowLevelInput.h"
+#include <list>
 
 namespace hpl
 {
 	class iLowLevelGraphics;
+
+	enum eAndroidInputEventType
+	{
+		eAInputType_Key,
+		eAInputType_Mouse,
+		eAInputType_Touch,
+		eAInputType_LastEnum
+	};
+
+	class cAndroidInputEvent
+	{
+	public:
+		cAndroidInputEvent():x(),y(),key(),uchar(),modifiers(),action(),pointer(),type(eAInputType_LastEnum){}
+		float x;
+		float y;
+		int key;
+		int uchar;
+		int modifiers;
+		int action;
+		int pointer;
+		eAndroidInputEventType type;
+	};
 
 	class cLowLevelInputAndroid : public iLowLevelInput
 	{
@@ -39,6 +62,8 @@ namespace hpl
 		iMouse* CreateMouse();
 		iKeyboard* CreateKeyboard();
 
+		void AddEvent(const cAndroidInputEvent &aEvent);
+		std::list<cAndroidInputEvent> mlstEvents;
 	private:
 		iLowLevelGraphics *mpLowLevelGraphics;
 	};
