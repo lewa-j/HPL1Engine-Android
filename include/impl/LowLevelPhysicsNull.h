@@ -8,6 +8,10 @@
 #include "physics/CollideShape.h"
 #include "physics/PhysicsBody.h"
 #include "physics/CharacterBody.h"
+#include "physics/PhysicsJointBall.h"
+#include "physics/PhysicsJointHinge.h"
+#include "physics/PhysicsJointSlider.h"
+#include "physics/PhysicsJointScrew.h"
 
 #include "scene/World3D.h"
 #include "scene/PortalContainer.h"
@@ -153,7 +157,7 @@ namespace hpl
 		cVector3f mvTotalForce;
 		cVector3f mvTotalTorque;
 	};
-	
+
 	class cCharacterBodyNull : public iCharacterBody
 	{
 	public:
@@ -161,7 +165,109 @@ namespace hpl
 		: iCharacterBody(asName,apWorld, avSize){}
 		~cCharacterBodyNull(){}
 	};
-	
+
+	class cPhysicsJointBallNull : public iPhysicsJointBall
+	{
+	public:
+		cPhysicsJointBallNull(const tString &asName, iPhysicsBody *apParentBody, iPhysicsBody *apChildBody,
+			iPhysicsWorld *apWorld,const cVector3f &avPivotPoint)
+			: iPhysicsJointBall(asName, apParentBody, apChildBody, apWorld, avPivotPoint){}
+		~cPhysicsJointBallNull(){}
+		
+		void SetCollideBodies(bool abX){}
+		bool GetCollideBodies(){return false;}
+		void SetStiffness(float afX){}
+		float GetStiffness(){return 0;}
+		cVector3f GetVelocity(){return cVector3f();}
+		cVector3f GetAngularVelocity(){return cVector3f();}
+		cVector3f GetForce(){return cVector3f();}
+		float GetDistance(){return 0;}
+		float GetAngle(){return 0;}
+		
+		void SetConeLimits(const cVector3f& avPin, float afMaxConeAngle, float afMaxTwistAngle){}
+		cVector3f GetAngles(){return cVector3f();}
+	};
+
+	class cPhysicsJointHingeNull : public iPhysicsJointHinge
+	{
+	public:
+		cPhysicsJointHingeNull(const tString &asName, iPhysicsBody *apParentBody, iPhysicsBody *apChildBody,
+			iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f avPinDir)
+			: iPhysicsJointHinge(asName, apParentBody, apChildBody, apWorld, avPivotPoint){}
+		~cPhysicsJointHingeNull(){}
+		
+		void SetCollideBodies(bool abX){}
+		bool GetCollideBodies(){return false;}
+		void SetStiffness(float afX){}
+		float GetStiffness(){return 0;}
+		cVector3f GetVelocity(){return cVector3f();}
+		cVector3f GetAngularVelocity(){return cVector3f();}
+		cVector3f GetForce(){return cVector3f();}
+		float GetDistance(){return 0;}
+		float GetAngle(){return 0;}
+		
+		void SetMaxAngle(float afAngle){}
+		void SetMinAngle(float afAngle){}
+		float GetMaxAngle(){return 0;}
+		float GetMinAngle(){return 0;}
+	};
+
+	class cPhysicsJointSliderNull : public iPhysicsJointSlider
+	{
+	public:
+		cPhysicsJointSliderNull(const tString &asName, iPhysicsBody *apParentBody, iPhysicsBody *apChildBody,
+			iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f avPinDir)
+			: iPhysicsJointSlider(asName, apParentBody, apChildBody, apWorld, avPivotPoint){}
+		~cPhysicsJointSliderNull(){}
+		
+		void SetCollideBodies(bool abX){}
+		bool GetCollideBodies(){return false;}
+		void SetStiffness(float afX){}
+		float GetStiffness(){return 0;}
+		cVector3f GetVelocity(){return cVector3f();}
+		cVector3f GetAngularVelocity(){return cVector3f();}
+		cVector3f GetForce(){return cVector3f();}
+		float GetDistance(){return 0;}
+		float GetAngle(){return 0;}
+		
+		void SetMaxDistance(float afX){};
+		void SetMinDistance(float afX){};
+		float GetMaxDistance(){return 0;}
+		float GetMinDistance(){return 0;}
+	};
+
+	class cPhysicsJointScrewNull : public iPhysicsJointScrew
+	{
+	public:
+		cPhysicsJointScrewNull(const tString &asName, iPhysicsBody *apParentBody, iPhysicsBody *apChildBody,
+			iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f avPinDir)
+			: iPhysicsJointScrew(asName, apParentBody, apChildBody, apWorld, avPivotPoint){}
+		~cPhysicsJointScrewNull(){}
+		
+		void SetCollideBodies(bool abX){}
+		bool GetCollideBodies(){return false;}
+		void SetStiffness(float afX){}
+		float GetStiffness(){return 0;}
+		cVector3f GetVelocity(){return cVector3f();}
+		cVector3f GetAngularVelocity(){return cVector3f();}
+		cVector3f GetForce(){return cVector3f();}
+		float GetDistance(){return 0;}
+		float GetAngle(){return 0;}
+		
+		void SetMaxDistance(float afX){};
+		void SetMinDistance(float afX){};
+		float GetMaxDistance(){return 0;}
+		float GetMinDistance(){return 0;}
+	};
+
+	class cPhysicsControllerNull : public iPhysicsController
+	{
+	public:
+		cPhysicsControllerNull(const tString &asName, iPhysicsWorld *apWorld)
+			: iPhysicsController(asName, apWorld){}
+		~cPhysicsControllerNull(){}
+	};
+
 	class cPhysicsWorldNull : public iPhysicsWorld
 	{
 	public:
@@ -234,16 +340,36 @@ namespace hpl
 		}
 
 		iPhysicsJointBall* CreateJointBall(const tString &asName,const cVector3f& avPivotPoint,
-												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody){return nullptr;}
+												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody)
+		{
+			iPhysicsJointBall *pJoint = hplNew( cPhysicsJointBallNull, (asName,apParentBody,apChildBody,this,avPivotPoint) );
+			mlstJoints.push_back(pJoint);
+			return pJoint;
+		}
 		iPhysicsJointHinge* CreateJointHinge(const tString &asName,const cVector3f& avPivotPoint,
 												const cVector3f& avPinDir,
-												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody){return nullptr;}
+												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody)
+		{
+			iPhysicsJointHinge *pJoint = hplNew( cPhysicsJointHingeNull, (asName,apParentBody,apChildBody,this,avPivotPoint,avPinDir) );
+			mlstJoints.push_back(pJoint);
+			return pJoint;
+		}
 		iPhysicsJointSlider* CreateJointSlider(const tString &asName,const cVector3f& avPivotPoint,
 												const cVector3f& avPinDir,
-												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody){return nullptr;}
+												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody)
+		{
+			iPhysicsJointSlider *pJoint = hplNew( cPhysicsJointSliderNull, (asName,apParentBody,apChildBody,this,avPivotPoint,avPinDir) );
+			mlstJoints.push_back(pJoint);
+			return pJoint;
+		}
 		iPhysicsJointScrew* CreateJointScrew(const tString &asName,const cVector3f& avPivotPoint,
 												const cVector3f& avPinDir,
-												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody){return nullptr;}
+												iPhysicsBody* apParentBody, iPhysicsBody *apChildBody)
+		{
+			iPhysicsJointScrew *pJoint = hplNew( cPhysicsJointScrewNull, (asName,apParentBody,apChildBody,this,avPivotPoint,avPinDir) );
+			mlstJoints.push_back(pJoint);
+			return pJoint;
+		}
 
 		iPhysicsBody* CreateBody(const tString &asName,iCollideShape *apShape)
 		{
@@ -269,7 +395,12 @@ namespace hpl
 			return pMaterial;
 		}
 
-		iPhysicsController *CreateController(const tString &asName){return nullptr;}
+		iPhysicsController *CreateController(const tString &asName)
+		{
+			iPhysicsController* pController = hplNew( cPhysicsControllerNull, (asName, this) );
+			mlstControllers.push_back(pController);
+			return pController;
+		}
 
 		void CastRay(iPhysicsRayCallback *apCallback,
 							const cVector3f &avOrigin, const cVector3f& avEnd,
