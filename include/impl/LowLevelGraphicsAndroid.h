@@ -156,7 +156,7 @@ namespace hpl
 		void DrawTri(const tVertexVec &avVtx){}
 		void DrawTri(const cVertex* avVtx){}
 
-		void DrawQuad(const tVertexVec &avVtx){}
+		void DrawQuad(const tVertexVec &avVtx);
 		void DrawQuad(const tVertexVec &avVtx, const cColor aCol){}
 		void DrawQuad(const tVertexVec &avVtx,const float afZ){}
 		void DrawQuad(const tVertexVec &avVtx,const float afZ,const cColor &aCol){}

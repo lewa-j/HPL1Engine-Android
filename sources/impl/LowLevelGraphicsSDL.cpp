@@ -876,81 +876,6 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
-	void cLowLevelGraphicsSDL::DrawTri(const tVertexVec &avVtx)
-	{
-		assert(avVtx.size()==3);
-
-		glBegin(GL_TRIANGLES);
-		{
-			for(int i=0;i<3;i++){
-				glTexCoord3f(avVtx[i].tex.x,avVtx[i].tex.y,avVtx[i].tex.z);
-				glColor4f(avVtx[i].col.r,avVtx[i].col.g,avVtx[i].col.b,avVtx[i].col.a);
-				glVertex3f(avVtx[i].pos.x,avVtx[i].pos.y,avVtx[i].pos.z);
-			}
-		}
-		glEnd();
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsSDL::DrawTri(const cVertex* avVtx)
-	{
-		glBegin(GL_TRIANGLES);
-		{
-			for(int i=0;i<3;i++){
-				glTexCoord3f(avVtx[i].tex.x,avVtx[i].tex.y,avVtx[i].tex.z);
-				glColor4f(avVtx[i].col.r,avVtx[i].col.g,avVtx[i].col.b,avVtx[i].col.a);
-				glVertex3f(avVtx[i].pos.x,avVtx[i].pos.y,avVtx[i].pos.z);
-			}
-		}
-		glEnd();
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsSDL::DrawQuad(const tVertexVec &avVtx)
-	{
-		assert(avVtx.size()==4);
-
-		glBegin(GL_QUADS);
-		{
-			for(int i=0;i<4;i++){
-				glTexCoord3f(avVtx[i].tex.x,avVtx[i].tex.y,avVtx[i].tex.z);
-				glColor4f(avVtx[i].col.r,avVtx[i].col.g,avVtx[i].col.b,avVtx[i].col.a);
-				glVertex3f(avVtx[i].pos.x,avVtx[i].pos.y,avVtx[i].pos.z);
-			}
-		}
-		glEnd();
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsSDL::DrawQuadMultiTex(const tVertexVec &avVtx,const tVector3fVec &avExtraUvs)
-	{
-		int lExtraUnits = (int)avExtraUvs.size()/4;
-		glBegin(GL_QUADS);
-		{
-			for(int i=0;i<4;i++)
-			{
-				glMultiTexCoord3f(GL_TEXTURE0,avVtx[i].tex.x,avVtx[i].tex.y,avVtx[i].tex.z);
-
-				for(int unit=0; unit<lExtraUnits; ++unit)
-				{
-					glMultiTexCoord3f(GL_TEXTURE0 + unit + 1,
-										avExtraUvs[unit*4 + i].x, avExtraUvs[unit*4 + i].y, avExtraUvs[unit*4 + i].z);
-				}
-
-				glColor4f(avVtx[i].col.r,avVtx[i].col.g,avVtx[i].col.b,avVtx[i].col.a);
-				glVertex3f(avVtx[i].pos.x,avVtx[i].pos.y,avVtx[i].pos.z);
-			}
-		}
-		glEnd();
-
-	}
-
-
-	//-----------------------------------------------------------------------
-
 	iOcclusionQuery* cLowLevelGraphicsSDL::CreateOcclusionQuery()
 	{
 		return hplNew(cOcclusionQueryOGL, () );
@@ -1148,6 +1073,79 @@ namespace hpl
 							GetGLBlendEnum(aDestFactorAlpha));
 	}
 
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsSDL::DrawTri(const tVertexVec& avVtx)
+	{
+		assert(avVtx.size() == 3);
+
+		glBegin(GL_TRIANGLES);
+		{
+			for (int i = 0; i < 3; i++) {
+				glTexCoord3f(avVtx[i].tex.x, avVtx[i].tex.y, avVtx[i].tex.z);
+				glColor4f(avVtx[i].col.r, avVtx[i].col.g, avVtx[i].col.b, avVtx[i].col.a);
+				glVertex3f(avVtx[i].pos.x, avVtx[i].pos.y, avVtx[i].pos.z);
+			}
+		}
+		glEnd();
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsSDL::DrawTri(const cVertex* avVtx)
+	{
+		glBegin(GL_TRIANGLES);
+		{
+			for (int i = 0; i < 3; i++) {
+				glTexCoord3f(avVtx[i].tex.x, avVtx[i].tex.y, avVtx[i].tex.z);
+				glColor4f(avVtx[i].col.r, avVtx[i].col.g, avVtx[i].col.b, avVtx[i].col.a);
+				glVertex3f(avVtx[i].pos.x, avVtx[i].pos.y, avVtx[i].pos.z);
+			}
+		}
+		glEnd();
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsSDL::DrawQuad(const tVertexVec& avVtx)
+	{
+		assert(avVtx.size() == 4);
+
+		glBegin(GL_QUADS);
+		{
+			for (int i = 0; i < 4; i++) {
+				glTexCoord3f(avVtx[i].tex.x, avVtx[i].tex.y, avVtx[i].tex.z);
+				glColor4f(avVtx[i].col.r, avVtx[i].col.g, avVtx[i].col.b, avVtx[i].col.a);
+				glVertex3f(avVtx[i].pos.x, avVtx[i].pos.y, avVtx[i].pos.z);
+			}
+		}
+		glEnd();
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsSDL::DrawQuadMultiTex(const tVertexVec& avVtx, const tVector3fVec& avExtraUvs)
+	{
+		int lExtraUnits = (int)avExtraUvs.size() / 4;
+		glBegin(GL_QUADS);
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				glMultiTexCoord3f(GL_TEXTURE0, avVtx[i].tex.x, avVtx[i].tex.y, avVtx[i].tex.z);
+
+				for (int unit = 0; unit < lExtraUnits; ++unit)
+				{
+					glMultiTexCoord3f(GL_TEXTURE0 + unit + 1,
+						avExtraUvs[unit * 4 + i].x, avExtraUvs[unit * 4 + i].y, avExtraUvs[unit * 4 + i].z);
+				}
+
+				glColor4f(avVtx[i].col.r, avVtx[i].col.g, avVtx[i].col.b, avVtx[i].col.a);
+				glVertex3f(avVtx[i].pos.x, avVtx[i].pos.y, avVtx[i].pos.z);
+			}
+		}
+		glEnd();
+
+	}
 
 	//-----------------------------------------------------------------------
 

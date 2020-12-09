@@ -168,7 +168,7 @@ namespace hpl
 		eglGetConfigAttrib(mEglDisplay, mEglConfig, EGL_BUFFER_SIZE , &mlBpp);
 		Log(" Setting video mode: %d x %d - %d bpp\n", mvScreenSize.x, mvScreenSize.y, mlBpp);
 
-		mvVirtualSize.y = mvVirtualSize.x/(mvScreenSize.x/(float)mvScreenSize.y);
+		//mvVirtualSize.y = mvVirtualSize.x/(mvScreenSize.x/(float)mvScreenSize.y);
 		
 		Log(" Init glad...");
 		if(gladLoadGLES2Loader((GLADloadproc)eglGetProcAddress))
@@ -789,7 +789,21 @@ namespace hpl
 	}
 
 	//-----------------------------------------------------------------------
-	
+
+	void cLowLevelGraphicsAndroid::DrawQuad(const tVertexVec &avVtx)
+	{
+		assert(avVtx.size()==4);
+
+		glVertexAttribPointer(eVtxAttr_Position, 3, GL_FLOAT, false, sizeof(cVertex), &avVtx[0].pos.x);
+		glVertexAttribPointer(eVtxAttr_Color0, 4, GL_FLOAT, false, sizeof(cVertex), &avVtx[0].col.r);
+		glVertexAttribPointer(eVtxAttr_Texture0, 3, GL_FLOAT, false, sizeof(cVertex), &avVtx[0].tex.x);
+
+		uint16_t quadIndices[]{0,1,2,2,3,0};
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, quadIndices);
+	}
+
+	//-----------------------------------------------------------------------
+
 	void cLowLevelGraphicsAndroid::AddVertexToBatch(const cVertex *apVtx)
 	{
 		//Coord
