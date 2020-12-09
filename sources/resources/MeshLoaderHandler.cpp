@@ -29,11 +29,7 @@ namespace hpl {
 	bool iMeshLoader::mbRestricStaticLightToSector = false;
 	bool iMeshLoader::mbUseFastMaterial = false;
 	tString iMeshLoader::msFastMaterialFile = "";
-#ifdef ANDROID
-	tString iMeshLoader::msCacheDir = tString(getenv("EXTERNAL_STORAGE")) + "/hpl1/core/cache/";
-#else
-	tString iMeshLoader::msCacheDir = "core/cache/";
-#endif
+	tString iMeshLoader::msCacheDir = GetPlatformPath("core/cache/");
 
 	//////////////////////////////////////////////////////////////////////////
 	// CONSTRUCTORS

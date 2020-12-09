@@ -299,6 +299,45 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
+	tWString GetSystemSpecialPath(eSystemPath aPathType)
+	{
+#if defined(WIN32)
+		int type;
+		switch (aPathType)
+		{
+		case eSystemPath_Personal:	type = CSIDL_PERSONAL;
+			break;
+		default: return _W("");
+		}
+
+		TCHAR sPath[1024];
+		if (SUCCEEDED(SHGetFolderPath(NULL,
+			type | CSIDL_FLAG_CREATE,
+			NULL, 0, sPath)))
+		{
+			return tWString(sPath);
+		}
+		else
+		{
+			return _W("");
+		}
+#else
+		switch (aPathType)
+		{
+		case eSystemPath_Personal: {
+			const char* home = getenv("HOME");
+			if (!home)
+				return _W("");
+			return cString::To16Char(tString(home));
+		}
+		default:
+			return _W("");
+		}
+#endif
+	}
+
+	//-----------------------------------------------------------------------
+
 	void SetWindowCaption(const tString &asName)
 	{
 		SDL_WM_SetCaption(asName.c_str(),"");

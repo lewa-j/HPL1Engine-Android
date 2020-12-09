@@ -54,7 +54,7 @@ static cLogWriter gUpdateLogWriter(_W("hpl_update.log"));
 
 cLogWriter::cLogWriter(const tWString& asFileName)
 {
-	msFileName = asFileName;
+	msFileName = GetPlatformPath(asFileName);
 }
 
 cLogWriter::~cLogWriter()
@@ -103,13 +103,7 @@ void cLogWriter::ReopenFile()
 	#ifdef WIN32
 		mpFile = _wfopen(msFileName.c_str(), _W("w"));
 	#else
-	#ifdef ANDROID
-		static const char* storage = getenv("EXTERNAL_STORAGE");
-		tString sPath = storage + tString("/hpl1/") + cString::To8Char(msFileName);
-		mpFile = fopen(sPath.c_str(), "w");
-	#else
 		mpFile = fopen(cString::To8Char(msFileName).c_str(), "w");
-	#endif
 	#endif
 }
 
@@ -304,43 +298,6 @@ void OpenBrowserWindow(const tWString& asURL)
 
 //-----------------------------------------------------------------------
 
-tWString GetSystemSpecialPath(eSystemPath aPathType)
-{
-#if defined(WIN32)
-	int type;
-	switch (aPathType)
-	{
-	case eSystemPath_Personal:	type = CSIDL_PERSONAL;
-		break;
-	default: return _W("");
-	}
-
-	TCHAR sPath[1024];
-	if (SUCCEEDED(SHGetFolderPath(NULL,
-		type | CSIDL_FLAG_CREATE,
-		NULL, 0, sPath)))
-	{
-		return tWString(sPath);
-	}
-	else
-	{
-		return _W("");
-	}
-#else
-	switch (aPathType)
-	{
-	case eSystemPath_Personal: {
-		const char* home = getenv("HOME");
-		return cString::To16Char(tString(home));
-	}
-	default:
-		return _W("");
-	}
-#endif
-}
-
-//-----------------------------------------------------------------------
-
 bool FileExists(const tWString& asFileName)
 {
 #ifdef WIN32
@@ -483,5 +440,30 @@ cDate FileCreationDate(const tWString& asFilePath)
 	return date;
 }
 
+//-----------------------------------------------------------------------
+
+tString GetPlatformPath(const tString& asFile)
+{
+#ifdef ANDROID
+	if (asFile[0] == '/' || asFile[0] == '\\')
+		return asFile;
+	static const char* storage = getenv("EXTERNAL_STORAGE");
+	return storage + tString("/hpl1/") + asFile;
+#else
+	return asFile;
+#endif
+}
+
+tWString GetPlatformPath(const tWString& asFile)
+{
+#ifdef ANDROID
+	if (asFile[0] == _W('/') || asFile[0] == _W('\\'))
+		return asFile;
+	static const char* storage = getenv("EXTERNAL_STORAGE");
+	return cString::To16Char(storage) + tWString(_W("/hpl1/")) + asFile;
+#else
+	return asFile;
+#endif
+}
 
 }

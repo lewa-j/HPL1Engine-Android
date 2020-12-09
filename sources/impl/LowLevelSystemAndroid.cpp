@@ -34,7 +34,7 @@
 
 extern int hplMain(const hpl::tString &asCommandLine);
 
-void droid_handle_cmd(struct android_app* app, int32_t cmd)
+static void droid_handle_cmd(android_app* app, int32_t cmd)
 {
 	switch (cmd)
 	{
@@ -58,7 +58,7 @@ void droid_handle_cmd(struct android_app* app, int32_t cmd)
 void android_main(android_app *app)
 {
 	app->onAppCmd = droid_handle_cmd;
-	
+
 	//wait until we have window
 	int ident;
 	int events;
@@ -77,7 +77,7 @@ void android_main(android_app *app)
 		if(hpl::gpAWindow)
 			break;
 	}
-	
+
 	hpl::tString cmdline = "";
 	/*for (int i=1; i < argc; i++) {
 		if (cmdline.length()>0) {
@@ -86,13 +86,17 @@ void android_main(android_app *app)
 			cmdline.append(argv[i]);
 		}
 	}*/
+
+	hpl::gpAndroidApp = app;
 	int r = hplMain(cmdline);
 	__android_log_print(ANDROID_LOG_INFO,"HPL1test","hplMain returned %d\n",r);
 }
+
 namespace hpl
 {
+	android_app *gpAndroidApp = nullptr;
 	ANativeWindow *gpAWindow = nullptr;
-	
+
 	cLowLevelSystemAndroid::cLowLevelSystemAndroid()
 	{
 		//mpScriptEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
@@ -158,7 +162,7 @@ namespace hpl
 		//if(mpScriptEngine->RegisterGlobalFunction(asFuncDecl.c_str(),
 		//										asFUNCTION(pFunc),callConv)<0)
 		{
-			Error("Couldn't add func '%s'\n",asFuncDecl.c_str());
+			//Error("Couldn't add func '%s'\n",asFuncDecl.c_str());
 			return false;
 		}
 
@@ -224,12 +228,26 @@ namespace hpl
 		CreateMessageBoxW( eMsgBoxType_Default, asCaption, fmt, ap );
 		va_end(ap);
 	}
-	
+
+	//-----------------------------------------------------------------------
+
+	tWString GetSystemSpecialPath(eSystemPath aPathType)
+	{
+		switch (aPathType)
+		{
+		case eSystemPath_Personal: {
+			return cString::To16Char(tString(gpAndroidApp->activity->externalDataPath));
+		}
+		default:
+			return _W("");
+		}
+	}
+
 	void SetWindowCaption(const tString &asName)
 	{
 		//TODO Implement
 	}
-	
+
 	typedef long long unsigned int longtime_t;
 	unsigned long GetApplicationTime()
 	{

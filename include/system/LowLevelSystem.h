@@ -79,6 +79,8 @@ namespace hpl {
 	extern bool RenameFile(const tWString& asFrom, const tWString& asTo);
 	extern cDate FileModifiedDate(const tWString& asFilePath);
 	extern cDate FileCreationDate(const tWString& asFilePath);
+	extern tString GetPlatformPath(const tString& asFile);
+	extern tWString GetPlatformPath(const tWString& asFile);
 
 	extern void SetWindowCaption(const tString &asName);
 
