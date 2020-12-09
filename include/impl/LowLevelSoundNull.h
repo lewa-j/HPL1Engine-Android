@@ -20,19 +20,84 @@
 #define HPL_LOWLEVELSOUND_NULL_H
 
 #include "sound/LowLevelSound.h"
+#include "sound/SoundData.h"
+#include "sound/SoundChannel.h"
 
 namespace hpl
 {
+
+	class cSoundChannelNull : public iSoundChannel
+	{
+	public:
+		cSoundChannelNull(iSoundData* apData, cSoundManager* apSoundManger) : iSoundChannel(apData, apSoundManger)
+		{}
+		~cSoundChannelNull(){}
+
+		void Play(){}
+		void Stop(){}
+
+		void SetPaused(bool abX){}
+		void SetSpeed(float afSpeed){}
+		void SetVolume (float afVolume){}
+		void SetLooping (bool abLoop){}
+		void SetPan (float afPan){}
+		void Set3D(bool ab3D){}
+
+		void SetPriority(int alX){}
+		int GetPriority(){return 0;}
+
+		void SetPositionRelative(bool abRelative){}
+		void SetPosition(const cVector3f &avPos){}
+		void SetVelocity(const cVector3f &avVel){}
+
+		void SetMinDistance(float fMin){}
+		void SetMaxDistance(float fMax){}
+
+		bool IsPlaying(){return false;}
+
+		bool IsBufferUnderrun() { return false;}
+		double GetElapsedTime()	{ return 0;}
+		double GetTotalTime()	{ return 1;}
+
+		void SetAffectedByEnv(bool abAffected){}
+		void SetFiltering ( bool abEnabled, int alFlags){}
+		void SetFilterGain(float afGain){}
+		void SetFilterGainHF(float afGainHF){}
+	};
+
+	class cSoundDataNull : public iSoundData
+	{
+	public:
+		cSoundDataNull(tString asName, bool abStream) : iSoundData(asName, abStream)
+		{}
+		~cSoundDataNull(){}
+		bool CreateFromFile(const tString &asFile){return true;}
+		iSoundChannel* CreateChannel(int alPriority){return hplNew(cSoundChannelNull,(this, mpSoundManger));}
+		bool IsStereo(){return false;}
+	};
+
 	class cLowLevelSoundNull : public iLowLevelSound
 	{
 	public:
-		cLowLevelSoundNull(){}
+		cLowLevelSoundNull(){
+			mvFormats[0] = "WAV";
+			mvFormats[1] = "OGG";
+			mvFormats[2] = "";
+		}
 		~cLowLevelSoundNull(){}
 
-		void GetSupportedFormats(tStringList &alstFormats){}
+		void GetSupportedFormats(tStringList &alstFormats){
+			int lPos = 0;
+
+			while(mvFormats[lPos][0] != '\0')
+			{
+				alstFormats.push_back(mvFormats[lPos]);
+				lPos++;
+			}
+		}
 
 		iSoundData* LoadSoundData(const tString& asName,const tString& asFilePath,
-									const tString& asType, bool abStream,bool abLoopStream){return nullptr;}
+									const tString& asType, bool abStream,bool abLoopStream){return hplNew(cSoundDataNull,(asName,abStream));}
 
 		void UpdateSound(float afTimeStep){}
 
@@ -62,7 +127,7 @@ namespace hpl
 		void FadeSoundEnvironment( iSoundEnvironment* apSourceSoundEnv, iSoundEnvironment* apDestSoundEnv, float afT ){}
 
 	private:
-
+		tString mvFormats[3];
 	};
 };
 #endif // HPL_LOWLEVELSOUND_NULL_H
