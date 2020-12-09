@@ -55,13 +55,12 @@ namespace hpl
 					continue;
 				}
 
-				if(event.action == AMOTION_EVENT_ACTION_MOVE)
+				mvMouseAbsPos = cVector2f(event.x,event.y);
+				mvMouseAbsPos = (mvMouseAbsPos/vScreenSize)*vVirtualSize;
+
+				if(event.action != AMOTION_EVENT_ACTION_MOVE)
 				{
-					mvMouseAbsPos = cVector2f(event.x,event.y);
-					mvMouseAbsPos = (mvMouseAbsPos/vScreenSize)*vVirtualSize;
-				}
-				else
-				{
+					vLastMouseAbsPos = (cVector2f(event.x,event.y)/vScreenSize)*vVirtualSize;
 					bool bButtonIsDown = event.action == AMOTION_EVENT_ACTION_DOWN;
 					mvMButtonArray[eMButton_Left] = bButtonIsDown;
 				}
