@@ -24,6 +24,7 @@
 #include "impl/VertexBufferGLES.h"
 #include "impl/GLHelpers.h"
 #include "math/Math.h"
+#include "graphics/OcclusionQuery.h"
 
 namespace hpl
 {
@@ -47,7 +48,7 @@ namespace hpl
 
 		for(int i=0;i<eMatrix_LastEnum;i++)
 			mMatrixStack[i].push(cMatrixf::Identity);
-		
+
 		mbClearColor = true;
 		mbClearDepth = true;
 		mbClearStencil = false;
@@ -65,21 +66,16 @@ namespace hpl
 			mlTexCoordArrayCount[i]=0;
 		}
 	}
-	
+
 	static const bool egl_log = true;
-	
+
 	cLowLevelGraphicsAndroid::~cLowLevelGraphicsAndroid()
 	{
-
 		hplFree(mpVertexArray);
 		hplFree(mpIndexArray);
 		for(int i=0;i<MAX_TEXTUREUNITS;i++)
 			hplFree(mpTexCoordArray[i]);
 
-		//Exit extra stuff
-		//ExitCG();
-		//TTF_Quit();
-		
 		bool r = eglDestroySurface(mEglDisplay, mEglSurface);
 		if(egl_log) Log("egl destroy surface %d\n",r);
 		r = eglDestroyContext(mEglDisplay, mEglContext);
@@ -468,9 +464,35 @@ namespace hpl
 	{
 		return hplNew( cVertexBufferGLES, (this, aFlags,aDrawType,aUsageType,alReserveVtxSize,alReserveIdxSize) );
 	}
-	
-	
-	
+
+	//-----------------------------------------------------------------------
+
+	class cOcclusionQueryNull : public iOcclusionQuery
+	{
+	public:
+		cOcclusionQueryNull(){}
+		~cOcclusionQueryNull(){}
+
+		void Begin(){}
+		void End(){}
+		bool FetchResults(){return true;}
+		unsigned int GetSampleCount(){return 100;}
+	};
+
+	iOcclusionQuery* cLowLevelGraphicsAndroid::CreateOcclusionQuery()
+	{
+		return hplNew(cOcclusionQueryNull, () );
+	}
+
+	//-----------------------------------------------------------------------
+
+	void cLowLevelGraphicsAndroid::DestroyOcclusionQuery(iOcclusionQuery *apQuery)
+	{
+		if(apQuery)	hplDelete(apQuery);
+	}
+
+	//-----------------------------------------------------------------------
+
 	void cLowLevelGraphicsAndroid::FlushRendering()
 	{
 		glFlush();

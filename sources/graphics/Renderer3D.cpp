@@ -760,6 +760,8 @@ namespace hpl {
 
 	void cRenderer3D::RenderOcclusionQueries(cCamera3D *apCamera)
 	{
+		if (!mpDiffuseVtxProgram)return;
+
 		//////////////////////////////////////////////////
 		// Reset any vertex buffers,fragment or vertex programs.
 		if(mRenderSettings.mpFragmentProgram) mRenderSettings.mpFragmentProgram->UnBind();

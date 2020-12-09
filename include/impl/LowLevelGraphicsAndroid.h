@@ -88,8 +88,8 @@ namespace hpl
 		/////////// DRAWING METHODS /////////////////////////
 
 		// OCCLUSION
-		iOcclusionQuery* CreateOcclusionQuery(){return nullptr;}
-		void DestroyOcclusionQuery(iOcclusionQuery *apQuery){}
+		iOcclusionQuery* CreateOcclusionQuery();
+		void DestroyOcclusionQuery(iOcclusionQuery *apQuery);
 
 		// CLEARING THE FRAMEBUFFER
 		void ClearScreen();
