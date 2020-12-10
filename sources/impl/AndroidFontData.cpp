@@ -149,9 +149,15 @@ namespace hpl
 				for(unsigned int x=0;x<lW;x++) {
 					uint8_t *Pix = &PixBuffer[(y*lW + x)*lBmpSize];
 					uint8_t *src = &srcBuffer[((lY+y)*pSourceBitmap->GetWidth()+lX+x)*srcSize];
-					Pix[0] = src[0];
-					Pix[1] = src[1];
-					Pix[2] = src[2];
+					if(srcSize == 1){
+						Pix[0] = src[0];
+						Pix[1] = src[0];
+						Pix[2] = src[0];
+					}else{
+						Pix[0] = src[0];
+						Pix[1] = src[1];
+						Pix[2] = src[2];
+					}
 					//Set proper alpha (dunno if this is needed)
 					Pix[3] = Pix[0];
 				}

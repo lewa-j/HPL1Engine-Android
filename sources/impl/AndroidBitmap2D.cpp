@@ -85,9 +85,16 @@ namespace hpl
 													(x + avDestPos.x)) * lDestSize];
 				unsigned char* srcPix = &srcBuffer[(y*mlWidth + x) * lSrcSize];
 
-				destPix[0] = srcPix[0];
-				destPix[1] = srcPix[1];
-				destPix[2] = srcPix[2];
+				if(lSrcSize==1)
+				{
+					destPix[0] = srcPix[0];
+					destPix[1] = srcPix[0];
+					destPix[2] = srcPix[0];
+				}else{
+					destPix[0] = srcPix[0];
+					destPix[1] = srcPix[1];
+					destPix[2] = srcPix[2];
+				}
 				if(lDestSize==4 && lSrcSize==4)
 					destPix[3] = srcPix[3];
 			}
