@@ -603,13 +603,7 @@
     <ClInclude Include="include\impl\Platform.h">
       <Filter>Impl\System</Filter>
     </ClInclude>
-    <ClInclude Include="include\impl\scriptstring.h">
-      <Filter>Impl\System</Filter>
-    </ClInclude>
     <ClInclude Include="include\impl\SqScript.h">
-      <Filter>Impl\System</Filter>
-    </ClInclude>
-    <ClInclude Include="include\impl\stdstring.h">
       <Filter>Impl\System</Filter>
     </ClInclude>
     <ClInclude Include="include\impl\SDLGameSetup.h">
@@ -894,6 +888,12 @@
     </ClInclude>
     <ClInclude Include="include\impl\glad\glad_wgl.h">
       <Filter>Impl\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\impl\scriptstdstring.h">
+      <Filter>Impl\System</Filter>
+    </ClInclude>
+    <ClInclude Include="include\impl\scripthelper.h">
+      <Filter>Impl\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1350,13 +1350,7 @@
     <ClCompile Include="sources\impl\LowLevelSystemSDL.cpp">
       <Filter>Impl\System</Filter>
     </ClCompile>
-    <ClCompile Include="sources\impl\scriptstring.cpp">
-      <Filter>Impl\System</Filter>
-    </ClCompile>
     <ClCompile Include="sources\impl\SqScript.cpp">
-      <Filter>Impl\System</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\impl\stdstring.cpp">
       <Filter>Impl\System</Filter>
     </ClCompile>
     <ClCompile Include="sources\impl\platform\win32.cpp">
@@ -1598,6 +1592,12 @@
     </ClCompile>
     <ClCompile Include="sources\impl\glad_wgl.c">
       <Filter>Impl\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\impl\scriptstdstring.cpp">
+      <Filter>Impl\System</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\impl\scripthelper.cpp">
+      <Filter>Impl\System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

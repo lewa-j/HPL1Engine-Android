@@ -49,6 +49,7 @@ namespace hpl {
 
 		int mlHandle;
 		tString msModuleName;
+		asIScriptModule *mpModule;
 
 		char* LoadCharBuffer(const tString& asFileName, int& alLength);
 	};

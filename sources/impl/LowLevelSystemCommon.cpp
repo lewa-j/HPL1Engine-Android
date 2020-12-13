@@ -113,13 +113,13 @@ void cScriptOutput::AddMessage(const asSMessageInfo* msg)
 {
 	char sMess[1024];
 
-	tString type = "ERR ";
+	const char* type = "ERR ";
 	if (msg->type == asMSGTYPE_WARNING)
 		type = "WARN";
 	else if (msg->type == asMSGTYPE_INFORMATION)
 		type = "INFO";
 
-	sprintf(sMess, "%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type.c_str(), msg->message);
+	snprintf(sMess, 1024, "%s (%d, %d) : %s : %s\n", msg->section, msg->row, msg->col, type, msg->message);
 
 	msMessage += sMess;
 }

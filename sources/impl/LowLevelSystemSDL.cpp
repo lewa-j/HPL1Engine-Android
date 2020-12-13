@@ -20,8 +20,11 @@
 //Use this to check for memory leaks!
 
 #ifdef WIN32
+#ifdef _DEBUG
+#pragma comment(lib, "angelscriptd.lib")
+#else
 #pragma comment(lib, "angelscript.lib")
-#pragma comment(lib, "legacy_stdio_definitions.lib")
+#endif
 #define UNICODE
 #include <windows.h>
 #include <shlobj.h>
@@ -47,8 +50,7 @@
 
 #include "SDL/SDL.h"
 
-#include "impl/stdstring.h"
-#include "impl/scriptstring.h"
+#include "impl/scriptstdstring.h"
 
 #include "system/String.h"
 
@@ -101,11 +103,7 @@ namespace hpl
 		mpScriptOutput = hplNew( cScriptOutput, () );
 		mpScriptEngine->SetMessageCallback(asMETHOD(cScriptOutput,AddMessage), mpScriptOutput, asCALL_THISCALL);
 
-#ifdef AS_MAX_PORTABILITY
-		RegisterScriptString(mpScriptEngine);
-#else
 		RegisterStdString(mpScriptEngine);
-#endif
 
 		mlHandleCount = 0;
 
@@ -118,7 +116,7 @@ namespace hpl
 	{
 		/*Release all runnings contexts */
 
-		mpScriptEngine->Release();
+		mpScriptEngine->ShutDownAndRelease();
 		hplDelete(mpScriptOutput);
 
 		//perhaps not the best thing to skip :)
