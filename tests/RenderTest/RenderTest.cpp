@@ -8,7 +8,7 @@
 #include <hpl.h>
 #include <impl/SDLGameSetup.h>
 
-#include <GL/GLee.h>
+//#include <GL/GLee.h>
 
 #include "../Common/SimpleCamera.h"
 
@@ -110,7 +110,7 @@ public:
 		mpScreenBuffer->SetWrapT(eTextureWrap_ClampToEdge);
 
 		//Load a font
-		mpFont = gpGame->GetResources()->GetFontManager()->CreateFontData("verdana.ttf",12,32,128);
+		mpFont = gpGame->GetResources()->GetFontManager()->CreateFontData("viewer.fnt",12,32,128);
 
 		//2d graphics
 		mpGfxDrawer = gpGame->GetGraphics()->GetDrawer();
@@ -630,6 +630,9 @@ private:
 
 int hplMain(const tString& asArg)
 {
+	iResourceBase::SetLogCreateAndDelete(true);
+	iGpuProgram::SetLogDebugInformation(true);
+
 	//Init the game engine
 	gpGame = new cGame(new cSDLGameSetup(),800,600,32,false,45);
 	gpGame->GetGraphics()->GetLowLevel()->SetVsyncActive(false);

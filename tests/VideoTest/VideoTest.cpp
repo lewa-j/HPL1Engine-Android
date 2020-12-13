@@ -13,7 +13,6 @@
 
 #include <conio.h>
 
-#pragma comment(lib, "libogg.lib")
 #pragma comment(lib, "libtheora.lib")
 
 #include <theora/theora.h>
@@ -45,7 +44,7 @@ public:
 
 	//--------------------------------------------------
 
-	cSimpleUpdate() : iUpdateable("SimpleUPdate")
+	cSimpleUpdate() : iUpdateable("SimpleUpdate")
 	{
 		////////////////////////////////
 		//Scene Init
@@ -89,12 +88,12 @@ public:
 		////////////////////////////////
 		//Theora Setup video texture
 		mpVideoStream = gpGame->GetResources()->GetVideoManager()->CreateVideo("test_video2.ogm");
-		mpVideoStream->Play();
-		mpVideoStream->SetLoop(true);
-
 
 		if(mpVideoStream)
 		{
+			mpVideoStream->Play();
+			mpVideoStream->SetLoop(true);
+
 			cVector2l vVideoSize = mpVideoStream->GetSize();
 			mpVideoTexture = gpGame->GetGraphics()->GetLowLevel()->CreateTexture(vVideoSize,32,cColor(0,1),false,
 																				eTextureType_Normal,eTextureTarget_Rect);

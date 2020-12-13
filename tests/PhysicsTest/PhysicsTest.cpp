@@ -39,7 +39,7 @@ public:
 		gpGame->GetScene()->SetWorld3D(mpWorld);
 
 		mpPhysicsWorld = gpGame->GetPhysics()->CreateWorld(true);
-		mpPhysicsWorld->SetWorldSize(300,-300);
+		mpPhysicsWorld->SetWorldSize(-300,300);
 		mpPhysicsWorld->SetMaxTimeStep(1.0f / 60.0f);
 
 		mpWorld->SetPhysicsWorld(mpPhysicsWorld);

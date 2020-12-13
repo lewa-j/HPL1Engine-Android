@@ -8,7 +8,10 @@
 *.dll
 *.exe
 *.pdb
+*.ipdb
+*.iobj
 *.lib
+*.ilk
 .vs/
 *.o
 *.o.d
@@ -16,3 +19,6 @@
 *.a
 *.class
 *.dex
+*.user
+android/libs/
+android/obj/
