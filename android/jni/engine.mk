@@ -1,6 +1,11 @@
 LOCAL_PATH:= $(call my-dir)/../..
 
 include $(CLEAR_VARS)
+LOCAL_MODULE := angelscript
+LOCAL_SRC_FILES := dependencies/$(TARGET_ARCH_ABI)/libangelscript.a
+include $(PREBUILT_STATIC_LIBRARY)
+
+include $(CLEAR_VARS)
 
 LOCAL_MODULE := hpl1engine
 LOCAL_CPP_EXTENSION := .cpp
@@ -20,7 +25,8 @@ sources/impl/MeshLoaderCollada.cpp \
 sources/impl/MeshLoaderColladaHelpers.cpp \
 sources/impl/MeshLoaderColladaLoader.cpp \
 sources/impl/SqScript.cpp \
-sources/impl/stdstring.cpp \
+sources/impl/scriptstdstring.cpp \
+sources/impl/scripthelper.cpp \
 sources/impl/glad.c \
 sources/impl/platform/posix.cpp \
 sources/impl/tinyXml/tinystr.cpp sources/impl/tinyXml/tinyxml.cpp sources/impl/tinyXml/tinyxmlerror.cpp sources/impl/tinyXml/tinyxmlparser.cpp \
@@ -219,7 +225,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/include $(LOCAL_PATH)/dependencies
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 #LOCAL_EXPORT_LDFLAGS :=
 LOCAL_EXPORT_LDLIBS := -lEGL -lGLESv2
-LOCAL_STATIC_LIBRARIES := android_native_app_glue
+LOCAL_STATIC_LIBRARIES := android_native_app_glue angelscript
 LOCAL_THIN_ARCHIVE := true
 include $(BUILD_STATIC_LIBRARY)
 

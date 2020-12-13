@@ -30,8 +30,7 @@
 #include "impl/SqScript.h"
 #include "system/String.h"
 
-#include "impl/stdstring.h"
-#include "impl/scriptstring.h"
+#include "impl/scriptstdstring.h"
 
 extern int hplMain(const hpl::tString &asCommandLine);
 
@@ -157,16 +156,12 @@ namespace hpl
 
 	cLowLevelSystemAndroid::cLowLevelSystemAndroid()
 	{
-		//mpScriptEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
+		mpScriptEngine = asCreateScriptEngine(ANGELSCRIPT_VERSION);
 
 		mpScriptOutput = hplNew( cScriptOutput, () );
-		//mpScriptEngine->SetMessageCallback(asMETHOD(cScriptOutput,AddMessage), mpScriptOutput, asCALL_THISCALL);
+		mpScriptEngine->SetMessageCallback(asMETHOD(cScriptOutput,AddMessage), mpScriptOutput, asCALL_THISCALL);
 
-#ifdef AS_MAX_PORTABILITY
-		//RegisterScriptString(mpScriptEngine);
-#else
-		//RegisterStdString(mpScriptEngine);
-#endif
+		RegisterStdString(mpScriptEngine);
 
 		mlHandleCount = 0;
 
@@ -179,7 +174,7 @@ namespace hpl
 	{
 		/*Release all runnings contexts */
 
-		//mpScriptEngine->Release();
+		mpScriptEngine->ShutDownAndRelease();
 		hplDelete(mpScriptOutput);
 
 		//perhaps not the best thing to skip :)
@@ -209,18 +204,17 @@ namespace hpl
 
 	iScript* cLowLevelSystemAndroid::CreateScript(const tString& asName)
 	{
-		return nullptr;
-		//return hplNew( cSqScript, (asName,mpScriptEngine,mpScriptOutput,mlHandleCount++) );
+		return hplNew( cSqScript, (asName,mpScriptEngine,mpScriptOutput,mlHandleCount++) );
 	}
 
 	//-----------------------------------------------------------------------
 
 	bool cLowLevelSystemAndroid::AddScriptFunc(const tString& asFuncDecl, void* pFunc, int callConv)
 	{
-		//if(mpScriptEngine->RegisterGlobalFunction(asFuncDecl.c_str(),
-		//										asFUNCTION(pFunc),callConv)<0)
+		if(mpScriptEngine->RegisterGlobalFunction(asFuncDecl.c_str(),
+												asFUNCTION(pFunc),callConv)<0)
 		{
-			//Error("Couldn't add func '%s'\n",asFuncDecl.c_str());
+			Error("Couldn't add func '%s'\n",asFuncDecl.c_str());
 			return false;
 		}
 
@@ -231,7 +225,7 @@ namespace hpl
 
 	bool cLowLevelSystemAndroid::AddScriptVar(const tString& asVarDecl, void *pVar)
 	{
-		//if(mpScriptEngine->RegisterGlobalProperty(asVarDecl.c_str(),pVar)<0)
+		if(mpScriptEngine->RegisterGlobalProperty(asVarDecl.c_str(),pVar)<0)
 		{
 			Error("Couldn't add var '%s'\n",asVarDecl.c_str());
 			return false;
