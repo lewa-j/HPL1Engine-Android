@@ -12,6 +12,7 @@
 *.iobj
 *.lib
 *.ilk
+*.exp
 .vs/
 *.o
 *.o.d
