@@ -5,7 +5,21 @@ Yes, here it is at last the Engine that made the Penumbra Series.
 
 Still WIP
 
-Penumbra code found [here](https://github.com/lewa-j/PenumbraOverture)
+## Done
+* EGL surface
+* glad 0.1.34 instead of GLee
+* AngelScript 2.35
+* Keyboard input
+* Mouse emulation through touch
+
+## TODO
+* GLES2 + GLSL renderer
+* Newton 3.14 physics
+* Build OpenAL-soft
+* Touch controls
+* Better fs handling
+
+Penumbra code found [here](https://github.com/lewa-j/PenumbraOverture-Android)
 
 License Information
 -------------------
