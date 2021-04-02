@@ -46,11 +46,11 @@ namespace hpl
 			cVector2f vLastMouseAbsPos = mvMouseAbsPos;
 			for(const auto &event : mpLowLevelInput->mlstEvents)
 			{
-				if(event.type != eAInputType_Touch &&
-					event.type != eAInputType_Mouse &&
-					event.action != AMOTION_EVENT_ACTION_DOWN &&
+				if((event.type != eAInputType_Touch &&
+					event.type != eAInputType_Mouse) ||
+					(event.action != AMOTION_EVENT_ACTION_DOWN &&
 					event.action != AMOTION_EVENT_ACTION_UP &&
-					event.action != AMOTION_EVENT_ACTION_MOVE)
+					event.action != AMOTION_EVENT_ACTION_MOVE))
 				{
 					continue;
 				}
@@ -140,9 +140,9 @@ namespace hpl
 			mlstKeysPressed.clear();
 			for(const auto &event : mpLowLevelInput->mlstEvents)
 			{
-				if(event.type != eAInputType_Key &&
-					event.action != AKEY_EVENT_ACTION_DOWN &&
-					event.action != AKEY_EVENT_ACTION_UP)
+				if(event.type != eAInputType_Key ||
+					(event.action != AKEY_EVENT_ACTION_DOWN &&
+					event.action != AKEY_EVENT_ACTION_UP))
 				{
 					continue;
 				}
