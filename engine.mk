@@ -1,9 +1,14 @@
-LOCAL_PATH:= $(call my-dir)/../..
+LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := angelscript
 LOCAL_SRC_FILES := dependencies/$(TARGET_ARCH_ABI)/libangelscript.a
 include $(PREBUILT_STATIC_LIBRARY)
+
+#include $(CLEAR_VARS)
+#LOCAL_MODULE := newton
+#LOCAL_SRC_FILES := dependencies/$(TARGET_ARCH_ABI)/libnewton.so
+#include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
@@ -14,10 +19,21 @@ sources/impl/LowLevelInputAndroid.cpp \
 sources/impl/LowLevelResourcesAndroid.cpp \
 sources/impl/LowLevelSystemAndroid.cpp \
 sources/impl/LowLevelSystemCommon.cpp \
+sources/impl/LowLevelPhysicsNewton.cpp \
 sources/impl/AndroidBitmap2D.cpp \
 sources/impl/AndroidFontData.cpp \
 sources/impl/AndroidGameSetup.cpp \
 sources/impl/AndroidTexture.cpp \
+sources/impl/PhysicsWorldNewton.cpp \
+sources/impl/CollideShapeNewton.cpp \
+sources/impl/PhysicsBodyNewton.cpp \
+sources/impl/PhysicsMaterialNewton.cpp \
+sources/impl/CharacterBodyNewton.cpp \
+sources/impl/PhysicsControllerNewton.cpp \
+sources/impl/PhysicsJointBallNewton.cpp \
+sources/impl/PhysicsJointHingeNewton.cpp \
+sources/impl/PhysicsJointScrewNewton.cpp \
+sources/impl/PhysicsJointSliderNewton.cpp \
 sources/impl/GLSLProgram.cpp \
 sources/impl/VertexBufferGLES.cpp \
 sources/impl/GLHelpers.cpp \
@@ -216,17 +232,25 @@ sources/system/SerializeClass.cpp \
 sources/system/String.cpp \
 sources/system/System.cpp
 
+LOCAL_ARM_MODE := arm
 LOCAL_CPPFLAGS := -std=c++11 -D_USRDLL -DHPL_EXPORTS
-LOCAL_CPPFLAGS += -g -ggdb -D_DEBUG
-#-DNDEBUG
 LOCAL_CPPFLAGS += -Wno-switch
 #-Wno-extern-c-compat -Wno-undefined-var-template -Wno-delete-non-virtual-dtor -Wno-ignored-attributes
+ifeq ($(APP_OPTIM),debug)
+$(warning debug build)
+LOCAL_CPPFLAGS += -g -ggdb -D_DEBUG
+else
+$(warning release build)
+LOCAL_CPPFLAGS += -DNDEBUG
+endif
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include $(LOCAL_PATH)/dependencies
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 #LOCAL_EXPORT_LDFLAGS :=
 LOCAL_EXPORT_LDLIBS := -lEGL -lGLESv2
 LOCAL_STATIC_LIBRARIES := android_native_app_glue angelscript
+LOCAL_SHARED_LIBRARIES := newton
 LOCAL_THIN_ARCHIVE := true
 include $(BUILD_STATIC_LIBRARY)
 
+include $(LOCAL_PATH)/../newton-dynamics-3.14c/sdk/Android.mk
 $(call import-module,android/native_app_glue)

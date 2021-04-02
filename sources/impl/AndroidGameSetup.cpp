@@ -23,8 +23,8 @@
 #include "impl/LowLevelResourcesAndroid.h"
 //#include "impl/LowLevelSoundOpenAL.h"
 #include "impl/LowLevelSoundNull.h"
-//#include "impl/LowLevelPhysicsNewton.h"
-#include "impl/LowLevelPhysicsNull.h"
+#include "impl/LowLevelPhysicsNewton.h"
+//#include "impl/LowLevelPhysicsNull.h"
 
 namespace hpl
 {
@@ -35,7 +35,7 @@ namespace hpl
 		mpLowLevelInput = hplNew( cLowLevelInputAndroid,(mpLowLevelGraphics) );
 		mpLowLevelResources = hplNew( cLowLevelResourcesAndroid,((cLowLevelGraphicsAndroid *)mpLowLevelGraphics) );
 		mpLowLevelSound	= hplNew( cLowLevelSoundNull,() );
-		mpLowLevelPhysics = hplNew( cLowLevelPhysicsNull,() );//hplNew( cLowLevelPhysicsNewton,() );
+		mpLowLevelPhysics = hplNew( cLowLevelPhysicsNewton,() );//hplNew( cLowLevelPhysicsNull,() );
 
 #ifdef INCLUDE_HAPTIC
 		mpLowLevelHaptic = hplNew( cLowLevelHapticHaptX,() );
