@@ -49,11 +49,13 @@ namespace hpl {
 	cPhysicsWorldNewton::cPhysicsWorldNewton()
 		: iPhysicsWorld()
 	{
-		mpNewtonWorld = NewtonCreate(NULL, NULL);
+		mpNewtonWorld = NewtonCreate();
 
 		if(mpNewtonWorld==NULL){
 			Warning("Couldn't create newton world!\n");
 		}
+
+		//NewtonSetNumberOfSubsteps(mpNewtonWorld, 2);
 
 		/////////////////////////////////
 		//Set default values to properties
@@ -74,6 +76,7 @@ namespace hpl {
 		mpTempDepths = hplNewArray( float,500);
 		mpTempNormals = hplNewArray( float,500 * 3);
 		mpTempPoints = hplNewArray( float,500 * 3);
+		mpTempAttributes = hplNewArray( dLong, 500 * 2);
 	}
 
 	//-----------------------------------------------------------------------
@@ -86,6 +89,7 @@ namespace hpl {
 		hplDeleteArray(mpTempDepths);
 		hplDeleteArray(mpTempNormals);
 		hplDeleteArray(mpTempPoints);
+		hplDeleteArray(mpTempAttributes);
 	}
 
 	//-----------------------------------------------------------------------
@@ -118,6 +122,17 @@ namespace hpl {
 		{
 			cPhysicsBodyNewton* pBody = static_cast<cPhysicsBodyNewton*>(*it);
 			pBody->ClearForces();
+
+			//TODO fix
+			if (cMath::Abs(pBody->GetLocalPosition().y) > 99999) {
+				Warning("PhysicsBody %s out of bounds! Freezing\n",pBody->GetName().c_str());
+				cVector3f pos = pBody->GetLocalPosition();
+				pos.y = -99000;
+				pBody->SetPosition(pos);
+				pBody->SetLinearVelocity(0);
+				pBody->SetAngularVelocity(0);
+				pBody->SetEnabled(false);
+			}
 		}
 	}
 
@@ -140,7 +155,7 @@ namespace hpl {
 		mvWorldSizeMin = avMin;
 		mvWorldSizeMax = avMax;
 
-		NewtonSetWorldSize(mpNewtonWorld,avMin.v, avMax.v);
+		//NewtonSetWorldSize(mpNewtonWorld,avMin.v, avMax.v);
 	}
 
 	cVector3f cPhysicsWorldNewton::GetWorldSizeMin()
@@ -177,17 +192,17 @@ namespace hpl {
 		switch(mAccuracy)
 		{
 		case ePhysicsAccuracy_Low:
-									NewtonSetSolverModel(mpNewtonWorld,8);
-									NewtonSetFrictionModel(mpNewtonWorld,1);
+									NewtonSetSolverIterations(mpNewtonWorld,1);
+									//NewtonSetFrictionModel(mpNewtonWorld,1);
 									Log("SETTING LOW!\n");
 									break;
 		case ePhysicsAccuracy_Medium:
-									NewtonSetSolverModel(mpNewtonWorld,1);
-									NewtonSetFrictionModel(mpNewtonWorld,1);
+									NewtonSetSolverIterations(mpNewtonWorld,4);
+									//NewtonSetFrictionModel(mpNewtonWorld,1);
 									break;
 		case ePhysicsAccuracy_High:
-									NewtonSetSolverModel(mpNewtonWorld,0);
-									NewtonSetFrictionModel(mpNewtonWorld,0);
+									NewtonSetSolverIterations(mpNewtonWorld,8);
+									//NewtonSetFrictionModel(mpNewtonWorld,0);
 									break;
 		}
 	}
@@ -262,8 +277,7 @@ namespace hpl {
 
 	iCollideShape* cPhysicsWorldNewton::CreateMeshShape(iVertexBuffer *apVtxBuffer)
 	{
-		cCollideShapeNewton *pShape = hplNew( cCollideShapeNewton, (eCollideShapeType_Mesh,
-															0, NULL, mpNewtonWorld,this) );
+		cCollideShapeNewton *pShape = hplNew( cCollideShapeNewton, (eCollideShapeType_Mesh, 0, NULL, mpNewtonWorld,this) );
 
 		pShape->CreateFromVertices(apVtxBuffer->GetIndices(),apVtxBuffer->GetIndexNum(),
 									apVtxBuffer->GetArray(eVertexFlag_Position),
@@ -278,8 +292,7 @@ namespace hpl {
 
 	iCollideShape* cPhysicsWorldNewton::CreateCompundShape(tCollideShapeVec &avShapes)
 	{
-		cCollideShapeNewton *pShape = hplNew( cCollideShapeNewton, (eCollideShapeType_Compound,
-															0, NULL, mpNewtonWorld,this) );
+		cCollideShapeNewton *pShape = hplNew( cCollideShapeNewton, (eCollideShapeType_Compound, 0, NULL, mpNewtonWorld,this) );
 		pShape->CreateFromShapeVec(avShapes);
 		mlstShapes.push_back(pShape);
 
@@ -403,8 +416,9 @@ namespace hpl {
 		else return 0;
 	}
 
-	static float RayCastFilterFunc (const NewtonBody* apNewtonBody, const float* apNormalVec,
-								int alCollisionID, void* apUserData, float afIntersetParam)
+	static float RayCastFilterFunc (const NewtonBody* const apNewtonBody, const NewtonCollision* const shapeHit,
+								const dFloat* const hitContact, const dFloat* const apNormalVec,
+								dLong alCollisionID, void* const apUserData, dFloat afIntersetParam)
 	{
 		cPhysicsBodyNewton* pRigidBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apNewtonBody);
 		if(pRigidBody->IsActive()==false) return 1;
@@ -450,9 +464,9 @@ namespace hpl {
 		gpRayCallback = apCallback;
 
 		if(abUsePrefilter)
-			NewtonWorldRayCast(mpNewtonWorld, avOrigin.v, avEnd.v,RayCastFilterFunc, NULL, RayCastPrefilterFunc);
+			NewtonWorldRayCast(mpNewtonWorld, avOrigin.v, avEnd.v,RayCastFilterFunc, NULL, RayCastPrefilterFunc,0);
 		else
-			NewtonWorldRayCast(mpNewtonWorld, avOrigin.v, avEnd.v,RayCastFilterFunc, NULL, NULL);
+			NewtonWorldRayCast(mpNewtonWorld, avOrigin.v, avEnd.v,RayCastFilterFunc, NULL, NULL,0);
 	}
 
 	//-----------------------------------------------------------------------
@@ -492,7 +506,8 @@ namespace hpl {
 					int lNum = NewtonCollisionCollide(mpNewtonWorld, alMaxPoints,
 												pSubShapeA->GetNewtonCollision(), &(mtxTransposeA.m[0][0]),
 												pSubShapeB->GetNewtonCollision(), &(mtxTransposeB.m[0][0]),
-												mpTempPoints, mpTempNormals, mpTempDepths);
+												mpTempPoints, mpTempNormals, mpTempDepths,
+												mpTempAttributes, mpTempAttributes+500, 0);
 					if(lNum<1) continue;
 					if(lNum > alMaxPoints )lNum = alMaxPoints;
 
@@ -517,6 +532,9 @@ namespace hpl {
 						CollPoint.mvPoint.x = mpTempPoints[lVertex+0];
 						CollPoint.mvPoint.y = mpTempPoints[lVertex+1];
 						CollPoint.mvPoint.z = mpTempPoints[lVertex+2];
+
+						//CollPoint.mlAttributeA = mpTempAttributes[i * 2];
+						//CollPoint.mlAttributeB = mpTempAttributes[i * 2 + 1];
 					}
 
 					lCollideDataStart += lNum;
@@ -536,7 +554,8 @@ namespace hpl {
 			int lNum = NewtonCollisionCollide(mpNewtonWorld, alMaxPoints,
 										pNewtonShapeA->GetNewtonCollision(), &(mtxTransposeA.m[0][0]),
 										pNewtonShapeB->GetNewtonCollision(), &(mtxTransposeB.m[0][0]),
-										mpTempPoints, mpTempNormals, mpTempDepths);
+										mpTempPoints, mpTempNormals, mpTempDepths,
+										mpTempAttributes, mpTempAttributes + 500, 0);
 
 			if(lNum<1) return false;
 			if(lNum > alMaxPoints )lNum = alMaxPoints;
@@ -555,6 +574,9 @@ namespace hpl {
 				CollPoint.mvPoint.x = mpTempPoints[lVertex+0];
 				CollPoint.mvPoint.y = mpTempPoints[lVertex+1];
 				CollPoint.mvPoint.z = mpTempPoints[lVertex+2];
+
+				//CollPoint.mlAttributeA = mpTempAttributes[i * 2];
+				//CollPoint.mlAttributeB = mpTempAttributes[i * 2 + 1];
 			}
 
 			aCollideData.mlNumOfPoints = lNum;

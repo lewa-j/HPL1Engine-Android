@@ -372,7 +372,8 @@ namespace hpl {
 
 
 		//Check so the body is not still
-		if(mpParentBody){
+		if(mpParentBody)
+		{
 			if(	m_mtxPrevChild == mpChildBody->GetLocalMatrix() &&
 				m_mtxPrevParent == mpParentBody->GetLocalMatrix())
 			{
@@ -381,7 +382,8 @@ namespace hpl {
 			m_mtxPrevChild = mpChildBody->GetLocalMatrix();
 			m_mtxPrevParent = mpParentBody->GetLocalMatrix();
 		}
-		else {
+		else
+		{
 			if(m_mtxPrevChild == mpChildBody->GetLocalMatrix())
 			{
 				vVel =0;
@@ -447,6 +449,7 @@ namespace hpl {
 					if(mpSound)	{
 						mpSound->SetIsSaved(false);
 						mpSound->FadeIn(3.3f);
+						mpSound->SetPosition(mvPivotPoint);
 					}
 					//Log("Starting!\n");
 				}

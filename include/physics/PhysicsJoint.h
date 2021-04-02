@@ -151,8 +151,8 @@ namespace hpl {
 
 		void RemoveBody(iPhysicsBody *apBody);
 
-		cVector3f GetPivotPoint(){ return mvPivotPoint;}
-		cVector3f GetPinDir(){ return mvPinDir;}
+		const cVector3f& GetPivotPoint(){ return mvPivotPoint;}
+		const cVector3f& GetPinDir(){ return mvPinDir;}
 
 		virtual ePhysicsJointType GetType()=0;
 

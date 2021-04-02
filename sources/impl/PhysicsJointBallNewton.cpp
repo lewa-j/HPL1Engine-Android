@@ -61,6 +61,8 @@ namespace hpl {
 
 	void cPhysicsJointBallNewton::SetConeLimits(const cVector3f& avPin, float afMaxConeAngle, float afMaxTwistAngle)
 	{
+		afMaxConeAngle = 0;
+		afMaxTwistAngle = 0;
 		NewtonBallSetConeLimits(mpNewtonJoint, avPin.v,afMaxConeAngle,afMaxTwistAngle);
 		mvConePin = avPin;
 		mvPinDir = mvConePin;
@@ -83,13 +85,13 @@ namespace hpl {
 	}
 	cVector3f cPhysicsJointBallNewton::GetAngularVelocity()
 	{
-		cVector3f vVel;
+		cVector3f vVel(0);
 		NewtonBallGetJointOmega(mpNewtonJoint,&vVel.v[0]);
 		return vVel;
 	}
 	cVector3f cPhysicsJointBallNewton::GetForce()
 	{
-		cVector3f vForce;
+		cVector3f vForce(0);
 		NewtonBallGetJointForce(mpNewtonJoint,&vForce.v[0]);
 		return vForce;
 	}

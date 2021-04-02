@@ -43,8 +43,8 @@ namespace hpl {
 		cCollideShapeNewton *pShapeNewton = static_cast<cCollideShapeNewton*>(apShape);
 
 		mpNewtonWorld = pWorldNewton->GetNewtonWorld();
-		mpNewtonBody = NewtonCreateBody(pWorldNewton->GetNewtonWorld(),
-										pShapeNewton->GetNewtonCollision());
+		mpNewtonBody = NewtonCreateDynamicBody(pWorldNewton->GetNewtonWorld(),
+										pShapeNewton->GetNewtonCollision(), cMatrixf::Identity.v);
 
 		mpCallback = hplNew( cPhysicsBodyNewtonCallback, () );
 
@@ -53,7 +53,7 @@ namespace hpl {
 		// Setup the callbacks and set this body as user data
 		// This is so that the transform gets updated and
 		// to add gravity, forces and user sink.
-		NewtonBodySetForceAndTorqueCallback(mpNewtonBody,OnUpdateCallback);
+		NewtonBodySetForceAndTorqueCallback(mpNewtonBody, OnUpdateCallback);
 		NewtonBodySetTransformCallback(mpNewtonBody, OnTransformCallback);
 		NewtonBodySetUserData(mpNewtonBody, this);
 
@@ -67,6 +67,8 @@ namespace hpl {
 		mfAutoDisableLinearThreshold = 0.01f;
 		mfAutoDisableAngularThreshold = 0.01f;
 		mlAutoDisableNumSteps = 10;
+
+		ClearForces();
 
 		//Log("Creating newton body '%s' %d\n",msName.c_str(),(size_t)this);
 	}
@@ -83,7 +85,7 @@ namespace hpl {
 	void cPhysicsBodyNewton::DeleteLowLevel()
 	{
 		//Log(" Newton body %d\n", (size_t)mpNewtonBody);
-		NewtonDestroyBody(mpNewtonWorld,mpNewtonBody);
+		NewtonDestroyBody(mpNewtonBody);
 		//Log(" Callback\n");
 		hplDelete(mpCallback);
 	}
@@ -101,7 +103,10 @@ namespace hpl {
 		if(cPhysicsBodyNewton::mbUseCallback==false) return;
 
 		cPhysicsBodyNewton *pRigidBody = static_cast<cPhysicsBodyNewton*>(apEntity);
-		NewtonBodySetMatrix(pRigidBody->mpNewtonBody, &apEntity->GetLocalMatrix().GetTranspose().m[0][0]);
+		//matrix must not contain scaling
+		//cMatrixf mtx = cMath::MatrixOrthogonalize(apEntity->GetLocalMatrix()).GetTranspose();
+		cMatrixf mtx = apEntity->GetLocalMatrix().GetTranspose();
+		NewtonBodySetMatrix(pRigidBody->mpNewtonBody, mtx.m[0]);
 
 		if(pRigidBody->mpNode) pRigidBody->mpNode->SetMatrix(apEntity->GetLocalMatrix());
 	}
@@ -155,6 +160,8 @@ namespace hpl {
 
 	void cPhysicsBodyNewton::SetLinearDamping(float afDamping)
 	{
+		if(afDamping < 0.001f) afDamping = 0.001f;
+
 		NewtonBodySetLinearDamping(mpNewtonBody,afDamping);
 	}
 	float cPhysicsBodyNewton::GetLinearDamping() const
@@ -166,6 +173,8 @@ namespace hpl {
 
 	void cPhysicsBodyNewton::SetAngularDamping(float afDamping)
 	{
+		if(afDamping < 0.001f) afDamping = 0.001f;
+
 		float fDamp[3] = {afDamping,afDamping,afDamping};
 		NewtonBodySetAngularDamping(mpNewtonBody,fDamp);
 	}
@@ -204,7 +213,7 @@ namespace hpl {
 	{
 		float fIxx, fIyy, fIzz, fMass;
 
-		NewtonBodyGetMassMatrix(mpNewtonBody,&fMass, &fIxx, &fIyy, &fIzz);
+		NewtonBodyGetMass(mpNewtonBody,&fMass, &fIxx, &fIyy, &fIzz);
 
 		cMatrixf mtxRot = GetLocalMatrix().GetRotation();
 		cMatrixf mtxTransRot = mtxRot.GetTranspose();
@@ -300,41 +309,38 @@ namespace hpl {
 														vMassCentre);
 
 			cVector3f vWorldPosition = GetWorldPosition() + vCentreOffset;
-			NewtonAddBodyImpulse(mpNewtonBody, avImpulse.v, vWorldPosition.v);
+			NewtonBodyAddImpulse(mpNewtonBody, avImpulse.v, vWorldPosition.v, mpWorld->GetMaxTimeStep());
 		}
 		else
 		{
-			NewtonAddBodyImpulse(mpNewtonBody, avImpulse.v, GetWorldPosition().v);
+			NewtonBodyAddImpulse(mpNewtonBody, avImpulse.v, GetWorldPosition().v, mpWorld->GetMaxTimeStep());
 		}
 	}
 	void cPhysicsBodyNewton::AddImpulseAtPosition(const cVector3f &avImpulse, const cVector3f &avPos)
 	{
-		NewtonAddBodyImpulse(mpNewtonBody, avImpulse.v, avPos.v);
+		NewtonBodyAddImpulse(mpNewtonBody, avImpulse.v, avPos.v, mpWorld->GetMaxTimeStep());
 	}
 
 	//-----------------------------------------------------------------------
 
 	void cPhysicsBodyNewton::SetEnabled(bool abEnabled)
 	{
-		if (abEnabled)
-			NewtonWorldUnfreezeBody(mpNewtonWorld, mpNewtonBody);
-		else
-			NewtonWorldFreezeBody(mpNewtonWorld, mpNewtonBody);
+		NewtonBodySetFreezeState(mpNewtonBody, !abEnabled);
 	}
 	bool cPhysicsBodyNewton::GetEnabled() const
 	{
-		return NewtonBodyGetSleepingState(mpNewtonBody) ==0?false: true;
+		return NewtonBodyGetSleepState(mpNewtonBody) == 0 ? false : true;
 	}
 
 	//-----------------------------------------------------------------------
 
 	void cPhysicsBodyNewton::SetAutoDisable(bool abEnabled)
 	{
-		NewtonBodySetAutoFreeze(mpNewtonBody, abEnabled ? 1 : 0);
+		NewtonBodySetAutoSleep(mpNewtonBody, abEnabled ? 1 : 0);
 	}
 	bool cPhysicsBodyNewton::GetAutoDisable() const
 	{
-		return NewtonBodyGetAutoFreeze(mpNewtonBody) == 0 ? false : true;
+		return NewtonBodyGetAutoSleep(mpNewtonBody) == 0 ? false : true;
 	}
 
 	//-----------------------------------------------------------------------
@@ -342,8 +348,8 @@ namespace hpl {
 	void cPhysicsBodyNewton::SetAutoDisableLinearThreshold(float afThresold)
 	{
 		mfAutoDisableLinearThreshold = afThresold;
-		NewtonBodySetFreezeTreshold(mpNewtonBody, mfAutoDisableLinearThreshold,
-			mfAutoDisableAngularThreshold, mlAutoDisableNumSteps);
+		/*NewtonBodySetFreezeTreshold(mpNewtonBody, mfAutoDisableLinearThreshold,
+			mfAutoDisableAngularThreshold, mlAutoDisableNumSteps);*/
 	}
 	float cPhysicsBodyNewton::GetAutoDisableLinearThreshold() const
 	{
@@ -355,8 +361,8 @@ namespace hpl {
 	void cPhysicsBodyNewton::SetAutoDisableAngularThreshold(float afThresold)
 	{
 		mfAutoDisableAngularThreshold = afThresold;
-		NewtonBodySetFreezeTreshold(mpNewtonBody, mfAutoDisableLinearThreshold,
-			mfAutoDisableAngularThreshold, mlAutoDisableNumSteps);
+		/*NewtonBodySetFreezeTreshold(mpNewtonBody, mfAutoDisableLinearThreshold,
+			mfAutoDisableAngularThreshold, mlAutoDisableNumSteps);*/
 	}
 	float cPhysicsBodyNewton::GetAutoDisableAngularThreshold() const
 	{
@@ -368,8 +374,8 @@ namespace hpl {
 	void cPhysicsBodyNewton::SetAutoDisableNumSteps(int anNum)
 	{
 		mlAutoDisableNumSteps = anNum;
-		NewtonBodySetFreezeTreshold(mpNewtonBody, mfAutoDisableLinearThreshold,
-			mfAutoDisableAngularThreshold, mlAutoDisableNumSteps);
+		/*NewtonBodySetFreezeTreshold(mpNewtonBody, mfAutoDisableLinearThreshold,
+			mfAutoDisableAngularThreshold, mlAutoDisableNumSteps);*/
 	}
 
 	int cPhysicsBodyNewton::GetAutoDisableNumSteps() const
@@ -408,7 +414,7 @@ namespace hpl {
 
 	////////////////////////////////////////////
 
-	static void RenderDebugPolygon(const NewtonBody* apNewtonBody,
+	static void RenderDebugPolygon(void* const userData,
 		int alVertexCount, const dFloat* apFaceVertex, int alId)
 	{
 		int i;
@@ -431,7 +437,7 @@ namespace hpl {
 	{
 		gpLowLevelGraphics = apLowLevel;
 		gDebugColor = aColor;
-		NewtonBodyForEachPolygonDo (mpNewtonBody, RenderDebugPolygon);
+		NewtonCollisionForEachPolygonDo(NewtonBodyGetCollision(mpNewtonBody), m_mtxLocalTransform.GetTranspose().v, RenderDebugPolygon,nullptr);
 	}
 
 	//-----------------------------------------------------------------------
@@ -452,7 +458,7 @@ namespace hpl {
 	//-----------------------------------------------------------------------
 
 
-	void cPhysicsBodyNewton::OnTransformCallback(const NewtonBody* apBody, const dFloat* apMatrix)
+	void cPhysicsBodyNewton::OnTransformCallback(const NewtonBody* apBody, const dFloat* apMatrix, int alThreadIndex)
 	{
 		cPhysicsBodyNewton* pRigidBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apBody);
 
@@ -467,33 +473,21 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	//callback for buoyancy
-	static cPlanef gSurfacePlane;
-	static int BuoyancyPlaneCallback (const int alCollisionID, void *apContext,
-									const float* afGlobalSpaceMatrix, float* afGlobalSpacePlane)
+	void cPhysicsBodyNewton::OnUpdateCallback(const NewtonBody* apBody, dFloat afTimestep, int alThreadIndex)
 	{
-		afGlobalSpacePlane[0] = gSurfacePlane.a;
-		afGlobalSpacePlane[1] = gSurfacePlane.b;
-		afGlobalSpacePlane[2] = gSurfacePlane.c;
-		afGlobalSpacePlane[3] = gSurfacePlane.d;
-		return 1;
-	}
-
-	void cPhysicsBodyNewton::OnUpdateCallback(const NewtonBody* apBody)
-	{
-		float fMass;
-		float fX,fY,fZ;
-
 		cPhysicsBodyNewton* pRigidBody = (cPhysicsBodyNewton*) NewtonBodyGetUserData(apBody);
 
-		if(pRigidBody->IsActive()==false) return;
-
-		cVector3f vGravity = pRigidBody->mpWorld->GetGravity();
+		if(pRigidBody->IsActive()==false)
+			return;
 
 		//Create some gravity
 		if (pRigidBody->mbGravity)
 		{
-			NewtonBodyGetMassMatrix(apBody, &fMass, &fX, &fY, &fZ);
+			cVector3f vGravity = pRigidBody->mpWorld->GetGravity();
+			float fMass;
+			//float fX,fY,fZ;
+			//NewtonBodyGetMass(apBody, &fMass, &fX, &fY, &fZ);
+			fMass = pRigidBody->mfMass;
 
 			float fForce[3] = { fMass * vGravity.x, fMass * vGravity.y, fMass * vGravity.z};
 
@@ -503,13 +497,46 @@ namespace hpl {
 		// Create Buoyancy
 		if (pRigidBody->mBuoyancy.mbActive)
 		{
-			gSurfacePlane = pRigidBody->mBuoyancy.mSurface;
-			NewtonBodyAddBuoyancyForce( apBody,
+			cPlanef surfacePlane = pRigidBody->mBuoyancy.mSurface;
+			/*NewtonBodyAddBuoyancyForce( apBody,
 										pRigidBody->mBuoyancy.mfDensity,
 										pRigidBody->mBuoyancy.mfLinearViscosity,
 										pRigidBody->mBuoyancy.mfAngularViscosity,
 										vGravity.v, BuoyancyPlaneCallback,
-										pRigidBody);
+										pRigidBody);*/
+			cMatrixf matrix;
+			NewtonBodyGetMatrix(apBody, matrix.v);
+			NewtonCollision* collision = NewtonBodyGetCollision(apBody);
+			cVector3f centerOfBuoyancy;
+			dFloat volume = NewtonConvexCollisionCalculateBuoyancyVolume(collision, matrix.v, &surfacePlane.a, centerOfBuoyancy.v);
+			if (volume > 0.0f)
+			{
+				// if some part of the shape is under water, calculate the buoyancy force base on
+				// Archimedes's buoyancy principle, which is the buoyancy force is equal to the
+				// weight of the fluid displaced by the volume under water.
+				cVector3f cog(0.0f);
+
+				dFloat displacedMass = pRigidBody->mBuoyancy.mfDensity * volume;
+				NewtonBodyGetCentreOfMass(apBody, cog.v);
+				centerOfBuoyancy -= cMath::MatrixMul(matrix, cog);
+
+				// now with the mass and center of mass of the volume under water, calculate buoyancy force and torque
+				cVector3f force(dFloat(0.0f), dFloat(-9.8 * displacedMass), dFloat(0.0f));
+				cVector3f torque(cMath::Vector3Cross(centerOfBuoyancy, force));
+
+				NewtonBodyAddForce(apBody, force.v);
+				NewtonBodyAddTorque(apBody, torque.v);
+
+				// apply a fake viscous drag to damp the under water motion
+				cVector3f omega(0.0f);
+				cVector3f veloc(0.0f);
+				NewtonBodyGetOmega(apBody, omega.v);
+				NewtonBodyGetVelocity(apBody, veloc.v);
+				omega = omega * pRigidBody->mBuoyancy.mfAngularViscosity;
+				veloc = veloc * pRigidBody->mBuoyancy.mfLinearViscosity;
+				NewtonBodySetOmega(apBody, omega.v);
+				NewtonBodySetVelocity(apBody, veloc.v);
+			}
 		}
 
 		// Add forces from calls to Addforce(..), etc

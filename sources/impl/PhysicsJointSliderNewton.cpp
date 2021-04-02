@@ -33,7 +33,7 @@ namespace hpl {
 
 	cPhysicsJointSliderNewton::cPhysicsJointSliderNewton(const tString &asName,
 		iPhysicsBody *apParentBody, iPhysicsBody *apChildBody,
-		iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f avPinDir)
+		iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f& avPinDir)
 		: iPhysicsJointNewton<iPhysicsJointSlider>(asName,apParentBody,apChildBody,apWorld,avPivotPoint)
 	{
 		mvPin = avPinDir;
@@ -122,6 +122,8 @@ namespace hpl {
 
 	unsigned cPhysicsJointSliderNewton::LimitCallback(const NewtonJoint* pSlider, NewtonHingeSliderUpdateDesc* pDesc)
 	{
+		if (pDesc->m_timestep == 0)
+			return 0;
 		cPhysicsJointSliderNewton* pSliderJoint = (cPhysicsJointSliderNewton*)NewtonJointGetUserData(pSlider);
 
 		//pSliderJoint->OnPhysicsUpdate();

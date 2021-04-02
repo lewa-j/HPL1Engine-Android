@@ -422,6 +422,8 @@ namespace hpl {
 		 */
 		static cMatrixf MatrixInverse(const cMatrixf &a_mtxA);
 
+		static cMatrixf MatrixOrthogonalize(const cMatrixf& aMtx);
+
 		/**
 		 * Converts the matrix into Euler angles, XYZ only supported at the moment.
 		 * \param &a_mtxA

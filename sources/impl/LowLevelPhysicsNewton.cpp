@@ -16,7 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifdef _DEBUG
+#pragma comment(lib, "newton_d.lib")
+#else
 #pragma comment(lib, "newton.lib")
+#endif
 
 #include "impl/LowLevelPhysicsNewton.h"
 

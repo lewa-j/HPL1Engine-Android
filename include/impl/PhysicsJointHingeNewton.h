@@ -28,7 +28,7 @@ namespace hpl {
 	{
 	public:
 		cPhysicsJointHingeNewton(const tString &asName, iPhysicsBody *apParentBody, iPhysicsBody *apChildBody,
-			iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f avPinDir);
+			iPhysicsWorld *apWorld,const cVector3f &avPivotPoint, const cVector3f &avPinDir);
 		~cPhysicsJointHingeNewton();
 
 		void SetMaxAngle(float afAngle);
@@ -44,8 +44,17 @@ namespace hpl {
 		float GetAngle();
 
 	private:
+		cMatrixf m_mtxLocalPinPivot0;
+		cMatrixf m_mtxLocalPinPivot1;
+
 		float mfPreviousAngle;
-		static unsigned LimitCallback(const NewtonJoint* pHinge, NewtonHingeSliderUpdateDesc* pDesc);
+		int mlMaxDOF;
+
+		void CalculateGlobalMatrix(const cMatrixf& a_mtxLocalMatrix0, const cMatrixf& a_mtxLocalMatrix1, cMatrixf& a_mtxMatrix0, cMatrixf& a_mtxMatrix1);
+		void CalculateLocalMatrix(const cMatrixf& a_mtxPinsAndPivotFrame, cMatrixf& a_mtxLocalMatrix0, cMatrixf& a_mtxLocalMatrix1);
+		void SubmitConstraints(dFloat afTimestep, int alThreadIndex);
+		static void StaticSubmitConstraints(const NewtonJoint* apJoint, dFloat afTimestep, int alThreadIndex);
+		//static unsigned LimitCallback(const NewtonJoint* pHinge, NewtonHingeSliderUpdateDesc* pDesc);
 	};
 };
 #endif // HPL_PHYSICS_JOINT_HINGE_NEWTON_H
