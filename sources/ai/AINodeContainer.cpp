@@ -463,7 +463,7 @@ namespace hpl {
 			cVector2f vLocalPos(pNode->GetPosition().x, pNode->GetPosition().z);
 			vLocalPos -= mvMinGridPos;
 
-			 cVector2l vGridPos(0);
+			cVector2l vGridPos(0);
 			//Have checks so we are sure there is no division by zero.
 			if(mvGridSize.x >0)
 				vGridPos.x = (int)(vLocalPos.x / mvGridSize.x);

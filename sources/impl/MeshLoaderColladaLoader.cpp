@@ -100,7 +100,7 @@ namespace hpl {
 		TiXmlDocument* pXmlDoc = hplNew(TiXmlDocument, (asFile.c_str()) );
 		if(pXmlDoc->LoadFile()==false)
 		{
-			Error("Couldn't load Collada XML file '%s'!\n",asFile.c_str());
+			Error("Couldn't load Collada XML file '%s'! Error: %s\n",asFile.c_str(),pXmlDoc->ErrorDesc());
 			hplDelete(pXmlDoc);
 			return false;
 		}
