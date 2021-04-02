@@ -448,7 +448,8 @@ namespace hpl {
 				if(pLoader)
 				{
 					pEntity = pLoader->Load(asName, pRootElem,a_mtxTransform, this,sFileName, abLoadReferences);
-					pEntity->SetSourceFile(sFileName);
+					if(pEntity)
+						pEntity->SetSourceFile(sFileName);
 				}
 				else
 				{
