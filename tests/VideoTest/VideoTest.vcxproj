@@ -98,6 +98,11 @@
     <ClInclude Include="..\Common\SimpleCamera.h" />
     <ClInclude Include="VideoTest.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HPL.vcxproj">
+      <Project>{0780dec5-a930-4721-9364-17a49d2a4e60}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

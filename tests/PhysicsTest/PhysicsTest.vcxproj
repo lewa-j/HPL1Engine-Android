@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C6E72C29-38A3-4897-AA05-E87B0323AA71}</ProjectGuid>
+    <ProjectGuid>{6BF2F8B9-5AD1-42BE-A433-50005598DF36}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -98,6 +98,11 @@
   <ItemGroup>
     <ClInclude Include="..\Common\SimpleCamera.h" />
     <ClInclude Include="PhysicsTest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\HPL.vcxproj">
+      <Project>{0780dec5-a930-4721-9364-17a49d2a4e60}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
