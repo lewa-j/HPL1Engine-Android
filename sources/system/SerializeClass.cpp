@@ -873,85 +873,85 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	void cSerializeClass::LoadArray(TiXmlElement *apElement, iSerializable* apData,cSerializeSavedClass *apClass)
+	void cSerializeClass::LoadArray(TiXmlElement *apElement, iSerializable *apData, cSerializeSavedClass *apClass)
 	{
-		tString sName = cString::ToString(apElement->Attribute("name"),"");
-		tString sClassType = cString::ToString(apElement->Attribute("class_type"),"");
-		eSerializeType type = cString::ToInt(apElement->Attribute("type"),eSerializeMainType_NULL);
-		size_t lSize = cString::ToInt(apElement->Attribute("size"),0);
+		tString sName = cString::ToString(apElement->Attribute("name"), "");
+		tString sClassType = cString::ToString(apElement->Attribute("class_type"), "");
+		eSerializeType type = cString::ToInt(apElement->Attribute("type"), eSerializeMainType_NULL);
+		size_t lSize = cString::ToInt(apElement->Attribute("size"), 0);
 
-		if(gbLog) {
-			Log("%s Begin Saving array: '%s' classtype: %s type %d\n",GetTabs(),sName.c_str(),sClassType.c_str(),type);
+		if (gbLog) {
+			Log("%s Begin Saving array: '%s' classtype: %s type %d\n", GetTabs(), sName.c_str(), sClassType.c_str(), type);
 			++glTabs;
 		}
 
-		cSerializeMemberField *pField = GetMemberField(sName,apClass);
-		if(pField==NULL) return;
+		cSerializeMemberField *pField = GetMemberField(sName, apClass);
+		if (pField == NULL) return;
 
-		void *pArrayData = ValuePointer(apData,pField->mlOffset);
+		void *pArrayData = ValuePointer(apData, pField->mlOffset);
 
 		// CLASS ////////////////////////////////////////////
-		if(pField->mType == eSerializeType_Class)
+		if (pField->mType == eSerializeType_Class)
 		{
-			cSerializeSavedClass *pClass = GetClass(((iSerializable*)pArrayData)->Serialize_GetTopClass());
+			cSerializeSavedClass *pClass = GetClass(((iSerializable *)pArrayData)->Serialize_GetTopClass());
 			size_t lClassSize = pClass->mlSize;
 
-			size_t lCount=0;
+			size_t lCount = 0;
 			TiXmlElement *pVarElem = apElement->FirstChildElement();
-			for(; pVarElem != NULL; pVarElem = pVarElem->NextSiblingElement(),++lCount)
+			for (; pVarElem != NULL; pVarElem = pVarElem->NextSiblingElement(), ++lCount)
 			{
 				size_t lOffset = lCount * lClassSize;
 
-				LoadFromElement( (iSerializable*)ValuePointer(pArrayData,lOffset),pVarElem);
+				LoadFromElement((iSerializable *)ValuePointer(pArrayData, lOffset), pVarElem);
 			}
 		}
 		// CLASS POINTER ////////////////////////////////////////////
-		else if(pField->mType == eSerializeType_ClassPointer)
+		else if (pField->mType == eSerializeType_ClassPointer)
 		{
-			size_t lCount=0;
+			size_t lCount = 0;
 			TiXmlElement *pVarElem = apElement->FirstChildElement();
-			for(; pVarElem != NULL; pVarElem = pVarElem->NextSiblingElement(),++lCount)
+			for (; pVarElem != NULL; pVarElem = pVarElem->NextSiblingElement(), ++lCount)
 			{
-				size_t lOffset = sizeof(void*) * lCount;
-				iSerializable **pValuePtr = (iSerializable**)ValuePointer(pArrayData,lOffset);
+				size_t lOffset = sizeof(void *) * lCount;
+				iSerializable **pValuePtr = (iSerializable **)ValuePointer(pArrayData, lOffset);
 
-				tString sClassType = cString::ToString(pVarElem->Attribute("type"),"");
+				tString sClassType = cString::ToString(pVarElem->Attribute("type"), "");
 				cSerializeSavedClass *pSavedClass = GetClass(sClassType);
-				if(pSavedClass==NULL) continue;
+				if (pSavedClass == NULL) continue;
 
-				if(gbLog) Log("%s Element Class pointer: %s\n",GetTabs(),sClassType.c_str());
+				if (gbLog) Log("%s Element Class pointer: %s\n", GetTabs(), sClassType.c_str());
 
 				//If NULL, then just create else delete and then create-
 				//virtual pointers here...yes yes...
-				if(*pValuePtr == NULL) {
+				if (*pValuePtr == NULL) {
 					*pValuePtr = pSavedClass->mpCreateFunc();
 				}
 				else {
-					hplDelete(pValuePtr);
+					hplDelete(*pValuePtr);
 					*pValuePtr = pSavedClass->mpCreateFunc();
 				}
 
-				LoadFromElement(*pValuePtr ,pVarElem);
+				LoadFromElement(*pValuePtr, pVarElem);
 			}
 		}
 		// VARIABLE /////////////////////////////////////////
 		else
 		{
-			size_t lCount=0;
+			size_t lCount = 0;
 			TiXmlElement *pVarElem = apElement->FirstChildElement();
-			for(; pVarElem != NULL; pVarElem = pVarElem->NextSiblingElement(),++lCount)
+			for (; pVarElem != NULL; pVarElem = pVarElem->NextSiblingElement(), ++lCount)
 			{
-				const char* sVal = pVarElem->Attribute("val");
+				const char *sVal = pVarElem->Attribute("val");
 
-				if(gbLog) Log("%s Element variable val '%s'\n",GetTabs(),sVal);
+				if (gbLog) Log("%s Element variable val '%s'\n", GetTabs(), sVal);
 
-				StringToValue(pArrayData,lCount * SizeOfType(type),type,sVal);
+				StringToValue(pArrayData, lCount * SizeOfType(type), type, sVal);
 			}
 		}
 
-		if(gbLog) {
+		if (gbLog) {
 			--glTabs;
-			Log("%s End Saving array: %s\n",GetTabs(),sName.c_str());
+			Log("%s End Saving array: %s\n", GetTabs(), sName.c_str());
 		}
 	}
 
