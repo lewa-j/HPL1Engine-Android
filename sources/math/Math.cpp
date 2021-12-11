@@ -1135,6 +1135,25 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	cMatrixf cMath::MatrixOrthogonalize(const cMatrixf& aMtx)
+	{
+		cVector3f x = Vector3Normalize(aMtx.GetRight());
+		cVector3f z = Vector3Normalize(aMtx.GetForward());
+		x = Vector3Normalize(x - (z * Vector3Dot(x, z)));
+		cVector3f y = Vector3Cross(z, x) * aMtx.GetUp().Length();
+		x = x * aMtx.GetRight().Length();
+		z = z * aMtx.GetForward().Length();
+
+		cMatrixf mtx = aMtx;
+		mtx.SetRight(x);
+		mtx.SetUp(y);
+		mtx.SetForward(z);
+
+		return mtx;
+	}
+
+	//-----------------------------------------------------------------------
+
 	cVector3f cMath::MatrixToEulerAngles(const cMatrixf &a_mtxA, eEulerRotationOrder aOrder)
 	{
 		cVector3f vAngles;

@@ -219,6 +219,8 @@ namespace hpl {
 		if(mbDisableAfterSimulation)
 		{
 			mbDisableAfterSimulation = false;
+			SetAngularVelocity(0);
+			SetLinearVelocity(0);
 			SetEnabled(false);
 		}
 
@@ -255,7 +257,8 @@ namespace hpl {
 
 		//////////////////////////////////
 		//Update rolling sound
-		if(mpMaterial) mpMaterial->GetSurfaceData()->UpdateRollEffect(this);
+		if(mpMaterial && mpMaterial->GetSurfaceData())
+			mpMaterial->GetSurfaceData()->UpdateRollEffect(this);
 	}
 
 	//-----------------------------------------------------------------------

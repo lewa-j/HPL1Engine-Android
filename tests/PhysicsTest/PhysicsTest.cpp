@@ -10,8 +10,6 @@
 
 #include "../Common/SimpleCamera.h"
 
-#pragma comment(lib, "HPL.lib")
-
 using namespace hpl;
 
 cGame *gpGame=NULL;

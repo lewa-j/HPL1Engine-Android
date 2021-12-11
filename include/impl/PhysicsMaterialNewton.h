@@ -30,6 +30,18 @@ namespace hpl {
 
 	class iPhysicsBody;
 	class cPhysicsContactData;
+	//------------------------------------------
+
+	class cNewtonLockBodyUntilReturn
+	{
+	public:
+		cNewtonLockBodyUntilReturn(const NewtonBody* apNewtonBody, int alThreadIndex);
+		~cNewtonLockBodyUntilReturn();
+	private:
+		const NewtonBody* mpNewtonBody;
+	};
+
+	//------------------------------------------
 
 	class cPhysicsMaterialNewton : public iPhysicsMaterial
 	{
@@ -55,16 +67,8 @@ namespace hpl {
 	private:
 		float Combine(ePhysicsMaterialCombMode aMode, float afX, float afY);
 
-		static int BeginContactCallback(const NewtonMaterial* material,
-										const NewtonBody* apBody1, const NewtonBody* apBody2);
-		static int ProcessContactCallback(const NewtonMaterial* apMaterial,
-											const NewtonContact* apContact);
-		static void EndContactCallback(const NewtonMaterial* apMaterial);
-
-		static iPhysicsBody *mpContactBody1;
-		static iPhysicsBody *mpContactBody2;
-		static cPhysicsContactData mContactData;
-		static int mlContactNum;
+		static int OnAABBOverlapCallback(const NewtonJoint* const apContact, dFloat afTimestep, int alThreadIndex);
+		static void ProcessContactCallback(const NewtonJoint* const apContact, dFloat afTimestep, int alThreadIndex);
 
 		NewtonWorld *mpNewtonWorld;
 
