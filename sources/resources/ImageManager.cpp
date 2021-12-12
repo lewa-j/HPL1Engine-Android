@@ -62,12 +62,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cImageManager::Create(const tString& asName)
-	{
-		return CreateInFrame(asName, -1);
-	}
-	//-----------------------------------------------------------------------
-
 	iResourceBase* cImageManager::CreateInFrame(const tString& asName, int alFrameHandle)
 	{
 		cResourceImage *pImage = NULL;

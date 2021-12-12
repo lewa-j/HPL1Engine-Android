@@ -17,25 +17,32 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/GPUProgram.h"
+#include "resources/Resources.h"
+#include "resources/GpuShaderManager.h"
 
 namespace hpl{
 
-	bool iGpuProgram::mbDebugInfo=false;
+	bool iGpuProgram::mbDebugInfo = false;
 
-	//////////////////////////////////////////////////////////////////////////
-	// CONSTRUCTORS
-	//////////////////////////////////////////////////////////////////////////
+	iGpuProgram::iGpuProgram(const tString &asName, eGpuProgramFormat aFormat)
+	{
+		msName = asName;
+		mProgramFormat = aFormat;
+	}
 
-	//-----------------------------------------------------------------------
+	iGpuProgram::~iGpuProgram() 
+	{
+		if (mbAutoDestroyShaders && mpResources)
+		{
+			for (int i = 0; i < 2; ++i)
+			{
+				if (mpShader[i]) mpResources->GetGpuShaderManager()->Destroy(mpShader[i]);
+			}
+		}
+	}
 
-	//-----------------------------------------------------------------------
-
-	//////////////////////////////////////////////////////////////////////////
-	// PUBLIC METHODS
-	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
-
-	//-----------------------------------------------------------------------
-
+	void iGpuProgram::SetShader(eGpuShaderType aType, iGpuShader *apShader)
+	{
+		mpShader[static_cast<int>(aType)] = apShader;
+	}
 }

@@ -100,13 +100,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cMaterialManager::Create(const tString& asName)
-	{
-		return CreateMaterial(asName);
-	}
-
-	//-----------------------------------------------------------------------
-
 	void cMaterialManager::Update(float afTimeStep)
 	{
 		tResourceHandleMapIt it = m_mapHandleResources.begin();
@@ -331,7 +324,8 @@ namespace hpl {
 				}
 				else if(target == eTextureTarget_1D)
 				{
-					pTex = mpResources->GetTextureManager()->Create1D(sFile,bMipMaps,bCompress,
+					// HACKHACK create 2d wvwn if 1d requesed
+					pTex = mpResources->GetTextureManager()->Create2D(sFile,bMipMaps,bCompress,
 																			eTextureType_Normal,
 																			mlTextureSizeLevel);
 				}

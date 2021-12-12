@@ -41,23 +41,16 @@ namespace hpl {
 	public:
 		iMaterial_BaseLight(const tString& asLightVertexProgram,
 							const tString& asLightFragmentProgram,
-
-			const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-
+			const tString &asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
 		virtual ~iMaterial_BaseLight();
 
 		tTextureTypeList GetTextureTypes();
 
 		bool UsesType(eMaterialRenderType aType);
 
-		iGpuProgram* GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
+		iGpuProgram* GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight) override;
 		bool VertexProgramUsesLight(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight);
-
-		iGpuProgram* GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		iMaterialProgramSetup * GetFragmentProgramSetup(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 
 		eMaterialAlphaMode GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
@@ -92,11 +85,10 @@ namespace hpl {
 		bool mbUseNormalMap;
 		bool mbUseColorSpecular;
 
-		iGpuProgram* mpSimpleFP;
-		iGpuProgram* mpAmbientFP;
+		iGpuProgram* mpSimpleP;
+		iGpuProgram* mpAmbientP;
 
-		iGpuProgram* mvVtxPrograms[eBaseLightProgram_LastEnum];
-		iGpuProgram* mvFragPrograms[eBaseLightProgram_LastEnum];
+		iGpuProgram* mvPrograms[eBaseLightProgram_LastEnum];
 	};
 
 };

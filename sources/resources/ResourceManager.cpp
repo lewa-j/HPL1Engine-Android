@@ -24,6 +24,7 @@
 #include "resources/ResourceBase.h"
 
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 
 #include <algorithm>
 
@@ -184,7 +185,7 @@ namespace hpl {
 
 	void iResourceManager::BeginLoad(const tString& asFile)
 	{
-		mlTimeStart = GetApplicationTime();
+		mlTimeStart = cPlatform::GetApplicationTime();
 
 		//Log("Begin resource: %s\n",asFile.c_str());
 
@@ -235,7 +236,7 @@ namespace hpl {
 
 		if(abLog && iResourceBase::GetLogCreateAndDelete())
 		{
-			unsigned long lTime = GetApplicationTime() - mlTimeStart;
+			unsigned long lTime = cPlatform::GetApplicationTime() - mlTimeStart;
 			Log("%sLoaded resource %s in %d ms\n",GetTabs().c_str(), apResource->GetName().c_str(),lTime);
 			apResource->SetLogDestruction(true);
 		}

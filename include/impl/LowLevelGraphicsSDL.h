@@ -21,9 +21,6 @@
 
 #include "impl/platform/gl.h"
 
-#include <Cg/cg.h>
-#include <Cg/cgGL.h>
-
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
 // Unix's X11 Defines DestoryAll which collides with methods
@@ -80,7 +77,8 @@ namespace hpl
 
 		iPixelFormat* GetPixelFormat();
 
-		iGpuProgram* CreateGpuProgram(const tString& asName, eGpuProgramType aType);
+		iGpuProgram *CreateGpuProgram(const tString& asName) override;
+		iGpuShader *CreateGpuShader(const tString &asName, eGpuShaderType aType) override;
 
 		void SaveScreenToBMP(const tString& asFile);
 
@@ -90,7 +88,8 @@ namespace hpl
 		void PopMatrix(eMatrix aMtxType);
 		void SetIdentityMatrix(eMatrix aMtxType);
 
-		void SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA);
+		void SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA) override;
+		cMatrixf GetMatrix(eMatrix aMtxType) override;
 
 		void TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos);
 		void RotateMatrix(eMatrix aMtxType, const cVector3f &avRot);
@@ -175,6 +174,17 @@ namespace hpl
 		void DrawQuad(const tVertexVec &avVtx,const float afZ,const cColor &aCol);
 		void DrawQuadMultiTex(const tVertexVec &avVtx,const tVector3fVec &avExtraUvs);
 
+		//PRIMITIVES
+		void DrawLine(const cVector3f& avBegin, const cVector3f& avEnd, cColor aCol);
+		void DrawBoxMaxMin(const cVector3f& avMax, const cVector3f& avMin, cColor aCol);
+		void DrawSphere(const cVector3f& avPos, float afRadius, cColor aCol);
+
+		void DrawLine2D(const cVector2f& avBegin, const cVector2f& avEnd, float afZ, cColor aCol);
+		void DrawLineRect2D(const cRect2f& aRect, float afZ, cColor aCol);
+		void DrawLineCircle2D(const cVector2f& avCenter, float afRadius, float afZ, cColor aCol);
+
+		void DrawFilledRect2D(const cRect2f& aRect, float afZ, cColor aCol);
+
 		void AddVertexToBatch(const cVertex *apVtx);
 		void AddVertexToBatch(const cVertex *apVtx, const cVector3f* avTransform);
 		void AddVertexToBatch(const cVertex *apVtx, const cMatrixf* aMtx);
@@ -194,16 +204,6 @@ namespace hpl
 		void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true);
 		void ClearBatch();
 
-		//PRIMITIVES
-		void DrawLine(const cVector3f& avBegin, const cVector3f& avEnd, cColor aCol);
-		void DrawBoxMaxMin(const cVector3f& avMax, const cVector3f& avMin, cColor aCol);
-		void DrawSphere(const cVector3f& avPos, float afRadius, cColor aCol);
-
-		void DrawLine2D(const cVector2f& avBegin, const cVector2f& avEnd, float afZ, cColor aCol);
-		void DrawLineRect2D(const cRect2f& aRect, float afZ, cColor aCol);
-		void DrawLineCircle2D(const cVector2f& avCenter, float afRadius, float afZ, cColor aCol);
-
-		void DrawFilledRect2D(const cRect2f& aRect, float afZ, cColor aCol);
 
 		//FRAMEBUFFER
 		void CopyContextToTexure(iTexture* apTex, const cVector2l &avPos,
@@ -218,8 +218,6 @@ namespace hpl
 		///// SDL Specific ////////////////////////////
 
 		iBitmap2D* CreateBitmap2DFromSurface(SDL_Surface* apSurface,const tString& asType);
-
-		CGcontext GetGC_Context(){ return mCG_Context;}
 
 		void SetupGL();
 
@@ -277,15 +275,8 @@ namespace hpl
 		//Texture
 		iTexture* mpCurrentTexture[MAX_TEXTUREUNITS];
 
-		//CG Compiler Variables
-		CGcontext mCG_Context;
-
 		//Multisample
 		void CheckMultisampleCaps();
-
-		//CG Helper
-		void InitCG();
-		void ExitCG();
 
 		//Batch helper
 		void SetUpBatchArrays();

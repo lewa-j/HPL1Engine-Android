@@ -20,18 +20,15 @@
 #define HPL_MATERIAL_DIFFUSE_ALPHA2D_H
 
 #include "graphics/Material.h"
-
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 
 	class cMaterial_DiffuseAlpha2D : public iMaterial
 	{
 	public:
-		cMaterial_DiffuseAlpha2D(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_DiffuseAlpha2D();
+		cMaterial_DiffuseAlpha2D(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_DiffuseAlpha2D();
 
 		void Compile();
 		bool StartRendering(eMaterialRenderType mType,iCamera* apCam,iLight *pLight);
@@ -50,18 +47,16 @@ namespace hpl {
 	class cMaterialType_DiffuseAlpha2D : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_DiffuseAlpha2D(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override {
 			return cString::ToLowerCase(asName)=="diffalpha2d";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
 		{
-			return hplNew( cMaterial_DiffuseAlpha2D, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_DiffuseAlpha2D, (asName, apGraphics, apResources, this, aPicture) );
 		}
 	};
 

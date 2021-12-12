@@ -41,7 +41,6 @@ namespace hpl {
 		cTextureManager(cGraphics* apGraphics,cResources *apResources);
 		~cTextureManager();
 
-		iResourceBase* Create(const tString& asName);
 		iTexture* Create1D(const tString& asName,bool abUseMipMaps, bool abCompress=false, eTextureType aType=eTextureType_Normal,
 							unsigned int alTextureSizeLevel=0);
 

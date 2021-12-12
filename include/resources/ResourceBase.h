@@ -53,6 +53,9 @@ namespace hpl {
 		unsigned long GetHandle(){return mlHandle;}
 		void SetHandle(unsigned long alHandle){mlHandle=alHandle;}
 		tString GetFilePath(){return msFilePath;}
+
+		void SetFullPath(const tWString &asPath);
+		const tWString &GetFullPath(){return msFullPath;}
 		unsigned long GetTime(){return mlTime;}
 		unsigned long GetPrio(){return mlPrio;}
 		unsigned long GetSize(){return mlSize;}
@@ -79,7 +82,10 @@ namespace hpl {
 		tString msName;
 		tString msFilePath;
 		bool mbLogDestruction;
+
+	private:
+		tWString msFullPath;
 	};
 
-};
+}
 #endif // HPL_RESOURCEBASE_H

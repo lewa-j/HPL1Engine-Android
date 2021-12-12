@@ -613,36 +613,21 @@ namespace hpl {
 			pNode = InsertNode(pNode, pTempNode);
 		}
 
-		/////// VERTEX PROGRAM //////////////
+		/////// GPU PROGRAM //////////////
 		{
-			//Log("\nVertex program level\n");
+			//Log("\nGpu program level\n");
 			//pTempNode = m_poolRenderNode->Create();
 			//pTempState = m_poolRenderState->Create();
 			//pTempNode->mpState = pTempState;
 
-			pTempState->mType = eRenderStateType_VertexProgram;
+			pTempState->mType = eRenderStateType_Program;
 
-			pTempState->mpVtxProgram = pMaterial->GetVertexProgram(aPassType,alPass,apLight);
-			pTempState->mpVtxProgramSetup = pMaterial->GetVertexProgramSetup(aPassType,alPass,apLight);
-			pTempState->mbUsesLight = pMaterial->VertexProgramUsesLight(aPassType, alPass,apLight);
-			pTempState->mbUsesEye = pMaterial->VertexProgramUsesEye(aPassType, alPass,apLight);
+			pTempState->mpProgram = pMaterial->GetProgram(aPassType, alPass, apLight);
+			pTempState->mpVtxProgramSetup = pMaterial->GetVertexProgramSetup(aPassType, alPass, apLight);
+			pTempState->mbUsesLight = pMaterial->VertexProgramUsesLight(aPassType, alPass, apLight);
+			pTempState->mbUsesEye = pMaterial->VertexProgramUsesEye(aPassType, alPass, apLight);
 			pTempState->mpLight = apLight;
-
-			pNode = InsertNode(pNode, pTempNode);
-		}
-
-		/////// FRAGMENT PROGRAM //////////////
-		{
-			//Log("\nFragment program level\n");
-			//pTempNode = m_poolRenderNode->Create();
-			//pTempState = m_poolRenderState->Create();
-			//pTempNode->mpState = pTempState;
-
-
-			pTempState->mType = eRenderStateType_FragmentProgram;
-
-			pTempState->mpFragProgram = pMaterial->GetFragmentProgram(aPassType,alPass,apLight);
-			pTempState->mpFragProgramSetup = pMaterial->GetFragmentProgramSetup(aPassType,alPass,apLight);
+			pTempState->mpFragProgramSetup = pMaterial->GetFragmentProgramSetup(aPassType, alPass, apLight);
 
 			pNode = InsertNode(pNode, pTempNode);
 		}

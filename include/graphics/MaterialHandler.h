@@ -20,6 +20,7 @@
 #define HPL_MATERIALHANDLER_H
 
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 

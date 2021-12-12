@@ -89,13 +89,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cSoundManager::Create(const tString& asName)
-	{
-		return	CreateSoundData(asName,false);
-	}
-
-	//-----------------------------------------------------------------------
-
 	void cSoundManager::Unload(iResourceBase* apResource)
 	{
 

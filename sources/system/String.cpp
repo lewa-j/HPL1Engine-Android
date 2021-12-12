@@ -1,38 +1,49 @@
 /*
- * Copyright (C) 2006-2010 - Frictional Games
- *
- * This file is part of HPL1 Engine.
- *
- * HPL1 Engine is free software: you can redistribute it and/or modify
+ * Copyright © 2009-2020 Frictional Games
+ * 
+ * This file is part of Amnesia: The Dark Descent.
+ * 
+ * Amnesia: The Dark Descent is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * HPL1 Engine is distributed in the hope that it will be useful,
+ * (at your option) any later version. 
+
+ * Amnesia: The Dark Descent is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
- * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Amnesia: The Dark Descent.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 #include "system/String.h"
 #include <stdlib.h>
+#include <string.h>
 
 #include "system/LowLevelSystem.h"
+
+#if defined WIN32
+#define SIZEOF_WCHAR 2
+#else
+#define SIZEOF_WCHAR 4
+#endif
 
 namespace hpl {
 
 	//////////////////////////////////////////////////////////////////////////
 	// PUBLIC METHODS
 	//////////////////////////////////////////////////////////////////////////
-
-
+	
+	
 	//-----------------------------------------------------------------------
 
 	tWString cString::To16Char(const tString &asString)
 	{
+		if ( asString == "" ) return L"";
+
 		tWString wsTemp;
+
 		size_t needed = mbstowcs(NULL,&asString[0],0);
 		wsTemp.resize(needed);
 		mbstowcs(&wsTemp[0],&asString[0],needed);
@@ -41,13 +52,139 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
-
+	
 	tString cString::To8Char(const tWString &awsString)
 	{
 		tString sTemp;
-		size_t needed = wcstombs(NULL,&awsString[0],0);
-		sTemp.resize(needed);
-		wcstombs(&sTemp[0],&awsString[0],needed);
+		
+		#ifdef WIN32
+			sTemp.resize(awsString.size());
+			for(size_t i=0; i<awsString.length(); ++i)
+			{
+				if(awsString[i]>255)	sTemp[i] = '_';
+				else					sTemp[i] = (unsigned char)awsString[i];
+			}
+		#else
+			size_t needed = wcstombs(NULL,&awsString[0],0);
+			if (needed == (size_t)-1) {
+				return "";
+			}
+			sTemp.resize(needed);
+			wcstombs(&sTemp[0],&awsString[0],needed);
+		#endif
+
+		return sTemp;
+	}
+	
+	tWString cString::UTF8ToWChar(const tString& asString)
+	{
+		tWString sTemp;
+
+		const char *pCur = asString.c_str();
+		const char *pEnd = pCur + asString.size();
+
+		while (pCur < pEnd) {
+			uint32_t uTemp;
+			if ( (*pCur & 0x80) == 0 ) {
+				uTemp = pCur[0];
+				pCur+=1;
+			}
+			else if ( (*pCur & 0xe0) == 0xc0 ) {
+				uTemp = (pCur[0] & 0x1f) << 6 | 
+						(pCur[1] & 0x3f);
+				pCur+=2;
+			}
+			else if ( (*pCur & 0xf0) == 0xe0 ) {
+				uTemp = (pCur[0] & 0x0f) << 12 | 
+						(pCur[1] & 0x3f) << 6 | 
+						(pCur[2] & 0x3f);
+				pCur+=3;
+			}
+#if SIZEOF_WCHAR == 4
+			else if ( (*pCur & 0xf8) == 0xf0 ) {
+				uTemp = (pCur[0] & 0x07) << 18 | 
+						(pCur[1] & 0x3f) << 12 | 
+						(pCur[2] & 0x3f) << 6 | 
+						(pCur[3] & 0x3f);
+				pCur+=4;
+			}
+			else if ( (*pCur & 0xfc) == 0xf8 ) {
+				uTemp = (pCur[0] & 0x03) << 24 | 
+						(pCur[1] & 0x3f) << 18 | 
+						(pCur[2] & 0x3f) << 12 | 
+						(pCur[3] & 0x3f) << 6 | 
+						(pCur[4] & 0x3f);
+				pCur+=5;
+			}
+			else if ( (*pCur & 0xfe) == 0xfc ) {
+				uTemp = (pCur[0] & 0x01) << 30 | 
+						(pCur[1] & 0x3f) << 24 | 
+						(pCur[2] & 0x3f) << 18 | 
+						(pCur[3] & 0x3f) << 12 | 
+						(pCur[4] & 0x3f) << 6 | 
+						(pCur[5] & 0x3f);
+				pCur+=6;
+			}
+#endif
+			sTemp.push_back((wchar_t)uTemp);
+		}
+
+		return sTemp;
+	}
+
+	//-----------------------------------------------------------------------
+
+	tString cString::S16BitToUTF8(const tWString& awsString)
+	{
+		tString sTemp;
+		for(size_t i=0; i<awsString.size(); ++i)
+		{
+			uint32_t lWChar = awsString[i];
+			tString sBuf;
+
+			if(lWChar < 0x80)
+			{
+				sBuf = char(lWChar);
+			}
+			else if(lWChar < 0x800)
+			{
+				sBuf.push_back(((lWChar & 0x7C0) >> 6) | 0xC0);
+				sBuf.push_back((lWChar & 0x3F) | 0x80);
+			}
+			else if(lWChar < 0x10000)
+			{
+				sBuf.push_back(((lWChar & 0xF000) >> 12) | 0xE0);
+				sBuf.push_back(((lWChar & 0xFC0) >> 6) | 0x80);
+				sBuf.push_back(((lWChar & 0x3F) | 0x80));
+			}
+#if SIZEOF_WCHAR == 4
+			else if(lWChar < 0x200000)
+			{
+				sBuf.push_back(((lWChar & 0x1C0000) >> 18) | 0xF0);
+				sBuf.push_back(((lWChar & 0x3F000) >> 12) | 0x80);
+				sBuf.push_back(((lWChar & 0xFC0) >> 6) | 0x80);
+				sBuf.push_back(((lWChar & 0x3F) | 0x80));
+			}
+			else if(lWChar < 0x4000000)
+			{
+				sBuf.push_back(((lWChar & 0x3000000) >> 24) | 0xF8);
+				sBuf.push_back(((lWChar & 0xFC000) >> 18) | 0x80);
+				sBuf.push_back(((lWChar & 0x3F000) >> 12) | 0x80);
+				sBuf.push_back(((lWChar & 0xFC0) >> 6) | 0x80);
+				sBuf.push_back(((lWChar & 0x3F) | 0x80));
+			}
+			else if(lWChar < 0x80000000)
+			{
+				sBuf.push_back(((lWChar & 0x40000000) >> 30) | 0xFC);
+				sBuf.push_back(((lWChar & 0x3F000000) >> 24) | 0x80);
+				sBuf.push_back(((lWChar & 0xFC000) >> 18) | 0x80);
+				sBuf.push_back(((lWChar & 0x3F000) >> 12) | 0x80);
+				sBuf.push_back(((lWChar & 0xFC0) >> 6) | 0x80);
+				sBuf.push_back(((lWChar & 0x3F) | 0x80));
+			}
+#endif
+			sTemp += sBuf;
+		}
 
 		return sTemp;
 	}
@@ -69,12 +206,12 @@ namespace hpl {
 
 		return wsString;
 	}
-
+	
 	//-----------------------------------------------------------------------
 
 	tString cString::Sub(const tString& asString,int alStart,int alCount)
 	{
-		int lStringSize = (int)asString.size();
+		int lStringSize = (int)asString.length();
 		if(alStart >= lStringSize) return "";
 		if(alStart + alCount > lStringSize) alCount = lStringSize - alStart;
 
@@ -83,7 +220,7 @@ namespace hpl {
 	}
 	tWString cString::SubW(const tWString& asString,int alStart,int alCount)
 	{
-		int lStringSize = (int)asString.size();
+		int lStringSize = (int)asString.length();
 		if(lStringSize==0) return _W("");
 		if(alStart >= lStringSize) return _W("");
 		if(alStart + alCount > lStringSize) alCount = lStringSize - alStart;
@@ -93,109 +230,306 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
-
+	
 	//Get the file extension of a string
-	tString cString::GetFileExt(tString aString)
+	tString cString::GetFileExt(const tString& aString)
 	{
-		int pos = GetLastStringPos(aString,".");
-
+		tString sFileName = GetFileName(aString);
+		int pos = GetLastStringPos(sFileName,".");
+		
 		if(pos<0)
 			return "";
 		else
-			return aString.substr(pos+1);
+			return sFileName.substr(pos+1);
 	}
 
-	tWString cString::GetFileExtW(tWString aString)
+	tWString cString::GetFileExtW(const tWString& aString)
 	{
-		int pos = GetLastStringPosW(aString,_W("."));
-
+		tWString sFileName = GetFileNameW(aString);
+		int pos = GetLastStringPosW(sFileName,_W("."));
+		
 		if(pos<0)
 			return _W("");
 		else
-			return aString.substr(pos+1);
+			return sFileName.substr(pos+1);
 	}
 
 
 	//-----------------------------------------------------------------------
 
-	tString cString::ToLowerCase(tString aString)
+	tString cString::ToLowerCase(const tString& aString)
 	{
+		tString sTemp;
+		sTemp.resize(aString.size());
 		for(int i=0;i<(int)aString.size();i++)
 		{
-			aString[i] = tolower(aString[i]);
+			sTemp[i] = tolower(aString[i]);
 		}
-		return aString;
+		return sTemp;
 	}
 
-	tWString cString::ToLowerCaseW(tWString aString)
+	tWString cString::ToLowerCaseW(const tWString& aString)
 	{
+		tWString sTemp;
+		sTemp.resize(aString.size());
 		for(int i=0;i<(int)aString.size();i++)
 		{
-			aString[i] = tolower(aString[i]);
+			sTemp[i] = tolower(aString[i]);
 		}
-		return aString;
+		return sTemp;
+	}
+	
+	//-----------------------------------------------------------------------
+
+	tString cString::ToUpperCase(const tString& aString)
+	{
+		tString sTemp;
+		sTemp.resize(aString.size());
+		for(int i=0;i<(int)aString.size();i++)
+		{
+			sTemp[i] = toupper(aString[i]);
+		}
+		return sTemp;
+	}
+
+	tWString cString::ToUpperCaseW(const tWString& aString)
+	{
+		tWString sTemp;
+		sTemp.resize(aString.size());
+		for(int i=0;i<(int)aString.size();i++)
+		{
+			sTemp[i] = toupper(aString[i]);
+		}
+		return sTemp;
 	}
 
 	//-----------------------------------------------------------------------
 
 
 	//Set the file extension
-	tString cString::SetFileExt(tString  aString,tString  aExt)
+	tString cString::SetFileExt(const tString&  aString,const tString&  aExt)
 	{
-		if(aExt.substr(0,1)==".")aExt = aExt.substr(1);
+		tString sExt = aExt;
+		tString sOutput = aString;
+		if(sExt.substr(0,1)==".")sExt = sExt.substr(1);
 		if(GetFileExt(aString)!="")
 		{
-			aString = aString.substr(0,GetLastStringPos(aString,"."));
+			sOutput = aString.substr(0,GetLastStringPos(aString,"."));
 		}
 
-		if(aExt!="")
-			aString = aString + "." + aExt;
+		if(sExt!="")
+			sOutput = sOutput + "." + sExt;
 
-		return aString;
+		return sOutput;
 	}
 
-	tWString cString::SetFileExtW(tWString  aString,tWString  aExt)
+	tWString cString::SetFileExtW(const tWString&  aString,const tWString&  aExt)
 	{
-		if(aExt.substr(0,1)==_W("."))aExt = aExt.substr(1);
+		tWString sExt = aExt;
+		tWString sOutput = aString;
+		if(sExt.substr(0,1)==_W("."))sExt = sExt.substr(1);
 		if(GetFileExtW(aString)!=_W(""))
 		{
-			aString = aString.substr(0,GetLastStringPosW(aString,_W(".")));
+			sOutput = aString.substr(0,GetLastStringPosW(aString,_W(".")));
 		}
 
-		if(aExt!=_W(""))
-			aString = aString + _W(".") + aExt;
+		if(sExt!=_W(""))
+			sOutput = sOutput + _W(".") + sExt;
 
-		return aString;
+		return sOutput;
 	}
 
 	//-----------------------------------------------------------------------
 
-	tString cString::SetFilePath(tString aString,tString aPath)
+	tString cString::SetFilePath(const tString& aString,const tString& aPath)
 	{
+		tString sSepp="";
 		if(GetLastChar(aPath)!="/" && GetLastChar(aPath)!="\\")
-			aPath +="/";
+			sSepp ="/";
 
-		aString = GetFileName(aString);
-
-		return aPath + aString;
+		return aPath +sSepp+ GetFileName(aString);
 	}
-
-	tWString cString::SetFilePathW(tWString aString,tWString aPath)
+	
+	tWString cString::SetFilePathW(const tWString& aString,const tWString& aPath)
 	{
+		tWString sSepp=_W("");
 		if(GetLastCharW(aPath)!=_W("/") && GetLastCharW(aPath)!=_W("\\"))
-			aPath +=_W("/");
+			sSepp =_W("/");
 
-		aString = GetFileNameW(aString);
-
-		return aPath + aString;
+		return aPath +sSepp+ GetFileNameW(aString);
 	}
 
+	//-----------------------------------------------------------------------
+
+	tString cString::GetRelativePath(const tString& aPath, const tString& aRelativeToPath)
+	{
+		///////////////
+		// Split both paths into folders
+		tStringVec vPathFolders, vRelativeFolders;
+		tString sSep = "/\\";
+		GetStringVec(aPath, vPathFolders, &sSep);
+		GetStringVec(aRelativeToPath, vRelativeFolders, &sSep);
+
+		/////////
+		// Find difference
+		int lDifferenceAt = 0;
+		size_t lPathSize = vPathFolders.size();
+		size_t lRelativeSize = vRelativeFolders.size();
+		size_t lCount = lPathSize < lRelativeSize ? lPathSize : lRelativeSize;
+
+		for(size_t i = 0; i < lCount; ++i)
+		{
+			if(vPathFolders[i] != vRelativeFolders[i])
+			{
+				///////
+				// Found a difference
+				lDifferenceAt = i;
+				break;
+			}
+			else
+			{
+				//////
+				// Update index in case of end of vector
+				lDifferenceAt = i + 1;
+			}
+		}
+
+		if(lDifferenceAt == 0)
+		{
+			//////////
+			// The files are no different partitions, theres no relative path
+			return aPath;
+		}
+
+		///////////
+		// Create relative path
+		tString sRelativePath = "";
+
+		size_t lBackUp = lRelativeSize - lDifferenceAt;
+		for(size_t i = 0; i < lBackUp; ++i)
+		{
+			// Move back a step
+			sRelativePath += "../";
+		}
+
+		for(size_t i = lDifferenceAt; i < lPathSize; ++i)
+		{
+			// Add the relaitve part
+			sRelativePath += vPathFolders[i] + "/";
+		}
+
+		return sRelativePath;
+	}
+
+	tWString cString::GetRelativePathW(const tWString& aPath, const tWString& aRelativeToPath)
+	{
+		///////////////
+		// Split both paths into folders
+		tWStringVec vPathFolders, vRelativeFolders;
+		tWString sSep = _W("/\\");
+		GetStringVecW(aPath, vPathFolders, &sSep);
+		GetStringVecW(aRelativeToPath, vRelativeFolders, &sSep);
+
+		/////////
+		// Find difference
+		int lDifferenceAt = 0;
+		size_t lPathSize = vPathFolders.size();
+		size_t lRelativeSize = vRelativeFolders.size();
+		size_t lCount = lPathSize < lRelativeSize ? lPathSize : lRelativeSize;
+
+		for(size_t i = 0; i < lCount; ++i)
+		{
+			if(vPathFolders[i] != vRelativeFolders[i])
+			{
+				///////
+				// Found a difference
+				lDifferenceAt = i;
+				break;
+			}
+			else
+			{
+				//////
+				// Update index in case this is end of vector
+				lDifferenceAt = i + 1;
+			}
+		}
+
+		if(lDifferenceAt == 0)
+		{
+			//////////
+			// The files are no different partitions, theres no relative path
+			return aPath;
+		}
+
+		///////////
+		// Create relative path
+		tWString sRelativePath = _W("");
+
+		size_t lBackUp = lRelativeSize - lDifferenceAt;
+		for(size_t i = 0; i < lBackUp; ++i)
+		{
+			// Move back a step
+			sRelativePath += _W("../");
+		}
+
+		for(size_t i = lDifferenceAt; i < lPathSize; ++i)
+		{
+			// Add the relaitve part
+			sRelativePath += vPathFolders[i] + _W("/");
+		}
+
+		return sRelativePath;
+	}
+		
+	//-----------------------------------------------------------------------
+
+	tString cString::AddSlashAtEnd(const tString& asPath,char alSlash)
+	{
+		if(asPath.size()==0) return "";
+
+		char lLastChar = asPath[asPath.size()-1];
+		if(lLastChar == '/' || lLastChar == '\\') return asPath;
+
+		return asPath + alSlash;
+	}
+
+	tWString cString::AddSlashAtEndW(const tWString& asPath,wchar_t alSlash)
+	{
+		if(asPath.size()==0) return _W("");
+
+		wchar_t lLastChar = asPath[asPath.size()-1];
+		if(lLastChar == _W('/') || lLastChar == _W('\\')) return asPath;
+
+		return asPath + alSlash;
+	}
+
+	//-----------------------------------------------------------------------
+
+	tString cString::RemoveSlashAtEnd(const tString& asPath)
+	{
+		if(asPath.size()==0) return "";
+
+		char lLastChar = asPath[asPath.size()-1];
+		if(lLastChar == '/' || lLastChar == '\\') return cString::Sub(asPath,0, asPath.size()-1);
+
+		return asPath;
+	}
+
+	tWString cString::RemoveSlashAtEndW(const tWString& asPath)
+	{
+		if(asPath.size()==0) return _W("");
+
+		wchar_t lLastChar = asPath[asPath.size()-1];
+		if(lLastChar == _W('/') || lLastChar == _W('\\')) return cString::SubW(asPath,0, asPath.size()-1);
+
+		return asPath;
+	}
 
 	//-----------------------------------------------------------------------
 
 
 	//Gets the filename in a path
-	tString cString::GetFileName(tString  aString)
+	tString cString::GetFileName(const tString&  aString)
 	{
 		int pos1 = GetLastStringPos(aString,"\\");
 		int pos2 = GetLastStringPos(aString,"/");
@@ -206,7 +540,7 @@ namespace hpl {
 		else
 			return aString.substr(pos+1);
 	}
-	tWString cString::GetFileNameW(tWString  aString)
+	tWString cString::GetFileNameW(const tWString&  aString)
 	{
 		int pos1 = GetLastStringPosW(aString,_W("\\"));
 		int pos2 = GetLastStringPosW(aString,_W("/"));
@@ -220,7 +554,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	tString cString::GetFilePath(tString aString)
+	tString cString::GetFilePath(const tString& aString)
 	{
 		if(GetLastStringPos(aString,".")<0)return aString;
 
@@ -235,7 +569,7 @@ namespace hpl {
 
 	}
 
-	tWString cString::GetFilePathW(tWString aString)
+	tWString cString::GetFilePathW(const tWString& aString)
 	{
 		if(GetLastStringPosW(aString,_W("."))<0) return aString;
 
@@ -252,15 +586,17 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	tString cString::ReplaceCharTo(tString aString, tString asOldChar,tString asNewChar)
+	tString cString::ReplaceCharTo(const tString& aString, const tString& asOldChar,const tString& asNewChar)
 	{
 		if(asNewChar !="")
 		{
+			tString sNewString = aString;
+			
 			for(int i=0;i<(int)aString.size();i++)
 			{
-				if(aString[i] == asOldChar[0]) aString[i] = asNewChar[0];
+				if(aString[i] == asOldChar[0]) sNewString[i] = asNewChar[0];
 			}
-			return aString;
+			return sNewString;
 		}
 		else
 		{
@@ -275,15 +611,16 @@ namespace hpl {
 		}
 	}
 
-	tWString cString::ReplaceCharToW(tWString aString, tWString asOldChar,tWString asNewChar)
+	tWString cString::ReplaceCharToW(const tWString& aString, const tWString& asOldChar,const tWString& asNewChar)
 	{
 		if(asNewChar !=_W(""))
 		{
+			tWString sNewString  = aString;
 			for(int i=0;i<(int)aString.size();i++)
 			{
-				if(aString[i] == asOldChar[0]) aString[i] = asNewChar[0];
+				if(aString[i] == asOldChar[0]) sNewString[i] = asNewChar[0];
 			}
-			return aString;
+			return sNewString;
 		}
 		else
 		{
@@ -300,10 +637,10 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	tString cString::ReplaceStringTo(tString asString, tString asOldString,tString asNewString)
+	tString cString::ReplaceStringTo(const tString& asString, const tString& asOldString,const tString& asNewString)
 	{
 		tString sNewString = "";
-
+		
 		for(size_t i=0;i<asString.size();i++)
 		{
 			bool bFound = true;
@@ -322,7 +659,7 @@ namespace hpl {
 			{
 				bFound = false;
 			}
-
+			
 			//Insert new string
 			if(bFound)
 			{
@@ -340,26 +677,27 @@ namespace hpl {
 	//-----------------------------------------------------------------------
 
 	//gets the last char in the string
-	tString cString::GetLastChar(tString aString)
+	tString cString::GetLastChar(const tString& aString)
 	{
 		if(aString.size()==0) return "";
-		return aString.substr(aString.size()-1);
+		return aString.substr(aString.size()-1); 
 	}
 
-	tWString cString::GetLastCharW(tWString aString)
+	tWString cString::GetLastCharW(const tWString& aString)
 	{
 		if(aString.size()==0) return _W("");
-		return aString.substr(aString.size()-1);
+		return aString.substr(aString.size()-1); 
 	}
 
 	//-----------------------------------------------------------------------
+
 	tString cString::ToString(const char* asString,tString asDefault)
 	{
 		if(asString==NULL)return asDefault;
 
 		return asString;
 	}
-
+	
 	//-----------------------------------------------------------------------
 
 	int cString::ToInt(const char* asString,int alDefault)
@@ -378,9 +716,7 @@ namespace hpl {
 		return (float)atof(asString);
 	}
 
-	//-----------------------------------------------------------------------
-
-	double cString::ToDouble(const char* asString, double afDefault)
+	double cString::ToDouble(const char *asString, double afDefault)
 	{
 		if (asString == NULL)return afDefault;
 
@@ -406,12 +742,12 @@ namespace hpl {
 		tFloatVec vValues;
 
 		GetFloatVec(asString,vValues,NULL);
-
+		
 		if(vValues.size() != 4) return aDefault;
 
 		return cColor(vValues[0],vValues[1],vValues[2],vValues[3]);
 	}
-
+	
 	//-----------------------------------------------------------------------
 
 	cVector2f cString::ToVector2f(const char* asString, const cVector2f& avDefault)
@@ -447,7 +783,7 @@ namespace hpl {
 	cVector2l cString::ToVector2l(const char* asString, const cVector2l& avDefault)
 	{
 		if(asString==NULL) return avDefault;
-
+		
 		tIntVec vValues;
 
 		GetIntVec(asString,vValues,NULL);
@@ -456,13 +792,13 @@ namespace hpl {
 
 		return cVector2l(vValues[0],vValues[1]);
 	}
-
+	
 	//-----------------------------------------------------------------------
 
 	cVector3l cString::ToVector3l(const char* asString, const cVector3l& avDefault)
 	{
 		if(asString==NULL) return avDefault;
-
+		
 		tIntVec vValues;
 
 		GetIntVec(asString,vValues,NULL);
@@ -535,43 +871,159 @@ namespace hpl {
 
 		return avVec;
 	}
-
+	
 	//-----------------------------------------------------------------------
 
-	tString cString::ToString(int alX)
+	tString cString::ToString(int alX, int alPaddingZeros)
+	{
+		char buff[256];
+		
+		sprintf(buff, "%0*d" , alPaddingZeros, alX);
+
+		return buff;
+	}
+
+	tString cString::ToString(unsigned int alX, int alPaddingZeros)
 	{
 		char buff[256];
 
-		sprintf(buff, "%d",alX);
+		sprintf(buff, "%0*u" , alPaddingZeros, alX);
 
 		return buff;
 	}
 
-	tString cString::ToString(float afX)
+	tString cString::ToString(unsigned long alX, int alPaddingZeros)
 	{
 		char buff[256];
 
-		sprintf(buff, "%f",afX);
+		sprintf(buff, "%0*lu", alPaddingZeros, alX);
 
 		return buff;
 	}
 
+	tString cString::ToString(float afX, int alNumDecimals, bool abRemoveTrailingZeros)
+	{
+		char buff[256];
+		if(alNumDecimals<0) alNumDecimals = 20;
+
+		////////////////////////////////////////////////////////////
+		// Print the float into a string, using a given precision
+		sprintf(buff, "%.*f", alNumDecimals, afX);
+		
+		//////////////////////////////////////////
+		// Clean up decimal part
+		//  Search for '.' char
+		char *p = strchr (buff,'.');
+		if(p != NULL) 
+		{
+			// Check if there are less decimals than what precision states
+			while(alNumDecimals >= 0) 
+			{
+				alNumDecimals--;
+				if(*p == '\0')    
+					break;
+				p++;
+			}
+			
+			///////////////////////
+			// Truncate string
+			*p-- = '\0';
+		
+			///////////////////////////////////////
+			// Remove trailing zeros on demand
+			if(abRemoveTrailingZeros)
+			{
+				// Overwrite any '0' chars with the null character
+				while(*p == '0')
+					*p-- = '\0';
+				
+				// If all decimals were zero, remove "."
+				if(*p == '.')
+					*p = '\0';
+			}
+		}
+		
+		return buff;
+	}
+	
 	//-----------------------------------------------------------------------
 
-	tWString cString::ToStringW(int alX)
+	tWString cString::ToStringW(int alX, int alPaddingZeros)
 	{
 		wchar_t buff[256];
 
-		swprintf(buff, 256, _W("%d"),alX);
+		tWString sFormat = _W("%0*d");
+
+#ifdef WIN32
+		swprintf(buff, sFormat.c_str(), alPaddingZeros, alX);
+#else
+		swprintf(buff, 256, sFormat.c_str(), alPaddingZeros, alX);
+#endif
 
 		return buff;
 	}
 
-	tWString cString::ToStringW(float afX)
+	tWString cString::ToStringW(unsigned long alX, int alPaddingZeros)
 	{
 		wchar_t buff[256];
 
-		swprintf(buff, 256, _W("%f"),afX);
+		tWString sFormat = _W("%0*ld");
+
+#ifdef WIN32
+		swprintf(buff, sFormat.c_str(), alPaddingZeros, alX);
+#else
+		swprintf(buff, 256, sFormat.c_str(), alPaddingZeros, alX);
+#endif
+
+		return buff;
+	}
+
+	tWString cString::ToStringW(float afX, int alNumDecimals, bool abRemoveTrailingZeros)
+	{
+		wchar_t buff[256];
+		if(alNumDecimals<0) alNumDecimals = 20;
+
+		////////////////////////////////////////////////////////////
+		// Print the float into a wstring, using a given precision
+		tWString sFormat = _W("%.*f");
+#ifdef WIN32
+		swprintf(buff, sFormat.c_str(), alNumDecimals ,afX);
+#else
+		swprintf(buff, 256, sFormat.c_str(), alNumDecimals, afX);
+#endif
+
+		//////////////////////////////////////////
+		// Clean up decimal part
+		//  Search for '.' char
+		wchar_t *p = wcschr (buff, _W('.'));
+		if(p != NULL) 
+		{
+			// Check if there are less decimals than what precision states
+			while(alNumDecimals >= 0) 
+			{
+				alNumDecimals--;
+				if(*p == _W('\0'))
+					break;
+				p++;
+			}
+			
+			///////////////////////
+			// Truncate string
+			*p-- = _W('\0');
+		
+			///////////////////////////////////////
+			// Remove trailing zeros on demand
+			if(abRemoveTrailingZeros)
+			{
+				// Overwrite any '0' chars with the null character
+				while(*p == _W('0'))
+					*p-- = _W('\0');
+				
+				// If all decimals were zero, remove "."
+				if(*p == _W('.'))
+					*p = _W('\0');
+			}
+		}
 
 		return buff;
 	}
@@ -588,7 +1040,7 @@ namespace hpl {
 		{
 			c = asData.substr(i,1);
 			bool bNewWord = false;
-
+			
 			//Check if the current char is a separator
 			if(apSeparators)
 			{
@@ -603,12 +1055,12 @@ namespace hpl {
 			}
 			else
 			{
-				if(c[0]==' ' || c[0]=='\n' || c[0]=='\t' || c[0]==',')
+				if(c[0]==' ' || c[0]=='\n' || c[0]=='\r' || c[0]=='\t' || c[0]==',')
 				{
-					bNewWord = true;
+					bNewWord = true;	
 				}
 			}
-
+			
 			if(bNewWord)
 			{
 				if(start)
@@ -624,17 +1076,156 @@ namespace hpl {
 				str +=c;
 				if(i==asData.length()-1)avVec.push_back(str);
 			}
-		}
+		}	
+	
+		return avVec;
+	}
+
+	//-----------------------------------------------------------------------
+
+	tWStringVec& cString::GetStringVecW(const tWString &asData, tWStringVec& avVec,tWString *apSeparators)
+	{
+		tWString str = _W("");
+		bool start = false;
+		wchar_t c = ' ';
+
+		for(int i=0;i<(int)asData.length();i++)
+		{
+			c = asData[i];
+			bool bNewWord = false;
+
+			//Check if the current char is a separator
+			if(apSeparators)
+			{
+				for(size_t j=0; j< apSeparators->size(); j++)
+				{
+					if((*apSeparators)[j] == c)
+					{
+						bNewWord = true;
+						break;
+					}
+				}
+			}
+			else
+			{
+				if(c==' ' || c=='\n' || c=='\r' || c=='\t' || c==',')
+				{
+					bNewWord = true;	
+				}
+			}
+
+			if(bNewWord)
+			{
+				if(start)
+				{
+					start = false;
+					avVec.push_back(str);
+					str = _W("");
+				}
+			}
+			else
+			{
+				start = true;
+				str +=c;
+				if(i==asData.length()-1)avVec.push_back(str);
+			}
+		}	
 
 		return avVec;
 	}
 
 	//-----------------------------------------------------------------------
 
+	tWStringVec& cString::GetStringWVec(const tWString &asData, tWStringVec& avVec,tWString *apSeparators)
+	{
+		tWString str = _W("");
+		bool start = false;
+		tWString c = _W("");
+
+		for(int i=0;i<(int)asData.length();i++)
+		{
+			c = asData.substr(i,1);
+			bool bNewWord = false;
+			
+			//Check if the current char is a separator
+			if(apSeparators)
+			{
+				for(size_t j=0; j< apSeparators->size(); j++)
+				{
+					if((*apSeparators)[j] == c[0])
+					{
+						bNewWord = true;
+						break;
+					}
+				}
+			}
+			else
+			{
+				if(c[0]==_W(' ') || c[0]==_W('\n') || c[0]==_W('\t') || c[0]==_W(','))
+				{
+					bNewWord = true;	
+				}
+			}
+			
+			if(bNewWord)
+			{
+				if(start)
+				{
+					start = false;
+					avVec.push_back(str);
+					str = _W("");
+				}
+			}
+			else
+			{
+				start = true;
+				str +=c;
+				if(i==asData.length()-1)avVec.push_back(str);
+			}
+		}	
+	
+		return avVec;
+	}
+
+	//-----------------------------------------------------------------------
+
+	///Helper
+	//returns first char in a string
+	int cString::GetFirstStringPos(const tString& aString, const tString&  aChar)
+	{	
+		int pos=-1;
+		for(int i=0;i<(int)aString.size();i++)
+		{
+			if(aString.substr(i,aChar.size())==aChar)
+			{
+				pos=i;
+				break;
+			}
+		}
+		return pos;
+	}
+
+	///Helper
+	//returns first char in a string
+	int cString::GetFirstStringPosW(const tWString& aString, const tWString&  aChar)
+	{	
+		int pos=-1;
+		for(int i=0;i<(int)aString.size();i++)
+		{
+			if(aString.substr(i,aChar.size())==aChar)
+			{
+				pos=i;
+				break;
+			}
+		}
+		return pos;
+	}
+
+
 	///Helper
 	//returns last char in a string
-	int cString::GetLastStringPos(tString aString, tString  aChar)
-	{
+	int cString::GetLastStringPos(const tString& aString, const tString&  aChar)
+	{	
 		int pos=-1;
 		for(int i=0;i<(int)aString.size();i++)
 		{
@@ -646,8 +1237,8 @@ namespace hpl {
 
 	///Helper
 	//returns last char in a string
-	int cString::GetLastStringPosW(tWString aString, tWString  aChar)
-	{
+	int cString::GetLastStringPosW(const tWString& aString, const tWString&  aChar)
+	{	
 		int pos=-1;
 		for(int i=0;i<(int)aString.size();i++)
 		{
@@ -678,7 +1269,7 @@ namespace hpl {
 				{
 					vTempChar[lTempCharCount] =0;
 					apArray[lArrayCount] = (unsigned int) atoi(vTempChar);
-
+					
 					lTempCharCount=0;
 					lArrayCount++;
 				}
@@ -728,6 +1319,316 @@ namespace hpl {
 
 			lStringCount++;
 		}
+	}
+	
+	//-----------------------------------------------------------------------
+
+	int cString::CountCharsInString(const tString& aString, const tString& aChar)
+	{
+		int lCount = 0;
+
+		for(int i=0;i<(int)aString.size();++i)
+		{
+			if(aString[i]==aChar[0])
+			{
+				++lCount;
+			}
+		}
+
+		return lCount;
+
+	}
+
+	//-----------------------------------------------------------------------
+
+	
+	int cString::CountCharsInStringW(const tWString& aString, const tWString& aChar)
+	{
+		int lCount = 0;
+
+		for(int i=0;i<(int)aString.size();++i)
+		{
+			if(aString[i]==aChar[0])
+			{
+				++lCount;
+			}
+		}
+
+		return lCount;
+
+	}
+
+	//-----------------------------------------------------------------------
+
+	//ALGO FROM: http://www.azillionmonkeys.com/qed/lHash.html
+	// by Paul Hsieh
+	
+	#define Get16Bits(data) (*((const wchar_t *) (data)))
+
+	unsigned int cString::GetHash(const tString& asStr)
+	{
+		unsigned int lLen = (unsigned int)asStr.size();
+		const char *pData = asStr.c_str();
+		unsigned int lHash = lLen, lTemp;
+		int lRem;
+
+		if (asStr.empty()) return 0;
+
+		lRem = lLen & 3;
+		lLen >>= 2;
+
+		//////////////////////////////////
+		//Main loop
+		for (;lLen > 0; lLen--)
+		{
+			lHash  += Get16Bits(pData);
+			lTemp    = ( Get16Bits(pData+2) << 11) ^ lHash;
+			lHash   = (lHash << 16) ^ lTemp;
+			pData  += 2*sizeof (wchar_t);
+			lHash  += lHash >> 11;
+		}
+
+		//////////////////////////////////
+		// Handle end cases
+		switch (lRem) 
+		{
+		case 3: 
+			lHash += Get16Bits(pData);
+			lHash ^= lHash << 16;
+			lHash ^= pData[sizeof (wchar_t)] << 18;
+			lHash += lHash >> 11;
+			break;
+		case 2: 
+			lHash += Get16Bits(pData);
+			lHash ^= lHash << 11;
+			lHash += lHash >> 17;
+			break;
+		case 1: 
+			lHash += *pData;
+			lHash ^= lHash << 10;
+			lHash += lHash >> 1;
+		}
+
+		//////////////////////////////////
+		// Force "avalanching" of final 127 bits
+		lHash ^= lHash << 3;
+		lHash += lHash >> 5;
+		lHash ^= lHash << 4;
+		lHash += lHash >> 17;
+		lHash ^= lHash << 25;
+		lHash += lHash >> 6;
+
+		return lHash;
+	}
+	
+	//-----------------------------------------------------------------------
+	
+	unsigned int cString::GetHashW(const tWString& asStr)
+	{
+		unsigned int lLen = (unsigned int)asStr.size();
+		const wchar_t *pData = asStr.c_str();
+		unsigned int lHash = lLen, lTemp;
+		int lRem;
+
+		if (asStr.empty()) return 0;
+
+		lRem = lLen & 1;
+		lLen >>= 1;
+
+		//////////////////////////////////
+		//Main loop
+		for (;lLen > 0; lLen--)
+		{
+			lHash  += pData[0];
+			lTemp    = ( pData[1] << 11) ^ lHash;
+			lHash   = (lHash << 16) ^ lTemp;
+			pData  += 2;
+			lHash  += lHash >> 11;
+		}
+
+		//////////////////////////////////
+		// Handle end cases
+		if(lRem) 
+		{
+			lHash += *pData;
+			lHash ^= lHash << 10;
+			lHash += lHash >> 1;
+		}
+
+		//////////////////////////////////
+		// Force "avalanching" of final 127 bits
+		lHash ^= lHash << 3;
+		lHash += lHash >> 5;
+		lHash ^= lHash << 4;
+		lHash += lHash >> 17;
+		lHash ^= lHash << 25;
+		lHash += lHash >> 6;
+
+		return lHash;
+	}
+
+	//-----------------------------------------------------------------------
+
+	tString cString::GetNumericSuffix(const tString& aString, int* apIndex)
+	{
+		const char* str = aString.c_str();
+		int lIndex=-1;
+		int lStringSize=(int)aString.size();
+		for(int i=lStringSize-1;i>=0;--i)
+		{
+			if(str[i]<'0' || str[i]>'9')
+			{
+				lIndex = ++i;
+				if(lIndex>=lStringSize) lIndex=-1;
+				break;
+			}
+		}
+		if(apIndex)
+			*apIndex=lIndex;
+
+		if(lIndex!=-1)
+			return Sub(aString,lIndex);
+		else
+			return "";
+	}
+
+	//-----------------------------------------------------------------------
+
+	tWString cString::GetNumericSuffixW(const tWString& aString, int* apIndex)
+	{
+		const wchar_t* str = aString.c_str();
+		int lIndex=-1;
+		int lStringSize=(int)aString.size();
+		for(int i=lStringSize-1;i>=0;--i)
+		{
+			if(str[i]<_W('0') || str[i]>_W('9'))
+			{
+				lIndex = ++i;
+				if(lIndex>=lStringSize) lIndex=-1;
+				break;
+			}
+		}
+		if(apIndex)
+			*apIndex=lIndex;
+
+		if(lIndex!=-1)
+			return SubW(aString,lIndex);
+		else
+			return _W("");
+	}
+
+	//-----------------------------------------------------------------------
+	
+	static tString EncodeTextStringDataChunk(int alChunk)
+	{
+		char vChars[7];
+		vChars[6] = 0; //string terminator
+
+		#ifdef BIGENDIAN
+			vChars[3] = (unsigned char)((alChunk>>0 ) & 0x000000FF );
+			vChars[2] = (unsigned char)((alChunk>>8 ) & 0x000000FF );
+			vChars[1] = (unsigned char)((alChunk>>16) & 0x000000FF );
+			vChars[0] = (unsigned char)((alChunk>>24) & 0x000000FF );
+		#else
+			//Need to be in separate order! (because of little endian)
+			vChars[0] = (unsigned char)((alChunk>>0 ) & 0x000000FF );
+			vChars[1] = (unsigned char)((alChunk>>8 ) & 0x000000FF );
+			vChars[2] = (unsigned char)((alChunk>>16) & 0x000000FF );
+			vChars[3] = (unsigned char)((alChunk>>24) & 0x000000FF );
+		#endif
+
+		//Save the padding for higher bytes
+		vChars[4] = (vChars[2]>>2) & 0x30;
+		vChars[5] = (vChars[3]>>2) & 0x30;
+
+		//Save the padding for lower bytes
+		vChars[4] |=  (vChars[0] >> 4) & 0x0C; 
+		vChars[5] |=  (vChars[1] >> 4) & 0x0C; 
+
+		//Convert to printable characters
+		for(int i=0;i<6; ++i)
+		{
+			vChars[i] &= 63;
+			if(vChars[i] != 63) vChars[i] += 64;
+		}
+
+		return tString(vChars);
+	}
+
+	void cString::EncodeDataToTextString(const void *apData, size_t alSize, tString &asOutput)
+	{
+		if(alSize %4 != 0) return;//Need to be dividable by 4!
+
+		size_t lCount = alSize;
+		asOutput ="";
+		const int *pDataChunk = (int*)apData;
+
+		while(lCount > 0)
+		{
+			int lChunk = *((int*)pDataChunk);
+
+			asOutput += EncodeTextStringDataChunk(lChunk);
+
+			++pDataChunk;
+			lCount -= 4;
+		}
+	}
+	
+	//-----------------------------------------------------------------------
+	
+	//Chars must contain 6 characters!
+	static int DecodeTextStringDataChunk(const char* apCharChunk)
+	{
+		int lFront = *((int*)&apCharChunk[0]);
+		int lBack = *((short*)&apCharChunk[4]);
+
+		//Clear spaces
+		lFront &= 0x3F3F3F3F; 
+
+		//Set ones in spaces
+		lFront |= ((lBack << 18) | (lBack << 4)) & 0xC0C0C0C0;
+
+		return lFront;
+	}
+
+	void cString::DecodeDataFromTextString(const tString &asStr, void *apDest, size_t alSize)
+	{
+		if(alSize %4 != 0) return;				//Need to be dividable by 4!
+		if(asStr.size() < (alSize/4)*6) return; //String not large enough!
+
+		const char *pDataChunk = asStr.c_str();
+		int *pDestChunk = (int*)apDest;
+		size_t lCount = alSize;
+
+		while(lCount>0)
+		{
+			*pDestChunk = DecodeTextStringDataChunk(pDataChunk);
+
+			pDataChunk += 6;
+			++pDestChunk;
+			lCount -= 4;
+		}
+	}
+
+	//-----------------------------------------------------------------------
+
+	tString cString::GetFormatOptions(const tString& asDataType, int alZeroesOnLeft, int alNumDecimals)
+	{
+		tString sFormat = "%";
+		if(alZeroesOnLeft)
+			sFormat += "0" + cString::ToString(alZeroesOnLeft);
+		if(alNumDecimals>=0)
+			sFormat += "." + cString::ToString(alNumDecimals);
+		sFormat += asDataType;
+
+		return sFormat;
+	}
+
+	tWString cString::GetFormatOptionsW(const tString& asDataType, int alZeroesOnLeft, int alNumDecimals)
+	{
+		tString sTemp = GetFormatOptions(asDataType, alZeroesOnLeft, alNumDecimals);
+
+		return cString::To16Char(sTemp);
 	}
 
 	//-----------------------------------------------------------------------

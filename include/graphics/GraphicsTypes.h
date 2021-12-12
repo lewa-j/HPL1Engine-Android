@@ -66,6 +66,48 @@ namespace hpl {
 
 	//-----------------------------------------
 
+	enum class eGpuProgramFormat
+	{
+		CG,
+		GLSL,
+		State,
+		LastEnum
+	};
+
+	enum class eGpuShaderType
+	{
+		Vertex,
+		Fragment,
+		LastEnum
+	};
+
+	enum class eGpuProgramMatrix
+	{
+		View,
+		Projection,
+		Texture,
+		ViewProjection,
+		LastEnum
+	};
+
+	enum class eGpuProgramMatrixOp
+	{
+		Identity,
+		Inverse,
+		Transpose,
+		InverseTranspose,
+		LastEnum
+	};
+
+	class iGpuShader;
+	class iGpuProgram;
+
+	typedef std::list<iGpuShader *> tGpuShaderList;
+	typedef tGpuShaderList::iterator tGpuShaderListIt;
+
+	typedef std::list<iGpuProgram *> tGpuProgramList;
+	typedef tGpuProgramList::iterator tGpuProgramListIt;
+
 	enum eColorDataFormat
 	{
 		eColorDataFormat_RGB,

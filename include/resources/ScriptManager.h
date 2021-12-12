@@ -33,7 +33,6 @@ namespace hpl {
 		cScriptManager(cSystem* apSystem,cResources *apResources);
 		~cScriptManager();
 
-		iResourceBase* Create(const tString& asName);
 		/**
 		 * Create a new script.
 		 * \param asName name of the script.

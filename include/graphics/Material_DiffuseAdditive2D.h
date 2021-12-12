@@ -20,6 +20,7 @@
 #define HPL_MATERIAL_DIFFUSE_ADDITIVE2D_H
 
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 
 
 namespace hpl {
@@ -27,11 +28,8 @@ namespace hpl {
 	class cMaterial_DiffuseAdditive2D : public iMaterial
 	{
 	public:
-		cMaterial_DiffuseAdditive2D(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_DiffuseAdditive2D();
+		cMaterial_DiffuseAdditive2D(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_DiffuseAdditive2D();
 
 		void Compile();
 		bool StartRendering(eMaterialRenderType mType,iCamera* apCam,iLight *pLight);
@@ -52,19 +50,17 @@ namespace hpl {
 	class cMaterialType_DiffuseAdditive2D : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_DiffuseAdditive2D (cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override {
 			if(cString::ToLowerCase(asName)=="diffadditive2d")return true;
 			return false;
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
 		{
-			return hplNew( cMaterial_DiffuseAdditive2D, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_DiffuseAdditive2D, (asName, apGraphics, apResources, this, aPicture) );
 		}
 	};
 

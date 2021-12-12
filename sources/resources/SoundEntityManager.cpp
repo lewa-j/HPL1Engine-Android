@@ -117,13 +117,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cSoundEntityManager::Create(const tString& asName)
-	{
-		return CreateSoundEntity(asName);
-	}
-
-	//-----------------------------------------------------------------------
-
 	void cSoundEntityManager::Unload(iResourceBase* apResource)
 	{
 

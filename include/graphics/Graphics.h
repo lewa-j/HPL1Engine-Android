@@ -20,6 +20,7 @@
 #define HPL_GRAPHICS_H
 
 #include "system/SystemTypes.h"
+#include "graphics/GraphicsTypes.h"
 
 namespace hpl {
 
@@ -33,6 +34,7 @@ namespace hpl {
 	class iLowLevelGraphics;
 	class cMeshCreator;
 	class cMaterialHandler;
+	class iGpuProgram;
 
 	class cGraphics
 	{
@@ -61,16 +63,23 @@ namespace hpl {
 		cMeshCreator* GetMeshCreator(){return mpMeshCreator;}
 		cMaterialHandler* GetMaterialHandler(){return mpMaterialHandler;}
 
+		iGpuProgram *CreateGpuProgram(const tString &asName);
+		iGpuProgram *CreateGpuProgramFromShaders(const tString &asName, const tString &asVtxShader, const tString &asFragShader);
+		void DestroyGpuProgram(iGpuProgram *apProgram);
+
 	private:
 		iLowLevelGraphics *mpLowLevelGraphics;
 		iLowLevelResources *mpLowLevelResources;
 		cGraphicsDrawer *mpDrawer;
 		cMeshCreator *mpMeshCreator;
+		cResources *mpResources = nullptr;
 		cMaterialHandler *mpMaterialHandler;
 		cRenderer2D* mpRenderer2D;
 		cRenderer3D* mpRenderer3D;
 		cRendererPostEffects* mpRendererPostEffects;
 		cRenderList *mpRenderList;
+
+		tGpuProgramList mlstGpuPrograms;
 	};
 
 };

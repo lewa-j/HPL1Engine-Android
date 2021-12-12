@@ -53,23 +53,23 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cTileSetManager::Create(const tString& asName)
+	cTileSet* cTileSetManager::CreateTileSet(const tString& asName)
 	{
 		tString sPath;
-		cTileSet* pTileSet;
+		cTileSet *pTileSet;
 		tString asNewName;
 
 		BeginLoad(asName);
 
-		asNewName = cString::SetFileExt(asName,"tsd");
+		asNewName = cString::SetFileExt(asName, "tsd");
 
-		pTileSet = static_cast<cTileSet*>(this->FindLoadedResource(asNewName,sPath));
+		pTileSet = static_cast<cTileSet *>(this->FindLoadedResource(asNewName, sPath));
 
-		if(pTileSet==NULL && sPath!="")
+		if (pTileSet == NULL && sPath != "")
 		{
-			pTileSet = hplNew( cTileSet, (asNewName,mpGraphics,mpResources) );
+			pTileSet = hplNew(cTileSet, (asNewName, mpGraphics, mpResources));
 
-			if(pTileSet->CreateFromFile(sPath)==false){
+			if (pTileSet->CreateFromFile(sPath) == false) {
 				EndLoad();
 				return NULL;
 			}
@@ -77,18 +77,11 @@ namespace hpl {
 			AddResource(pTileSet);
 		}
 
-		if(pTileSet)pTileSet->IncUserCount();
-		else Error("Couldn't load tileset '%s'\n",asNewName.c_str());
+		if (pTileSet)pTileSet->IncUserCount();
+		else Error("Couldn't load tileset '%s'\n", asNewName.c_str());
 
 		EndLoad();
 		return pTileSet;
-	}
-
-	//-----------------------------------------------------------------------
-
-	cTileSet* cTileSetManager::CreateTileSet(const tString& asName)
-	{
-		return 	static_cast<cTileSet*>(Create(asName));
 	}
 
 	//-----------------------------------------------------------------------

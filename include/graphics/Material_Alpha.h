@@ -20,29 +20,26 @@
 #define HPL_MATERIAL_ALPHA_H
 
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
+
+	class cMaterialType_Alpha;
 
 	class cMaterial_Alpha : public iMaterial
 	{
 	public:
-		cMaterial_Alpha(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-
+		cMaterial_Alpha(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_Alpha *apType, eMaterialPicture aPicture);
 		virtual ~cMaterial_Alpha();
 
 		tTextureTypeList GetTextureTypes();
 
 		bool UsesType(eMaterialRenderType aType);
 
-		iGpuProgram* GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
+		iGpuProgram* GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight) override;
 		iMaterialProgramSetup* GetVertexProgramSetup(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesLight(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight);
-
-		iGpuProgram* GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 
 		eMaterialAlphaMode GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		eMaterialBlendMode GetBlendMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
@@ -65,26 +62,25 @@ namespace hpl {
 		void EditVertexes(eMaterialRenderType aType, iCamera* apCam, iLight *pLight,
 			tVertexVec *apVtxVec,cVector3f *apTransform,unsigned int alIndexAdd){}
 	private:
-		iGpuProgram *mpFogVtxProg;
-		iGpuProgram *mpFogFragProg;
+		iGpuProgram *mpFogProg = nullptr;
 	};
 
 	class cMaterialType_Alpha : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_Alpha(cGraphics *apGraphics);
+		virtual ~cMaterialType_Alpha();
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="alpha";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		{
-			return hplNew( cMaterial_Alpha, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
-		}
+		iMaterial *Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
+
+	private:
+		iGpuProgram *mpFogProg = nullptr;
+
+		friend cMaterial_Alpha;
 	};
 
 };

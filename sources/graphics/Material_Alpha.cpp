@@ -17,11 +17,11 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material_Alpha.h"
+#include "graphics/Graphics.h"
 #include "graphics/Renderer2D.h"
 #include "graphics/Renderer3D.h"
 #include "scene/Light.h"
 #include "scene/Camera.h"
-#include "resources/GpuProgramManager.h"
 #include "resources/TextureManager.h"
 #include "graphics/GPUProgram.h"
 #include "math/Math.h"
@@ -53,31 +53,21 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_Alpha::cMaterial_Alpha(	const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		: iMaterial(asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-					aPicture,apRenderer3D)
+	cMaterial_Alpha::cMaterial_Alpha(	const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_Alpha *apType, eMaterialPicture aPicture)
+		: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = true;
 		mbIsGlowing= false;
 		mbUsesLights = false;
 
-		mpFogVtxProg = mpProgramManager->CreateProgram("Fog_Trans_vp.cg","main",eGpuProgramType_Vertex);
-
-		if(mpLowLevelGraphics->GetCaps(eGraphicCaps_GL_FragmentProgram))
-			mpFogFragProg = mpProgramManager->CreateProgram("Fog_Trans_Alpha_fp.cg","main",eGpuProgramType_Fragment);
-		else
-			mpFogFragProg = NULL;
+		mpFogProg = apType->mpFogProg;
 	}
 
 	//-----------------------------------------------------------------------
 
 	cMaterial_Alpha::~cMaterial_Alpha()
 	{
-		if(mpFogVtxProg) mpProgramManager->Destroy(mpFogVtxProg);
-		if(mpFogFragProg) mpProgramManager->Destroy(mpFogFragProg);
+
 	}
 
 	//-----------------------------------------------------------------------
@@ -88,10 +78,10 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iGpuProgram* cMaterial_Alpha::GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
+	iGpuProgram* cMaterial_Alpha::GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		if(mpRenderSettings->mbFogActive)
-			return mpFogVtxProg;
+			return mpFogProg;
 		else
 			return NULL;
 	}
@@ -112,14 +102,6 @@ namespace hpl {
 	bool cMaterial_Alpha::VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		return false;
-	}
-
-	iGpuProgram* cMaterial_Alpha::GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
-	{
-		if(mpRenderSettings->mbFogActive)
-			return mpFogFragProg;
-		else
-			return NULL;
 	}
 
 	eMaterialAlphaMode cMaterial_Alpha::GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight)
@@ -178,4 +160,20 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
+
+    cMaterialType_Alpha::cMaterialType_Alpha(cGraphics *apGraphics)
+		: iMaterialType(apGraphics)
+    {
+		mpFogProg = apGraphics->CreateGpuProgramFromShaders("cMaterial_Alpha", "Fog_Trans.vert", "Fog_Trans_Alpha.frag");
+    }
+
+	cMaterialType_Alpha::~cMaterialType_Alpha()
+	{
+		mpGraphics->DestroyGpuProgram(mpFogProg);
+	}
+
+	inline iMaterial *cMaterialType_Alpha::Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture)
+	{
+		return hplNew(cMaterial_Alpha, (asName, apGraphics, apResources, this, aPicture));
+	}
 }

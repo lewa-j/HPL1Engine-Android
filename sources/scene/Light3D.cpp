@@ -58,7 +58,7 @@ namespace hpl {
 		mpTextureManager = apResources->GetTextureManager();
 		mpFileSearcher = apResources->GetFileSearcher();
 
-		mpFalloffMap = mpTextureManager->Create1D("core_falloff_linear",false);
+		mpFalloffMap = mpTextureManager->Create2D("core_falloff_linear",false);
 		mpFalloffMap->SetWrapS(eTextureWrap_ClampToEdge);
 		mpFalloffMap->SetWrapT(eTextureWrap_ClampToEdge);
 
@@ -326,7 +326,7 @@ namespace hpl {
 		//////////////////////////////////////////////////////////
 		// Cast shadows
 		if(mbCastShadows && apRenderSettings->mShowShadows != eRendererShowShadows_None
-			&& apRenderSettings->mpVtxExtrudeProgram != NULL)
+			&& apRenderSettings->mpExtrudeProgram != NULL)
 		{
 			//Get temp index array. (Remove this when the index pool
 			// is implemented.).
@@ -368,22 +368,11 @@ namespace hpl {
 			//Reset this variable so it can be used when rendering shadows.
 			apRenderSettings->mbMatrixWasNULL = false;
 
-			//Set the fragment program.
-			if(apRenderSettings->mpFragExtrudeProgram)
-			{
-				if(apRenderSettings->mbLog)Log("Setting fragment program: '%s'\n",
-													apRenderSettings->mpFragExtrudeProgram->GetName().c_str());
-				apRenderSettings->mpFragExtrudeProgram->Bind();
-				apRenderSettings->mpFragmentProgram = apRenderSettings->mpFragExtrudeProgram;
-
-			}
-
-
-			//Set the vertex program.
-			if(apRenderSettings->mbLog)Log("Setting vertex program: '%s'\n",
-											apRenderSettings->mpVtxExtrudeProgram->GetName().c_str());
-			apRenderSettings->mpVtxExtrudeProgram->Bind();
-			apRenderSettings->mpVertexProgram = apRenderSettings->mpVtxExtrudeProgram;
+			//Set the gpu program.
+			if(apRenderSettings->mbLog)Log("Setting gpu program: '%s'\n",
+												apRenderSettings->mpExtrudeProgram->GetName().c_str());
+			apRenderSettings->mpExtrudeProgram->Bind();
+			apRenderSettings->mpProgram = apRenderSettings->mpExtrudeProgram;
 
 			//Render shadows
 			tCasterCacheSetIt it = m_setDynamicCasters.begin();
@@ -540,7 +529,7 @@ namespace hpl {
 					mDiffuseColor.a = cString::ToFloat(pMainElem->Attribute("Specular"),mDiffuseColor.a);
 
 					tString sFalloffImage = cString::ToString(pMainElem->Attribute("FalloffImage"),"");
-					iTexture *pTexture = mpTextureManager->Create1D(sFalloffImage,false);
+					iTexture *pTexture = mpTextureManager->Create2D(sFalloffImage,false);
 					if(pTexture) SetFalloffMap(pTexture);
 
 					ExtraXMLProperties(pMainElem);
@@ -834,10 +823,10 @@ namespace hpl {
 		//object was static.
 		if(pModelMtx || apRenderSettings->mbMatrixWasNULL==false)
 		{
-			apRenderSettings->mpVtxExtrudeProgram->SetVec3f("lightPosition", vLocalLight);
-			apRenderSettings->mpVtxExtrudeProgram->SetMatrixf("worldViewProj",
-																eGpuProgramMatrix_ViewProjection,
-																eGpuProgramMatrixOp_Identity);
+			apRenderSettings->mpExtrudeProgram->SetVec3f("lightPosition", vLocalLight);
+			apRenderSettings->mpExtrudeProgram->SetMatrixf("worldViewProj",
+																eGpuProgramMatrix::ViewProjection,
+																eGpuProgramMatrixOp::Identity);
 
 			//If a null matrix has been set, let other passes know.
 			if(pModelMtx)
@@ -1061,7 +1050,7 @@ namespace hpl {
 		//////////////////////////
 		// Data
 		if(pData->msFalloffMap != ""){
-			iTexture *pTex = mpTextureManager->Create1D(pData->msFalloffMap,false);
+			iTexture *pTex = mpTextureManager->Create2D(pData->msFalloffMap,false);
 			if(pTex) SetFalloffMap(pTex);
 		}
 

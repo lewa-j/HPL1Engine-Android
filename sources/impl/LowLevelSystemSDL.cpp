@@ -354,20 +354,6 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
-	unsigned long GetApplicationTime()
-	{
-		return SDL_GetTicks();
-	}
-
-	//-----------------------------------------------------------------------
-
-	unsigned long cLowLevelSystemSDL::GetTime()
-	{
-		return SDL_GetTicks();
-	}
-
-	//-----------------------------------------------------------------------
-
 	cDate cLowLevelSystemSDL::GetDate()
 	{
 		time_t lTime;

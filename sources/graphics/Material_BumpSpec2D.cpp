@@ -17,10 +17,10 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material_BumpSpec2D.h"
+#include "graphics/Graphics.h"
 #include "graphics/Renderer2D.h"
 #include "scene/Light.h"
 #include "scene/Camera.h"
-#include "resources/GpuProgramManager.h"
 #include "graphics/GPUProgram.h"
 
 
@@ -32,12 +32,8 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_BumpSpec2D::cMaterial_BumpSpec2D(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-	: iMaterial(asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-				aPicture,apRenderer3D)
+	cMaterial_BumpSpec2D::cMaterial_BumpSpec2D(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+	: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = false;
 		mbIsGlowing= false;
@@ -49,29 +45,15 @@ namespace hpl {
 
 		if(mbHasSpecular)
 		{
-			//load the fragment program
-			iGpuProgram* pFragProg = mpProgramManager->CreateProgram("BumpSpec2D_Light_fp.cg","main",
-				eGpuProgramType_Fragment);
-			SetProgram(pFragProg,eGpuProgramType_Fragment,0);
-
-
-			//Load the vertex program
-			iGpuProgram* pVtxProg = mpProgramManager->CreateProgram("BumpSpec2D_Light_vp.cg","main",
-				eGpuProgramType_Vertex);
-			SetProgram(pVtxProg,eGpuProgramType_Vertex,0);
+			//load the program
+			iGpuProgram* pProg = apGraphics->CreateGpuProgramFromShaders("BumpSpec2D_Light", "BumpSpec2D_Light.vert", "BumpSpec2D_Light.frag");
+			SetProgram(pProg,0);
 		}
 		else //Just use normal bump without specular
 		{
-			//load the fragment program
-			iGpuProgram* pFragProg = mpProgramManager->CreateProgram("Bump2D_Light_fp.cg","main",
-				eGpuProgramType_Fragment);
-			SetProgram(pFragProg,eGpuProgramType_Fragment,0);
-
-
-			//Load the vertex program
-			iGpuProgram* pVtxProg = mpProgramManager->CreateProgram("Bump2D_Light_vp.cg","main",
-				eGpuProgramType_Vertex);
-			SetProgram(pVtxProg,eGpuProgramType_Vertex,0);
+			//load the program
+			iGpuProgram* pProg = apGraphics->CreateGpuProgramFromShaders("Bump2D_Light", "Bump2D_Light.vert", "Bump2D_Light.frag");
+			SetProgram(pProg,0);
 		}
 
 	}
@@ -124,23 +106,20 @@ namespace hpl {
 			mpLowLevelGraphics->SetTexture(0, GetTexture(eMaterialTexture_NMap));
 			mpLowLevelGraphics->SetTexture(1, mpRenderer->GetLightMap(0));
 
-			mpProgram[eGpuProgramType_Vertex][0]->SetMatrixf("worldViewProj",
-				eGpuProgramMatrix_ViewProjection,
-				eGpuProgramMatrixOp_Identity);
+			mpProgram[0]->Bind();
+			mpProgram[0]->SetMatrixf("worldViewProj",
+				eGpuProgramMatrix::ViewProjection,
+				eGpuProgramMatrixOp::Identity);
 
-			mpProgram[eGpuProgramType_Vertex][0]->SetVec3f("LightPos",vLightPos.x, vLightPos.y,vLightPos.z);
+			mpProgram[0]->SetVec3f("LightPos",vLightPos.x, vLightPos.y,vLightPos.z);
 
 			if(mbHasSpecular)
-				mpProgram[eGpuProgramType_Vertex][0]->SetVec3f("EyePos",vEyePos.x, vEyePos.y,vEyePos.z);
+				mpProgram[0]->SetVec3f("EyePos",vEyePos.x, vEyePos.y,vEyePos.z);
 
-			mpProgram[eGpuProgramType_Vertex][0]->SetFloat("LightRadius",apLight->GetFarAttenuation());
-			mpProgram[eGpuProgramType_Vertex][0]->SetVec4f("LightColor",apLight->GetDiffuseColor().r,
+			mpProgram[0]->SetFloat("LightRadius",apLight->GetFarAttenuation());
+			mpProgram[0]->SetVec4f("LightColor",apLight->GetDiffuseColor().r,
 									apLight->GetDiffuseColor().g, apLight->GetDiffuseColor().b,
 									apLight->GetDiffuseColor().a);
-
-			mpProgram[eGpuProgramType_Vertex][0]->Bind();
-
-			mpProgram[eGpuProgramType_Fragment][0]->Bind();
 		}
 		else if(aType == eMaterialRenderType_Diffuse)
 		{
@@ -169,8 +148,7 @@ namespace hpl {
 			mpLowLevelGraphics->SetTexture(0, NULL);
 			mpLowLevelGraphics->SetTexture(1, NULL);
 
-			mpProgram[eGpuProgramType_Vertex][0]->UnBind();
-			mpProgram[eGpuProgramType_Fragment][0]->UnBind();
+			mpProgram[0]->UnBind();
 		}
 		else if(aType == eMaterialRenderType_Diffuse)
 		{

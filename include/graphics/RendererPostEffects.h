@@ -32,10 +32,11 @@ namespace hpl {
 
 	class iLowLevelGraphics;
 	class iLowLevelResources;
+	class cGraphics;
 	class iGpuProgram;
 	class cResources;
 	class iTexture;
-	class cGpuProgramManager;
+	class cGpuShaderManager;
 	class cRenderList;
 	class cRenderer3D;
 
@@ -67,8 +68,8 @@ namespace hpl {
 	class cRendererPostEffects
 	{
 	public:
-		cRendererPostEffects(iLowLevelGraphics *apLowLevelGraphics,cResources* apResources,
-							cRenderList *apRenderList, cRenderer3D *apRenderer3D);
+		cRendererPostEffects(cGraphics *apGraphics, cResources* apResources,
+							cRenderList *apRenderList);
 		~cRendererPostEffects();
 
 		/**
@@ -130,8 +131,9 @@ namespace hpl {
 
 		iLowLevelGraphics *mpLowLevelGraphics;
 		iLowLevelResources *mpLowLevelResources;
+		cGraphics *mpGraphics;
 		cResources* mpResources;
-		cGpuProgramManager* mpGpuManager;
+		cGpuShaderManager* mpGpuManager;
 		cRenderer3D *mpRenderer3D;
 
 		cRenderList *mpRenderList;
@@ -142,21 +144,17 @@ namespace hpl {
 
 		cImageTrailEffect mImageTrailData;
 
-		iGpuProgram *mpBlurVP;
-		iGpuProgram *mpBlur2dFP;
-		iGpuProgram *mpBlurRectFP;
+		iGpuProgram *mpBlur2dP;
+		iGpuProgram *mpBlurRectP;
 		bool mbBlurFallback;
 
-		iGpuProgram *mpBloomVP;
-		iGpuProgram *mpBloomFP;
+		iGpuProgram *mpBloomP;
 
 		iTexture *mpBloomBlurTexture;
 
-		iGpuProgram *mpMotionBlurVP;
-		iGpuProgram *mpMotionBlurFP;
+		iGpuProgram *mpMotionBlurP;
 
-		iGpuProgram *mpDepthOfFieldVP;
-		iGpuProgram *mpDepthOfFieldFP;
+		iGpuProgram *mpDepthOfFieldP;
 		iTexture *mpDofBlurTexture;
 
 		tVertexVec mvTexRectVtx;

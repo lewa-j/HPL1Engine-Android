@@ -53,13 +53,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cVideoManager::Create(const tString& asName)
-	{
-		return CreateVideo(asName);
-	}
-
-	//-----------------------------------------------------------------------
-
 	iVideoStream* cVideoManager::CreateVideo(const tString& asName)
 	{
 		BeginLoad(asName);

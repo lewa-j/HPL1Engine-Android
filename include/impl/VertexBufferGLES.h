@@ -73,7 +73,7 @@ namespace hpl
 
 		void SetVertexStates(tVertexFlag aFlags);
 
-		unsigned int mlElementHandle;
+		unsigned int mlElementHandle = 0;
 
 		tFloatVec mvVertexArray[klNumOfVertexFlags];
 
@@ -81,9 +81,9 @@ namespace hpl
 
 		tUIntVec mvIndexArray;
 
-		bool mbHasShadowDouble;
+		bool mbHasShadowDouble = false;
 
-		bool mbCompiled;
+		bool mbCompiled = false;
 	};
 
 }

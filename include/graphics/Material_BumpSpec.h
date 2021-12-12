@@ -20,17 +20,17 @@
 #define HPL_MATERIAL_BUMP_SPEC_H
 
 #include "graphics/Material_BaseLight.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
+
+	class cMaterialType_BumpSpec;
 
 	class cMaterial_BumpSpec : public iMaterial_BaseLight
 	{
 	public:
-		cMaterial_BumpSpec(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_BumpSpec();
+		cMaterial_BumpSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BumpSpec *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_BumpSpec();
 
 	private:
 	};
@@ -38,14 +38,14 @@ namespace hpl {
 	class cMaterialType_BumpSpec : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_BumpSpec(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="bumpspecular";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
 	};
 
 };

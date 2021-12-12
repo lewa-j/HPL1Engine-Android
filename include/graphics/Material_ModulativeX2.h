@@ -20,29 +20,24 @@
 #define HPL_MATERIAL_MODULATIVE_X_2_H
 
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 
 	class cMaterial_ModulativeX2 : public iMaterial
 	{
 	public:
-		cMaterial_ModulativeX2(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-
+		cMaterial_ModulativeX2(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
 		virtual ~cMaterial_ModulativeX2();
 
 		tTextureTypeList GetTextureTypes();
 
 		bool UsesType(eMaterialRenderType aType);
 
-		iGpuProgram* GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
+		iGpuProgram* GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight) override;
 		iMaterialProgramSetup* GetVertexProgramSetup(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesLight(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight);
-
-		iGpuProgram* GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 
 		eMaterialAlphaMode GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		eMaterialBlendMode GetBlendMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
@@ -66,25 +61,22 @@ namespace hpl {
 			tVertexVec *apVtxVec,cVector3f *apTransform,unsigned int alIndexAdd){}
 
 	private:
-		iGpuProgram *mpFogVtxProg;
-		iGpuProgram *mpFogFragProg;
+		iGpuProgram *mpFogProg;
 	};
 
 	class cMaterialType_ModulativeX2 : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_ModulativeX2(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="modulativex2";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
 		{
-			return hplNew( cMaterial_ModulativeX2, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_ModulativeX2, (asName, apGraphics, apResources, this, aPicture) );
 		}
 	};
 

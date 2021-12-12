@@ -19,6 +19,7 @@
 #include "gui/Gui.h"
 
 #include "graphics/Graphics.h"
+#include "system/Platform.h"
 #include "sound/Sound.h"
 
 #include "gui/GuiSet.h"
@@ -132,7 +133,7 @@ namespace hpl {
 	{
 		///////////////////////////////////////
 		//Calculate time since last render
-		unsigned long lCurrentTime = GetApplicationTime();
+		unsigned long lCurrentTime = cPlatform::GetApplicationTime();
 		if(mlLastRenderTime > lCurrentTime) mlLastRenderTime = lCurrentTime;
 
 		float fTimeStep = (float)(lCurrentTime - mlLastRenderTime) / 1000.0f;

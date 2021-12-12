@@ -40,7 +40,7 @@ namespace hpl {
 	class iResourceManager;
 	class cFileSearcher;
 	class cImageManager;
-	class cGpuProgramManager;
+	class cGpuShaderManager;
 	class cTileSetManager;
 	class cImageEntityManager;
 	class cParticleManager;
@@ -188,7 +188,7 @@ namespace hpl {
 		bool LoadResourceDirsFile(const tString &asFile);
 
 		cImageManager* GetImageManager(){return mpImageManager;}
-		cGpuProgramManager* GetGpuProgramManager(){return mpGpuProgramManager;}
+		cGpuShaderManager* GetGpuShaderManager(){return mpGpuShaderManager;}
 		cTileSetManager* GetTileSetManager(){ return mpTileSetManager;}
 		cImageEntityManager* GetImageEntityManager(){ return mpImageEntityManager; }
 		cParticleManager* GetParticleManager(){ return mpParticleManager;}
@@ -213,7 +213,7 @@ namespace hpl {
 
 		tResourceManagerList mlstManagers;
 		cImageManager *mpImageManager;
-		cGpuProgramManager *mpGpuProgramManager;
+		cGpuShaderManager *mpGpuShaderManager;
 		cTileSetManager* mpTileSetManager;
 		cImageEntityManager* mpImageEntityManager;
 		cParticleManager* mpParticleManager;

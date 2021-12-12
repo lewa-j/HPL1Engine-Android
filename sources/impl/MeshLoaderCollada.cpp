@@ -23,6 +23,7 @@
 #include "graphics/VertexBuffer.h"
 #include "system/String.h"
 #include "system/System.h"
+#include "system/Platform.h"
 
 #include "scene/Scene.h"
 #include "scene/PortalContainer.h"
@@ -114,7 +115,7 @@ namespace hpl {
 
 		mFlags = aFlags;
 
-		unsigned long lStartTime = GetApplicationTime();
+		unsigned long lStartTime = cPlatform::GetApplicationTime();
 
 		//Fill the structures with collada file data
 		bool bRet = FillStructures(asFile, &vColladaImages, &vColladaTextures,
@@ -123,7 +124,7 @@ namespace hpl {
 			NULL,NULL,
 			&ColladaScene,true);
 
-		unsigned long lTime = GetApplicationTime() - lStartTime;
+		unsigned long lTime = cPlatform::GetApplicationTime() - lStartTime;
 		Log("Loading collada for '%s' took: %d ms\n",asFile.c_str(),lTime);
 
 		if(bRet==false) return NULL;
@@ -2129,7 +2130,7 @@ namespace hpl {
 			if(apNode->msSource != "")
 			{
 				//Get number of chars in prefix.
-				int lPrefixChars =1;
+				size_t lPrefixChars = 1;
 				while(	lPrefixChars < apNode->msName.size() &&
 						apNode->msName[lPrefixChars]!= '_' &&
 						apNode->msName[lPrefixChars]!='\0') {
@@ -2337,7 +2338,7 @@ namespace hpl {
 				//Get portal number
 
 				//Get digits in num:
-				int lDigits =1;
+				size_t lDigits = 1;
 				while(apNode->msName[7+lDigits] != '_' && apNode->msName[7+lDigits] != 0) lDigits++;
 
 				//get string and convert to int
@@ -2351,7 +2352,7 @@ namespace hpl {
 				// Get target room
 
 				//Get the char pos for the target room
-				int lStartChar = 7 + lDigits + 1;
+				size_t lStartChar = 7 + lDigits + 1;
 				tString sTest = cString::ToLowerCase(cString::Sub(apNode->msName,lStartChar, 4));
 				if(sTest != "room"){
 					Error("Bad portal id 's'!\n", apNode->msName.c_str());
@@ -2359,7 +2360,7 @@ namespace hpl {
 				}
 
 				//Get number of digits
-				lDigits =1;
+				lDigits = 1;
 				while(	apNode->msName.length() > lStartChar+4+lDigits &&
 						apNode->msName[lStartChar+4+lDigits] != '_' &&
 						apNode->msName.length() >= 7+lDigits &&

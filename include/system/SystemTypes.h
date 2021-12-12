@@ -57,6 +57,15 @@ namespace hpl {
 
 	//--------------------------------------------------------
 
+	enum ePlatform
+	{
+		ePlatform_Win32,
+		ePlatform_Linux,
+		ePlatform_Mac,
+
+		ePlatform_LastEnum
+	};
+
 	enum eSystemPath
 	{
 		eSystemPath_Personal,
@@ -64,7 +73,6 @@ namespace hpl {
 	};
 
 	//--------------------------------------------------------
-
 
 	typedef unsigned int tFlag;
 
@@ -78,7 +86,6 @@ namespace hpl {
 
 	typedef std::set<tString> tStringSet;
 	typedef tStringSet::iterator tStringSetIt;
-
 
 	//--------------------------------------------------------
 
@@ -104,6 +111,7 @@ namespace hpl {
 	typedef std::vector<int> tIntVec;
 	typedef tIntVec::iterator tIntVecIt;
 
+	// why IntList is a vector and not list?
 	typedef std::vector<int> tIntList;
 	typedef tIntVec::iterator tIntListIt;
 
@@ -127,7 +135,6 @@ namespace hpl {
 		eMsgBoxType_Warning,
 		eMsgBoxType_Default
 	} eMsgBoxType;
-
 
 	//////////////////////////////////////////////////
 	///////// DEFINES ///////////////////////////////
@@ -343,6 +350,7 @@ namespace hpl {
 		{
 			if(*it == pObject){
 				aCont.erase(it);
+				return;
 			}
 		}
 	}

@@ -39,13 +39,12 @@ namespace hpl {
 		eRenderStateType_Depth = 3,
 		eRenderStateType_AlphaMode = 4,
 		eRenderStateType_BlendMode = 5,
-		eRenderStateType_VertexProgram = 6,
-		eRenderStateType_FragmentProgram = 7,
-		eRenderStateType_Texture = 8,
-		eRenderStateType_VertexBuffer = 9,
-		eRenderStateType_Matrix = 10,
-		eRenderStateType_Render = 11,
-		eRenderStateType_LastEnum  = 12
+		eRenderStateType_Program = 6,
+		eRenderStateType_Texture = 7,
+		eRenderStateType_VertexBuffer = 8,
+		eRenderStateType_Matrix = 9,
+		eRenderStateType_Render = 10,
+		eRenderStateType_LastEnum  = 11
 	};
 	///////////// INTERFACE ////////////////////
 
@@ -81,16 +80,13 @@ namespace hpl {
 		eMaterialBlendMode mBlendMode;
 		eMaterialChannelMode mChannelMode;
 
-		//Vertex program
-		iGpuProgram *mpVtxProgram;
+		//Program
+		iGpuProgram *mpProgram;
 		iMaterialProgramSetup* mpVtxProgramSetup;
+		iMaterialProgramSetup *mpFragProgramSetup;
 		bool mbUsesLight;
 		bool mbUsesEye;
 		iLight3D* mpLight;
-
-		//Fragment program
-		iGpuProgram *mpFragProgram;
-		iMaterialProgramSetup* mpFragProgramSetup;
 
 		//Texture
 		iTexture* mpTexture[MAX_TEXTUREUNITS];
@@ -118,8 +114,7 @@ namespace hpl {
 		int CompareDepth(const iRenderState* apState)const;
 		int CompareAlpha(const iRenderState* apState)const;
 		int CompareBlend(const iRenderState* apState)const;
-		int CompareVtxProg(const iRenderState* apState)const;
-		int CompareFragProg(const iRenderState* apState)const;
+		int CompareProg(const iRenderState* apState)const;
 		int CompareTexture(const iRenderState* apState)const;
 		int CompareVtxBuff(const iRenderState* apState)const;
 		int CompareMatrix(const iRenderState* apState)const;
@@ -131,8 +126,7 @@ namespace hpl {
 		void SetDepthMode(cRenderSettings* apSettings);
 		void SetBlendMode(cRenderSettings* apSettings);
 		void SetAlphaMode(cRenderSettings* apSettings);
-		void SetVtxProgMode(cRenderSettings* apSettings);
-		void SetFragProgMode(cRenderSettings* apSettings);
+		void SetProgMode(cRenderSettings* apSettings);
 		void SetTextureMode(cRenderSettings* apSettings);
 		void SetVtxBuffMode(cRenderSettings* apSettings);
 		void SetMatrixMode(cRenderSettings* apSettings);
@@ -182,12 +176,12 @@ namespace hpl {
 		eMaterialChannelMode mChannelMode;
 	};
 
-	/////////////// VERTEX PROGRAM //////////////////
+	/////////////// PROGRAM //////////////////
 
-	class cRenderState_VertexProgram : public iRenderState
+	class cRenderState_Program : public iRenderState
 	{
 	public:
-		cRenderState_VertexProgram() : iRenderState(eRenderStateType_VertexProgram){}
+		cRenderState_Program() : iRenderState(eRenderStateType_Program){}
 
 		int Compare(iRenderState* apState);
 		void SetMode(cRenderSettings* apSettings);
@@ -196,20 +190,6 @@ namespace hpl {
 		iGpuProgram *mpProgram;
 		bool mbUsesLight;
 		bool mbUsesEye;
-	};
-
-	//////////////// FRAGMENT PROGRAM /////////////////
-
-	class cRenderState_FragmentProgram : public iRenderState
-	{
-	public:
-		cRenderState_FragmentProgram() : iRenderState(eRenderStateType_FragmentProgram){}
-
-		int Compare(iRenderState* apState);
-		void SetMode(cRenderSettings* apSettings);
-
-		//Properties:
-		iGpuProgram *mpProgram;
 	};
 
 	///////////////// TEXTURE ////////////////

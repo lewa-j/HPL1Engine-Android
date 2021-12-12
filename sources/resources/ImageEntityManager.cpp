@@ -57,45 +57,38 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cImageEntityManager::Create(const tString& asName)
+	cImageEntityData* cImageEntityManager::CreateData(const tString& asName)
 	{
 		tString sPath;
-		cImageEntityData* pIEData;
+		cImageEntityData *pIEData;
 		tString asNewName;
 
 		BeginLoad(asName);
 
-		asNewName = cString::SetFileExt(asName,"hed");
+		asNewName = cString::SetFileExt(asName, "hed");
 
-		pIEData = static_cast<cImageEntityData*>(FindLoadedResource(asNewName,sPath));
+		pIEData = static_cast<cImageEntityData *>(FindLoadedResource(asNewName, sPath));
 
-		if(pIEData==NULL && sPath!="")
+		if (pIEData == NULL && sPath != "")
 		{
-			pIEData = hplNew( cImageEntityData, (asNewName,mpGraphics,mpResources) );
+			pIEData = hplNew(cImageEntityData, (asNewName, mpGraphics, mpResources));
 
-			if(pIEData->CreateFromFile(sPath,mvImageHandle)==false){
+			if (pIEData->CreateFromFile(sPath, mvImageHandle) == false) {
 				EndLoad();
 				return NULL;
 			}
 
-			if(pIEData)AddResource(pIEData);
+			if (pIEData)AddResource(pIEData);
 		}
 		else
 		{
 		}
 
-		if(pIEData)pIEData->IncUserCount();
-		else Error("Couldn't load image entity data '%s'\n",asNewName.c_str());
+		if (pIEData)pIEData->IncUserCount();
+		else Error("Couldn't load image entity data '%s'\n", asNewName.c_str());
 
 		EndLoad();
 		return pIEData;
-	}
-
-	//-----------------------------------------------------------------------
-
-	cImageEntityData* cImageEntityManager::CreateData(const tString& asName)
-	{
-		return 	static_cast<cImageEntityData*>(Create(asName));
 	}
 
 	//-----------------------------------------------------------------------

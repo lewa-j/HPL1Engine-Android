@@ -20,30 +20,25 @@
 #define HPL_MATERIAL_ADDITIVE_H
 
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
+	class cMaterialType_Additive;
 
 	class cMaterial_Additive : public iMaterial
 	{
 	public:
-		cMaterial_Additive(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-
+		cMaterial_Additive(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_Additive *apType, eMaterialPicture aPicture);
 		virtual ~cMaterial_Additive();
 
 		tTextureTypeList GetTextureTypes();
 
 		bool UsesType(eMaterialRenderType aType);
 
-		iGpuProgram* GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
-		iMaterialProgramSetup* GetVertexProgramSetup(eMaterialRenderType aType, int alPass, iLight3D *apLight);
-
+		iGpuProgram* GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight) override;
+		iMaterialProgramSetup *GetVertexProgramSetup(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesLight(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight);
-
-		iGpuProgram* GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 
 		eMaterialAlphaMode GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		eMaterialBlendMode GetBlendMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
@@ -67,26 +62,25 @@ namespace hpl {
 			tVertexVec *apVtxVec,cVector3f *apTransform,unsigned int alIndexAdd){}
 
 	private:
-		iGpuProgram *mpFogVtxProg;
-		iGpuProgram *mpFogFragProg;
+		iGpuProgram *mpFogProg = nullptr;
 	};
 
 	class cMaterialType_Additive : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_Additive(cGraphics *apGraphics, cResources *apResources);
+		virtual ~cMaterialType_Additive();
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="additive";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		{
-			return hplNew( cMaterial_Additive, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
-		}
+		iMaterial *Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
+
+	private:
+		iGpuProgram *mpFogProg = nullptr;
+
+		friend cMaterial_Additive;
 	};
 
 };

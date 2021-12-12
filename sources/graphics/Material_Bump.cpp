@@ -18,8 +18,6 @@
  */
 #include "graphics/Material_Bump.h"
 
-#include "graphics/Material_Fallback01_BaseLight.h"
-#include "graphics/Material_Fallback02_BaseLight.h"
 #include "graphics/Material_Flat.h"
 #include "graphics/Material_Alpha.h"
 
@@ -31,14 +29,10 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_Bump::cMaterial_Bump(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		: iMaterial_BaseLight(	"Diffuse_Light_vp.cg",
-								"Bump_Light_fp.cg",
-			asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-			aPicture,apRenderer3D)
+	cMaterial_Bump::cMaterial_Bump(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+		: iMaterial_BaseLight(	"Diffuse_Light.vert",
+								"Bump_Light.frag",
+			asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbUseSpecular = false;
 		mbUseNormalMap = true;
@@ -59,37 +53,24 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iMaterial* cMaterialType_Bump::Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-						cImageManager* apImageManager, cTextureManager *apTextureManager,
-						cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-						eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+    cMaterialType_Bump::cMaterialType_Bump(cGraphics *apGraphics)
+		: iMaterialType(apGraphics)
 	{
-		if( apLowLevelGraphics->GetCaps(eGraphicCaps_GL_FragmentProgram) &&
-			iMaterial::GetQuality() >= eMaterialQuality_High)
+	}
+
+	cMaterialType_Bump::~cMaterialType_Bump()
+	{
+	}
+
+    iMaterial* cMaterialType_Bump::Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture)
+	{
+		if( iMaterial::GetQuality() >= eMaterialQuality_High)
 		{
-			return hplNew( cMaterial_Bump, (asName,apLowLevelGraphics,
-									apImageManager,apTextureManager,apRenderer,
-									apProgramManager,aPicture,apRenderer3D) );
-		}
-		else if(apLowLevelGraphics->GetCaps(eGraphicCaps_MaxTextureImageUnits)>=3 &&
-			iMaterial::GetQuality() >= eMaterialQuality_Medium)
-		{
-			return hplNew( cMaterial_Fallback01_Bump, (asName,apLowLevelGraphics,
-											apImageManager,apTextureManager,apRenderer,
-											apProgramManager,aPicture,apRenderer3D) );
-		}
-		else if(apLowLevelGraphics->GetCaps(eGraphicCaps_GL_VertexProgram) &&
-			iMaterial::GetQuality() >= eMaterialQuality_Low)
-		{
-			return hplNew( cMaterial_Fallback02_Diffuse, (asName,apLowLevelGraphics,
-										apImageManager,apTextureManager,apRenderer,
-										apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_Bump, (asName, apGraphics, apResources, this, aPicture) );
 		}
 		else
 		{
-			return hplNew( cMaterial_Flat, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_Flat, (asName, apGraphics, apResources, this, aPicture) );
 		}
 	}
 

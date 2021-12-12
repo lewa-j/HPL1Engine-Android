@@ -55,4 +55,9 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	void iResourceBase::SetFullPath(const tWString &asPath)
+	{
+		msFullPath = asPath;
+	}
+
 }

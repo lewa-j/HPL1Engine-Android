@@ -17,10 +17,13 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material_BaseLight.h"
+#include "graphics/MaterialType.h"
+
+#include "graphics/Graphics.h"
 #include "graphics/Renderer2D.h"
 #include "scene/Light.h"
 #include "scene/Camera.h"
-#include "resources/GpuProgramManager.h"
+#include "resources/GpuShaderManager.h"
 #include "resources/TextureManager.h"
 #include "graphics/GPUProgram.h"
 #include "math/Math.h"
@@ -62,12 +65,8 @@ namespace hpl {
 
 	iMaterial_BaseLight::iMaterial_BaseLight(const tString& asLightVertexProgram,
 										const tString& asLightFragmentProgram,
-		const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		: iMaterial(asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-					aPicture,apRenderer3D)
+		const tString &asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+		: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = false;
 		mbIsGlowing= false;
@@ -75,30 +74,18 @@ namespace hpl {
 		mbUseColorSpecular = false;
 
 		for(int i=0; i<eBaseLightProgram_LastEnum; i++) {
-			mvVtxPrograms[i] =NULL;
-			mvFragPrograms[i] =NULL;
+			mvPrograms[i] = NULL;
 		}
 
 		////////////////////////////////////////
 		//Get names for other light programs
-		tString sSpotVtxProgram = cString::Sub(asLightVertexProgram,0, (int)asLightVertexProgram.size() - 5) +
-									"Spot_vp.cg";
+		tString sSpotVtxShader = cString::Sub(asLightVertexProgram,0, (int)asLightVertexProgram.size() - 5) +
+									"_Spot.vert";
 
 		///////////////////////////////////////////
-		//Load the light pass vertex program
+		//Load the light pass program
 		//Point
-		mvVtxPrograms[eBaseLightProgram_Point1] = mpProgramManager->CreateProgram(asLightVertexProgram,"main",
-			eGpuProgramType_Vertex);
-		//Spot
-		mvVtxPrograms[eBaseLightProgram_Spot1] = mpProgramManager->CreateProgram(sSpotVtxProgram,"main",
-			eGpuProgramType_Vertex);
-
-		///////////////////////////////////////////
-		//Load the light pass fragment program
-		//Point
-		mvFragPrograms[eBaseLightProgram_Point1] = mpProgramManager->CreateProgram(asLightFragmentProgram,"main",
-			eGpuProgramType_Fragment);
-
+		mvPrograms[eBaseLightProgram_Point1] = apGraphics->CreateGpuProgramFromShaders(asName + "_Point1", asLightVertexProgram, asLightFragmentProgram);
 
 		//////////////////////////////////////////////////////
 		//Check if there is enough texture units for 1 pass spot
@@ -107,55 +94,50 @@ namespace hpl {
 			mbUsesTwoPassSpot = false;
 
 			tString sSpotFragProgram = cString::Sub(asLightFragmentProgram,0, (int)asLightFragmentProgram.size() - 5) +
-													"Spot_fp.cg";
+													"_Spot.frag";
 
-			mvFragPrograms[eBaseLightProgram_Spot1] = mpProgramManager->CreateProgram(sSpotFragProgram,"main",
-															eGpuProgramType_Fragment);
+			mvPrograms[eBaseLightProgram_Spot1] = apGraphics->CreateGpuProgramFromShaders(asName + "_Spot1", sSpotVtxShader, sSpotFragProgram);
 		}
 		else
 		{
 			mbUsesTwoPassSpot = true;
 
-			tString sSpotFragProgram1 = "Diffuse_Light_Spot_fp_pass1.cg";//cString::Sub(asLightFragmentProgram,0, (int)asLightFragmentProgram.size() - 5) +
-										//			"Spot_fp_pass1.cg";
+			tString sSpotFragProgram1 = "Diffuse_Light_Spot_pass1.frag";//cString::Sub(asLightFragmentProgram,0, (int)asLightFragmentProgram.size() - 5) +
+										//			"_Spot_pass1.frag";
 			tString sSpotFragProgram2 = cString::Sub(asLightFragmentProgram,0, (int)asLightFragmentProgram.size() - 5) +
-													"Spot_fp_pass2.cg";
+													"_Spot_pass2.frag";
 
-			mvFragPrograms[eBaseLightProgram_Spot1] = mpProgramManager->CreateProgram(sSpotFragProgram1,"main",
-														eGpuProgramType_Fragment);
-
-			mvFragPrograms[eBaseLightProgram_Spot2] = mpProgramManager->CreateProgram(sSpotFragProgram2,"main",
-														eGpuProgramType_Fragment);
-
+			mvPrograms[eBaseLightProgram_Spot1] = apGraphics->CreateGpuProgramFromShaders(asName + "_Spot1", sSpotVtxShader, sSpotFragProgram1);
+			mvPrograms[eBaseLightProgram_Spot2] = apGraphics->CreateGpuProgramFromShaders(asName + "_Spot2", sSpotVtxShader, sSpotFragProgram2);
 		}
 
 
 		///////////////////////////////////////////
 		//Load the Z pass vertex program
-		iGpuProgram *pVtxProg = mpProgramManager->CreateProgram("Diffuse_Color_vp.cg","main",eGpuProgramType_Vertex);
-		SetProgram(pVtxProg,eGpuProgramType_Vertex,1);
+		iGpuProgram *pProg = apGraphics->CreateGpuProgramFromShaders("ZPass", "Diffuse_Color.vert", "Diffuse_Color.vert");
+		SetProgram(pProg,1);
 
 
 		///////////////////////////////////////////
 		//More fragment programs
-		mpSimpleFP = mpProgramManager->CreateProgram("Diffuse_Color_fp.cg","main",eGpuProgramType_Fragment);
-		mpAmbientFP = mpProgramManager->CreateProgram("Ambient_Color_fp.cg","main",eGpuProgramType_Fragment);
+		mpSimpleP = apGraphics->CreateGpuProgramFromShaders("iMaterial_BaseLight_Simple", "Diffuse_Color.vert", "Diffuse_Color.frag");
+		mpAmbientP = apGraphics->CreateGpuProgramFromShaders("iMaterial_BaseLight_Ambient", "Diffuse_Color.vert", "Ambient_Color.frag");
 
 		///////////////////////////////////////////
 		//Normalization map
 		mpNormalizationMap = mpTextureManager->CreateCubeMap("Normalization", false);
+		mpNormalizationMap->SetWrapR(eTextureWrap_ClampToEdge);
 		mpNormalizationMap->SetWrapS(eTextureWrap_ClampToEdge);
 		mpNormalizationMap->SetWrapT(eTextureWrap_ClampToEdge);
 
 		///////////////////////////////////////////
 		//Negative rejection
-		mpSpotNegativeRejectMap = mpTextureManager->Create1D("core_spot_negative_reject",false);
+		mpSpotNegativeRejectMap = mpTextureManager->Create2D("core_spot_negative_reject",false);
 		if(mpSpotNegativeRejectMap)
 		{
 			mpSpotNegativeRejectMap->SetWrapS(eTextureWrap_ClampToEdge);
 			mpSpotNegativeRejectMap->SetWrapT(eTextureWrap_ClampToEdge);
 		}
-
 
 		mbUseSpecular = false;
 		mbUseNormalMap = false;
@@ -170,11 +152,11 @@ namespace hpl {
 
 		for(int i=0; i<eBaseLightProgram_LastEnum; i++)
 		{
-			if(mvVtxPrograms[i])	mpProgramManager->Destroy(mvVtxPrograms[i]);
-			if(mvFragPrograms[i])	mpProgramManager->Destroy(mvFragPrograms[i]);
+			if(mvPrograms[i]) mpType->DestroyProgram(this, i, mvPrograms[i]);
 		}
 
-		if(mpSimpleFP) mpProgramManager->Destroy(mpSimpleFP);
+		if (mpSimpleP) mpType->DestroyProgram(this, 0, mpSimpleP);
+		if (mpAmbientP) mpType->DestroyProgram(this, 0, mpAmbientP);
 
 	}
 
@@ -186,20 +168,39 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iGpuProgram* iMaterial_BaseLight::GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
+	iGpuProgram* iMaterial_BaseLight::GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		if(apLight && aType == eMaterialRenderType_Light)
 		{
 			eBaseLightProgram program;
 
-			if(apLight->GetLightType()==eLight3DType_Point)		program = eBaseLightProgram_Point1;
-			else if(apLight->GetLightType()==eLight3DType_Spot)	program = eBaseLightProgram_Spot1;
+			///////////////
+			//Spot two pass
+			if (apLight->GetLightType() == eLight3DType_Spot
+				&& mbUsesTwoPassSpot)
+			{
+				if (alPass == 0)	program = eBaseLightProgram_Spot1;
+				else			program = eBaseLightProgram_Spot2;
+			}
+			//////////////////
+			//Other
+			else
+			{
+				if (apLight->GetLightType() == eLight3DType_Point)		program = eBaseLightProgram_Point1;
+				else if (apLight->GetLightType() == eLight3DType_Spot)	program = eBaseLightProgram_Spot1;
+			}
 
-			return mvVtxPrograms[program];
+			return mvPrograms[program];
 		}
 
-		if(aType == eMaterialRenderType_Z) return mpProgram[eGpuProgramType_Vertex][1];
-		if(aType == eMaterialRenderType_Diffuse) return mpProgram[eGpuProgramType_Vertex][1];
+		else if (aType == eMaterialRenderType_Diffuse)
+		{
+			return mpSimpleP;
+		}
+		else if (aType == eMaterialRenderType_Z)
+		{
+			return mpAmbientP;
+		}
 
 		return NULL;
 	}
@@ -221,43 +222,6 @@ namespace hpl {
 	}
 
 	//------------------------------------------------------------------------------------
-
-	iGpuProgram* iMaterial_BaseLight::GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
-	{
-		if(aType == eMaterialRenderType_Light)
-		{
-			eBaseLightProgram program;
-
-			///////////////
-			//Spot two pass
-			if(aType == eMaterialRenderType_Light && apLight->GetLightType() == eLight3DType_Spot
-				&& mbUsesTwoPassSpot)
-			{
-				if(alPass==0)	program = eBaseLightProgram_Spot1;
-				else			program = eBaseLightProgram_Spot2;
-			}
-			//////////////////
-			//Other
-			else
-			{
-				if(apLight->GetLightType()==eLight3DType_Point)		program = eBaseLightProgram_Point1;
-				else if(apLight->GetLightType()==eLight3DType_Spot)	program = eBaseLightProgram_Spot1;
-			}
-
-
-			return mvFragPrograms[program];
-		}
-		else if(aType == eMaterialRenderType_Diffuse)
-		{
-			return mpSimpleFP;
-		}
-		else if(aType == eMaterialRenderType_Z)
-		{
-			return mpAmbientFP;
-		}
-		return NULL;
-	}
-
 
 	iMaterialProgramSetup * iMaterial_BaseLight::GetFragmentProgramSetup(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{

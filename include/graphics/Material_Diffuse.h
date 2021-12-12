@@ -20,17 +20,15 @@
 #define HPL_MATERIAL_DIFFUSE_H
 
 #include "graphics/Material_BaseLight.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 
 	class cMaterial_Diffuse : public iMaterial_BaseLight
 	{
 	public:
-		cMaterial_Diffuse(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_Diffuse();
+		cMaterial_Diffuse(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_Diffuse();
 
 	private:
 	};
@@ -38,16 +36,13 @@ namespace hpl {
 	class cMaterialType_Diffuse : public iMaterialType
 	{
 	public:
-		cMaterialType_Diffuse();
+		cMaterialType_Diffuse(cGraphics *apGraphics);
 
-		bool IsCorrect(tString asName){
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="diffuse";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
 
 	private:
 		int mlTechLevel;

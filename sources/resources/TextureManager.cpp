@@ -255,13 +255,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cTextureManager::Create(const tString& asName)
-	{
-		return Create2D(asName,true);
-	}
-
-	//-----------------------------------------------------------------------
-
 	void cTextureManager::Unload(iResourceBase* apResource)
 	{
 

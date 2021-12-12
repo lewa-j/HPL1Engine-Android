@@ -20,6 +20,7 @@
 #include "system/String.h"
 #include "resources/LowLevelResources.h"
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 
 
 namespace hpl {
@@ -55,7 +56,7 @@ namespace hpl {
 		//Make the path with only "/" and lower case.
 		asPath = cString::ToLowerCase(cString::ReplaceCharTo(asPath,"\\","/"));
 
-		asPath = GetPlatformPath(asPath);
+		asPath = cPlatform::GetPlatformPath(asPath);
 
 		tStringSetIt it = m_setLoadedDirs.find(asPath);
 		//If the path is not allready added, add it!

@@ -27,6 +27,7 @@
 #include "physics/SurfaceData.h"
 #include "system/LowLevelSystem.h"
 #include "system/System.h"
+#include "system/Platform.h"
 #include "math/Math.h"
 #include "graphics/LowLevelGraphics.h"
 #include "scene/World3D.h"
@@ -78,7 +79,7 @@ namespace hpl {
 
 		////////////////////////////////////
 		//Update character bodies
-		unsigned int lTime = GetApplicationTime();
+		unsigned int lTime = cPlatform::GetApplicationTime();
 		tCharacterBodyListIt CharIt = mlstCharBodies.begin();
 		for(; CharIt != mlstCharBodies.end(); ++CharIt)
 		{
@@ -105,7 +106,7 @@ namespace hpl {
 
 		////////////////////////////////////
 		//Simulate the physics
-		lTime = GetApplicationTime();
+		lTime = cPlatform::GetApplicationTime();
 		Simulate(afTimeStep);
 		//LogUpdate(" Updating lowlevel physics took %d ms\n",mpWorld3D->GetSystem()->GetLowLevel()->GetTime() - lTime);
 

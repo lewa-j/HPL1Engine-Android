@@ -27,6 +27,7 @@
 #include "system/Script.h"
 #include "system/SerializeClass.h"
 #include "system/Container.h"
+#include "system/Platform.h"
 
 #include "input/Input.h"
 #include "input/InputDevice.h"
@@ -87,7 +88,6 @@
 #include "resources/LowLevelResources.h"
 #include "resources/FileSearcher.h"
 #include "resources/ImageManager.h"
-#include "resources/GpuProgramManager.h"
 #include "resources/TileSetManager.h"
 #include "resources/ImageEntityManager.h"
 #include "resources/ParticleManager.h"

@@ -306,12 +306,6 @@
     <ClInclude Include="include\graphics\Material_EnvMap_Reflect.h">
       <Filter>Graphics\Materials</Filter>
     </ClInclude>
-    <ClInclude Include="include\graphics\Material_Fallback01_BaseLight.h">
-      <Filter>Graphics\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="include\graphics\Material_Fallback02_BaseLight.h">
-      <Filter>Graphics\Materials</Filter>
-    </ClInclude>
     <ClInclude Include="include\graphics\Material_Flat.h">
       <Filter>Graphics\Materials</Filter>
     </ClInclude>
@@ -546,9 +540,6 @@
     <ClInclude Include="include\impl\tinyXML\tinyxml.h">
       <Filter>Impl\TinyXml</Filter>
     </ClInclude>
-    <ClInclude Include="include\impl\CGProgram.h">
-      <Filter>Impl\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="include\impl\LowLevelGraphicsSDL.h">
       <Filter>Impl\Graphics</Filter>
     </ClInclude>
@@ -679,9 +670,6 @@
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="include\resources\FrameTexture.h">
-      <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="include\resources\GpuProgramManager.h">
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include="include\resources\ImageEntityManager.h">
@@ -895,6 +883,27 @@
     <ClInclude Include="include\impl\scripthelper.h">
       <Filter>Impl\System</Filter>
     </ClInclude>
+    <ClInclude Include="include\graphics\GPUShader.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resources\GpuShaderManager.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="include\system\Platform.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="include\graphics\MaterialType.h">
+      <Filter>Graphics\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="include\impl\GLSLProgram.h">
+      <Filter>Impl\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\impl\GLSLShader.h">
+      <Filter>Impl\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\impl\VertexBufferGLES.h">
+      <Filter>Impl\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sources\system\Container.cpp">
@@ -1078,12 +1087,6 @@
       <Filter>Graphics\Materials</Filter>
     </ClCompile>
     <ClCompile Include="sources\graphics\Material_EnvMap_Reflect.cpp">
-      <Filter>Graphics\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\graphics\Material_Fallback01_BaseLight.cpp">
-      <Filter>Graphics\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\graphics\Material_Fallback02_BaseLight.cpp">
       <Filter>Graphics\Materials</Filter>
     </ClCompile>
     <ClCompile Include="sources\graphics\Material_Flat.cpp">
@@ -1293,9 +1296,6 @@
     <ClCompile Include="sources\impl\tinyXml\tinyxmlparser.cpp">
       <Filter>Impl\TinyXml</Filter>
     </ClCompile>
-    <ClCompile Include="sources\impl\CGProgram.cpp">
-      <Filter>Impl\Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="sources\impl\LowLevelGraphicsSDL.cpp">
       <Filter>Impl\Graphics</Filter>
     </ClCompile>
@@ -1423,9 +1423,6 @@
       <Filter>Resources</Filter>
     </ClCompile>
     <ClCompile Include="sources\resources\FrameTexture.cpp">
-      <Filter>Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\resources\GpuProgramManager.cpp">
       <Filter>Resources</Filter>
     </ClCompile>
     <ClCompile Include="sources\resources\ImageEntityManager.cpp">
@@ -1598,6 +1595,28 @@
     </ClCompile>
     <ClCompile Include="sources\impl\scripthelper.cpp">
       <Filter>Impl\System</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\resources\GpuShaderManager.cpp">
+      <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\impl\GLSLProgram.cpp">
+      <Filter>Impl\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\impl\GLSLShader.cpp">
+      <Filter>Impl\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="include\graphics\MaterialType.cpp" />
+    <ClCompile Include="sources\graphics\GPUShader.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\system\Platform.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\impl\PlatformWin32.cpp">
+      <Filter>Impl\System</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\impl\VertexBufferGLES.cpp">
+      <Filter>Impl\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

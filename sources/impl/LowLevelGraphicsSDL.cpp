@@ -19,25 +19,27 @@
 #ifdef WIN32
 #pragma comment(lib, "OpenGL32.lib")
 #pragma comment(lib, "GLu32.lib")
-#pragma comment(lib, "Cg.lib")
-#pragma comment(lib, "CgGL.lib")
 #pragma comment(lib, "SDL_ttf.lib")
 #endif
 
-#include <assert.h>
-#include <stdlib.h>
+#include "impl/LowLevelGraphicsSDL.h"
 
 #include "graphics/FontData.h"
-#include "impl/LowLevelGraphicsSDL.h"
 #include "impl/SDLBitmap2D.h"
 #include "impl/SDLFontData.h"
 #include "impl/SDLTexture.h"
-#include "impl/CGProgram.h"
+#include "impl/GLSLShader.h"
+#include "impl/GLSLProgram.h"
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 #include "impl/VertexBufferOGL.h"
 #include "impl/VertexBufferVBO.h"
+#include "impl/VertexBufferGLES.h"
 #include "impl/OcclusionQueryOGL.h"
 #include "impl/GLHelpers.h"
+
+#include <assert.h>
+#include <stdlib.h>
 
 namespace hpl
 {
@@ -88,7 +90,6 @@ namespace hpl
 		}
 
 		//Init extra stuff
-		InitCG();
 
 		TTF_Init();
 	}
@@ -111,7 +112,6 @@ namespace hpl
 		hplDelete(mpPixelFormat);
 
 		//Exit extra stuff
-		ExitCG();
 		TTF_Quit();
 	}
 
@@ -122,6 +122,11 @@ namespace hpl
 	//////////////////////////////////////////////////////////////////////////
 
 	//-----------------------------------------------------------------------
+
+	void CALLBACK OGLDebugOutputCallback(GLenum alSource, GLenum alType, GLuint alID, GLenum alSeverity, GLsizei alLength, const GLchar* apMessage, const GLvoid* apUserParam)
+	{
+		Log("Source: %d Type: %d Id: %d Severity: %d '%s'\n", alSource, alType, alID, alSeverity, apMessage);
+	}
 
 	bool cLowLevelGraphicsSDL::Init(int alWidth, int alHeight, int alBpp, int abFullscreen,
 									int alMultisampling, const tString& asWindowCaption)
@@ -163,6 +168,8 @@ namespace hpl
 
 		if(abFullscreen) mlFlags |= SDL_FULLSCREEN;
 
+		SetWindowCaption(asWindowCaption);
+
 		Log(" Setting video mode: %d x %d - %d bpp\n",alWidth, alHeight, alBpp);
 		mpScreen = SDL_SetVideoMode( alWidth, alHeight, alBpp, mlFlags);
 		if(mpScreen==NULL){
@@ -176,15 +183,17 @@ namespace hpl
 			}
 			else
 			{
-				SetWindowCaption(asWindowCaption);
-				CreateMessageBoxW(_W("Warning!"),
+				//SetWindowCaption(asWindowCaption);
+				cPlatform::CreateMessageBox(_W("Warning!"),
 									_W("Could not set displaymode and 640x480 is used instead!\n"));
 			}
 		}
 		else
 		{
-			SetWindowCaption(asWindowCaption);
+			//SetWindowCaption(asWindowCaption);
 		}
+
+		mvScreenSize = cVector2l(mpScreen->w, mpScreen->h);
 
 		Log(" Init glad...");
 	#if defined(WIN32)
@@ -238,6 +247,12 @@ namespace hpl
 		//Set the clear color
 		SDL_GL_SwapBuffers();
 
+		if(GLAD_GL_KHR_debug)
+		{
+			glDebugMessageCallbackKHR(&OGLDebugOutputCallback, NULL);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR);
+		}
+
 		return true;
 	}
 
@@ -284,7 +299,7 @@ namespace hpl
 		//glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 
 		/////  BEGIN BATCH ARRAY STUFF ///////////////
-
+#if 0
 		//Enable all the vertex arrays that are used:
 		glEnableClientState(GL_VERTEX_ARRAY ); //The positions
 		glEnableClientState(GL_COLOR_ARRAY ); //The color
@@ -293,10 +308,13 @@ namespace hpl
 		//Disable the once not used.
 		glDisableClientState(GL_INDEX_ARRAY); //color index
 		glDisableClientState(GL_EDGE_FLAG_ARRAY);
-
+#endif
 		///// END BATCH ARRAY STUFF ///////////////
 
 		//Show some info
+		Log("  Vendor: %s\n", glGetString(GL_VENDOR));
+		Log("  Renderer: %s\n", glGetString(GL_RENDERER));
+		Log("  Version: %s\n", glGetString(GL_VERSION));
 		Log("  Max texture image units: %d\n",GetCaps(eGraphicCaps_MaxTextureImageUnits));
 		Log("  Max texture coord units: %d\n",GetCaps(eGraphicCaps_MaxTextureCoordUnits));
 		Log("  Two sided stencil: %d\n",GetCaps(eGraphicCaps_TwoSideStencil));
@@ -307,6 +325,8 @@ namespace hpl
 			Log("  Max Anisotropic degree: %d\n",GetCaps(eGraphicCaps_MaxAnisotropicFiltering));
 
 		Log("  Multisampling: %d\n",GetCaps(eGraphicCaps_Multisampling));
+
+		Log("  GLSL Version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 		Log("  Vertex Program: %d\n",GetCaps(eGraphicCaps_GL_VertexProgram));
 		Log("  Fragment Program: %d\n",GetCaps(eGraphicCaps_GL_FragmentProgram));
@@ -579,12 +599,16 @@ namespace hpl
 		return pBmp;
 	}
 
-
 	//-----------------------------------------------------------------------
 
-	iGpuProgram* cLowLevelGraphicsSDL::CreateGpuProgram(const tString& asName, eGpuProgramType aType)
+	iGpuProgram* cLowLevelGraphicsSDL::CreateGpuProgram(const tString& asName)
 	{
-		return hplNew( cCGProgram, (asName,mCG_Context, aType) );
+		return hplNew( cGLSLProgram, (asName, this) );
+	}
+
+	iGpuShader *cLowLevelGraphicsSDL::CreateGpuShader(const tString &asName, eGpuShaderType aType)
+	{
+		return hplNew(cGLSLShader, (asName, aType, this));
 	}
 
 	//-----------------------------------------------------------------------
@@ -674,6 +698,19 @@ namespace hpl
 		SetMatrixMode(aMtxType);
 		cMatrixf mtxTranpose = a_mtxA.GetTranspose();
 		glLoadMatrixf(mtxTranpose.v);
+	}
+
+	cMatrixf cLowLevelGraphicsSDL::GetMatrix(eMatrix aMtxType)
+	{
+		cMatrixf result;
+		switch (aMtxType)
+		{
+			case eMatrix_ModelView: glGetFloatv(GL_TRANSPOSE_MODELVIEW_MATRIX, result.v); break;
+			case eMatrix_Projection: glGetFloatv(GL_TRANSPOSE_PROJECTION_MATRIX, result.v); break;
+			case eMatrix_Texture: glGetFloatv(GL_TRANSPOSE_TEXTURE_MATRIX, result.v); break;
+		}
+
+		return result;
 	}
 
 	//-----------------------------------------------------------------------
@@ -832,6 +869,8 @@ namespace hpl
 														eVertexBufferUsageType aUsageType,
 														int alReserveVtxSize,int alReserveIdxSize)
 	{
+
+		return hplNew( cVertexBufferGLES, (this, aFlags,aDrawType,aUsageType,alReserveVtxSize,alReserveIdxSize) );
 		//return hplNew( cVertexBufferVBO,(this, aFlags,aDrawType,aUsageType,alReserveVtxSize,alReserveIdxSize) );
 		//return hplNew( cVertexBufferOGL, (this, aFlags,aDrawType,aUsageType,alReserveVtxSize,alReserveIdxSize) );
 
@@ -1751,20 +1790,6 @@ namespace hpl
 		}
 
 
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsSDL::InitCG()
-	{
-		mCG_Context = cgCreateContext();
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsSDL::ExitCG()
-	{
-		cgDestroyContext(mCG_Context);
 	}
 
 	//-----------------------------------------------------------------------

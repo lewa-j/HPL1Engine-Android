@@ -20,16 +20,14 @@
 #define HPL_MATERIAL_BUMP_SPEC2D_H
 
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 
 	class cMaterial_BumpSpec2D : public iMaterial
 	{
 	public:
-		cMaterial_BumpSpec2D(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-							cImageManager* apImageManager, cTextureManager *apTextureManager,
-							cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-							eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
+		cMaterial_BumpSpec2D(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
 		~cMaterial_BumpSpec2D();
 
 		void Compile();
@@ -54,18 +52,16 @@ namespace hpl {
 	class cMaterialType_BumpSpec2D : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_BumpSpec2D(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override {
 			return cString::ToLowerCase(asName)=="bumpspec2d";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
 		{
-			return hplNew( cMaterial_BumpSpec2D, (asName,apLowLevelGraphics,
-								apImageManager,apTextureManager,apRenderer,
-								apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_BumpSpec2D, (asName, apGraphics, apResources, this, aPicture) );
 		}
 	};
 

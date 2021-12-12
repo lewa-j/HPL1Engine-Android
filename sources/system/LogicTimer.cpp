@@ -18,6 +18,7 @@
  */
 #include "system/LogicTimer.h"
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 
 namespace hpl {
 
@@ -52,7 +53,7 @@ namespace hpl {
 	//-----------------------------------------------------------------------
 	void cLogicTimer::Reset()
 	{
-		mlLocalTime = (double)GetApplicationTime();
+		mlLocalTime = (double)cPlatform::GetApplicationTime();
 	}
 
 	//-----------------------------------------------------------------------
@@ -62,7 +63,7 @@ namespace hpl {
 		++mlUpdateCount;
 		if(mlUpdateCount > mlMaxUpdates) return false;
 
-		if(mlLocalTime< (double)GetApplicationTime())
+		if(mlLocalTime< (double)cPlatform::GetApplicationTime())
 		{
 			Update();
 			return true;

@@ -48,8 +48,6 @@ namespace hpl {
 						iLowLevelSystem *apLowLevelSystem);
 		virtual ~iResourceManager(){}
 
-		virtual iResourceBase* Create(const tString& asName)=0;
-
 		iResourceBase* GetByName(const tString& asName);
 		iResourceBase* GetByHandle(unsigned long alHandle);
 

@@ -20,18 +20,15 @@
 #define HPL_MATERIAL_SMOKE2D_H
 
 #include "graphics/Material.h"
-
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 
 	class cMaterial_Smoke2D : public iMaterial
 	{
 	public:
-		cMaterial_Smoke2D(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_Smoke2D();
+		cMaterial_Smoke2D(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_Smoke2D();
 
 		void Compile();
 		bool StartRendering(eMaterialRenderType aType,iCamera* apCam,iLight *pLight);
@@ -50,18 +47,16 @@ namespace hpl {
 	class cMaterialType_Smoke2D : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_Smoke2D(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override {
 			return cString::ToLowerCase(asName)=="smoke2d";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
 		{
-			return hplNew( cMaterial_Smoke2D,(asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_Smoke2D,(asName, apGraphics, apResources, this, aPicture) );
 		}
 	};
 

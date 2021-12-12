@@ -35,7 +35,6 @@ namespace hpl {
 		cMaterialManager(cGraphics* apGraphics,cResources *apResources);
 		~cMaterialManager();
 
-		iResourceBase* Create(const tString& asName);
 		iMaterial* CreateMaterial(const tString& asName);
 
 		void Update(float afTimeStep);

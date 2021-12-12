@@ -20,17 +20,17 @@
 #define HPL_MATERIAL_BUMP_H
 
 #include "graphics/Material_BaseLight.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
+
+	class cMaterialType_Bump;
 
 	class cMaterial_Bump : public iMaterial_BaseLight
 	{
 	public:
-		cMaterial_Bump(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_Bump();
+		cMaterial_Bump(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_Bump();
 
 	private:
 	};
@@ -38,14 +38,16 @@ namespace hpl {
 	class cMaterialType_Bump : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_Bump(cGraphics *apGraphics);
+		virtual ~cMaterialType_Bump();
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="bump";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
+
+		friend cMaterial_Bump;
 	};
 
 };

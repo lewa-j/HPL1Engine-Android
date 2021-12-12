@@ -22,6 +22,7 @@
 #include "physics/PhysicsWorld.h"
 #include "physics/SurfaceData.h"
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 #include "system/String.h"
 
 #include "haptic/Haptic.h"
@@ -148,7 +149,7 @@ namespace hpl {
 	{
 		//////////////////////////////////
 		//Open document
-		TiXmlDocument* pXmlDoc = hplNew( TiXmlDocument, (GetPlatformPath(asFile).c_str()) );
+		TiXmlDocument* pXmlDoc = hplNew( TiXmlDocument, (cPlatform::GetPlatformPath(asFile).c_str()) );
 		if(pXmlDoc->LoadFile()==false)
 		{
 			Error("Couldn't load XML file '%s'!\n",asFile.c_str());

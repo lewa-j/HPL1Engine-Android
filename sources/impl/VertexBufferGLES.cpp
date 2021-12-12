@@ -34,10 +34,9 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
-	cVertexBufferGLES::cVertexBufferGLES(iLowLevelGraphics* apLowLevelGraphics,tVertexFlag aFlags,
-		eVertexBufferDrawType aDrawType,eVertexBufferUsageType aUsageType,
-		int alReserveVtxSize,int alReserveIdxSize) :
-	iVertexBuffer(apLowLevelGraphics, aFlags, aDrawType,aUsageType, alReserveVtxSize, alReserveIdxSize)
+	cVertexBufferGLES::cVertexBufferGLES(iLowLevelGraphics* apLowLevelGraphics, tVertexFlag aFlags,
+		eVertexBufferDrawType aDrawType, eVertexBufferUsageType aUsageType, int alReserveVtxSize, int alReserveIdxSize)
+		: iVertexBuffer(apLowLevelGraphics, aFlags, aDrawType,aUsageType, alReserveVtxSize, alReserveIdxSize)
 	{
 		if(alReserveVtxSize>0)
 		{
@@ -55,7 +54,7 @@ namespace hpl
 		if(alReserveIdxSize>0)
 			mvIndexArray.reserve(alReserveIdxSize);
 
-		mlElementHandle =0;
+		mlElementHandle = 0;
 
 		mbTangents = false;
 

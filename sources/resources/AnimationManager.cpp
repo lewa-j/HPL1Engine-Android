@@ -130,13 +130,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cAnimationManager::Create(const tString& asName)
-	{
-		return CreateAnimation(asName);
-	}
-
-	//-----------------------------------------------------------------------
-
 	void cAnimationManager::Unload(iResourceBase* apResource)
 	{
 

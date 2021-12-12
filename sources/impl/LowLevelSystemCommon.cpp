@@ -17,6 +17,7 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "impl/LowLevelSystemCommon.h"
+#include "system/Platform.h"
 #include "system/String.h"
 
 #include <stdio.h>
@@ -54,7 +55,7 @@ static cLogWriter gUpdateLogWriter(_W("hpl_update.log"));
 
 cLogWriter::cLogWriter(const tWString& asFileName)
 {
-	msFileName = GetPlatformPath(asFileName);
+	msFileName = cPlatform::GetPlatformPath(asFileName);
 }
 
 cLogWriter::~cLogWriter()
@@ -297,73 +298,6 @@ void OpenBrowserWindow(const tWString& asURL)
 }
 
 //-----------------------------------------------------------------------
-
-bool FileExists(const tWString& asFileName)
-{
-#ifdef WIN32
-	FILE* f = _wfopen(asFileName.c_str(), _W("r"));
-#else
-	FILE* f = fopen(cString::To8Char(asFileName).c_str(), "r");
-#endif
-	if (f == NULL)
-	{
-		return false;
-	}
-
-	fclose(f);
-	return true;
-}
-
-//-----------------------------------------------------------------------
-
-void RemoveFile(const tWString& asFilePath)
-{
-#ifdef WIN32
-	_wremove(asFilePath.c_str());
-#else
-	remove(cString::To8Char(asFilePath).c_str());
-#endif
-}
-
-//-----------------------------------------------------------------------
-
-bool CloneFile(const tWString& asSrcFileName, const tWString& asDestFileName,
-	bool abFailIfExists)
-{
-#ifdef WIN32
-	return CopyFile(asSrcFileName.c_str(), asDestFileName.c_str(), abFailIfExists) == TRUE;
-#else
-	if (abFailIfExists && FileExists(asDestFileName)) {
-		return true;
-	}
-	std::ifstream IN(cString::To8Char(asSrcFileName).c_str(), std::ios::binary);
-	std::ofstream OUT(cString::To8Char(asDestFileName).c_str(), std::ios::binary);
-	OUT << IN.rdbuf();
-	OUT.flush();
-	return true;
-#endif
-}
-
-//-----------------------------------------------------------------------
-
-bool CreateFolder(const tWString& asPath)
-{
-#ifdef WIN32
-	return CreateDirectory(asPath.c_str(), NULL) == TRUE;
-#else
-	return mkdir(cString::To8Char(asPath).c_str(), 0755) == 0;
-#endif
-}
-
-bool FolderExists(const tWString& asPath)
-{
-#ifdef WIN32
-	return GetFileAttributes(asPath.c_str()) == FILE_ATTRIBUTE_DIRECTORY;
-#else
-	struct stat statbuf;
-	return (stat(cString::To8Char(asPath).c_str(), &statbuf) != -1);
-#endif
-}
 
 bool IsFileLink(const tWString& asPath)
 {

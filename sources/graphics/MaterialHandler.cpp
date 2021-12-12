@@ -77,10 +77,7 @@ namespace hpl {
 		{
 			if((*it)->IsCorrect(asMatName))
 			{
-				pMat = (*it)->Create(asName,mpGraphics->GetLowLevel(),mpResources->GetImageManager(),
-									mpResources->GetTextureManager(),
-									mpGraphics->GetRenderer2D(),mpResources->GetGpuProgramManager(),
-									mPicType,mpGraphics->GetRenderer3D());
+				pMat = (*it)->Create(asName, mpGraphics, mpResources, mPicType);
 
 				//Set an id to the material for easier rendering later on.
 				pMat->SetId(lIdCount);

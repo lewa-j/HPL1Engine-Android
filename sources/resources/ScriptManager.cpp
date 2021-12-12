@@ -89,13 +89,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cScriptManager::Create(const tString& asName)
-	{
-		return CreateScript(asName);
-	}
-
-	//-----------------------------------------------------------------------
-
 	void cScriptManager::Unload(iResourceBase* apResource)
 	{
 

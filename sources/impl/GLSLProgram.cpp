@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2020 - lewa_j
+ * Copyright © 2009-2020 Frictional Games
+ * Copyright (C) 2020-2021 - lewa_j
  *
  * This file is part of HPL1 Engine.
  *
@@ -18,212 +19,177 @@
  */
 
 #include "impl/GLSLProgram.h"
+#include "impl/GLSLShader.h"
 #include "impl/Platform.h"
+#include "math/Math.h"
 
-namespace hpl
-{
-cGLSLProgram::cGLSLProgram(tString asName,eGpuProgramType aType)
- : iGpuProgram(asName,aType), mId(0)
-{
-	
-}
-cGLSLProgram::~cGLSLProgram()
-{
-	if(mId)
-		glDeleteProgram(mId);
-}
+namespace hpl {
 
-bool cGLSLProgram::Reload()
-{
-	return false;
-}
-void cGLSLProgram::Unload()
-{
-	
-}
-void cGLSLProgram::Destroy()
-{
-	
-}
+	int cGLSLProgram::mlCurrentProgram = 0;
 
-tString cGLSLProgram::GetProgramName()
-{
-	return msName;
-}
-
-bool cGLSLProgram::CreateFromFile(const tString& asFile, const tString& asEntry)
-{
-	return false;
-}
-
-char* LoadCharBuffer(const tString& asFileName, int& alLength)
-{
-	FILE *pFile = fopen(asFileName.c_str(), "rb");
-	if(pFile == nullptr){
-		alLength = 0;
-		return nullptr;
+	cGLSLProgram::cGLSLProgram(const tString &asName, iLowLevelGraphics *apLowLevelGfx) : iGpuProgram(asName, eGpuProgramFormat::GLSL)
+	{
+		mpLowLevelGfx = apLowLevelGfx;
+		mlHandle = glCreateProgram();
 	}
 
-	int lLength = (int)Platform::FileLength(pFile);
-	alLength = lLength;
+	cGLSLProgram::~cGLSLProgram()
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			cGLSLShader *pGLSLShader = static_cast<cGLSLShader *>(mpShader[i]);
+			if (pGLSLShader)
+			{
+				glDetachShader(mlHandle, pGLSLShader->GetHandle());
+			}
+		}
+		glDeleteProgram(mlHandle);
+	}
 
-	char *pBuffer = hplNewArray(char, lLength+1);
-	fread(pBuffer, lLength, 1, pFile);
-	pBuffer[lLength] = 0;
+	bool cGLSLProgram::Link()
+	{
+		glBindAttribLocation(mlHandle, eVtxAttr_Position, "a_position");
+		glBindAttribLocation(mlHandle, eVtxAttr_Color0, "a_color");
+		glBindAttribLocation(mlHandle, eVtxAttr_Normal, "a_normal");
+		glBindAttribLocation(mlHandle, eVtxAttr_Texture0, "a_uv");
+		glBindAttribLocation(mlHandle, eVtxAttr_Tangent, "a_tangent");
 
-	fclose(pFile);
+		///////////////////////////////////////
+		//Attach shaders
+		for (int i = 0; i < 2; ++i)
+		{
+			cGLSLShader *pGLSLShader = static_cast<cGLSLShader *>(mpShader[i]);
+			if (pGLSLShader)
+			{
+				glAttachShader(mlHandle, pGLSLShader->GetHandle());
+			}
+		}
 
-	return pBuffer;
-}
+		///////////////////////////////////////
+		//Link
+		glLinkProgram(mlHandle);
 
-bool cGLSLProgram::CreateFromFiles(const tString& asFileVertex, const tString& asFileFragment)
-{
-	if(mProgramType != eGpuProgramType_Linked)
+		///////////////////////////////////////
+		//Check for errors
+		GLint lStatus = 0;
+		glGetProgramiv(mlHandle, GL_LINK_STATUS, &lStatus);
+		if (lStatus == GL_FALSE)
+		{
+			Error("Failed to link GLSL program %s\n", msName.c_str());
+			LogProgramInfoLog();
+			return false;
+		}
+
+		///////////////////////////////////////
+		//Set up sampler units
+		glUseProgram(mlHandle);
+		glUniform1i(glGetUniformLocation(mlHandle, "diffuseMap"), 0);
+		glUniform1i(glGetUniformLocation(mlHandle, "normalMap"), 1);
+		glUniform1i(glGetUniformLocation(mlHandle, "normalCubeMap"), 2);
+		glUniform1i(glGetUniformLocation(mlHandle, "falloffMap"), 3);
+		glUniform1i(glGetUniformLocation(mlHandle, "spotlightMap"), 4);
+		glUniform1i(glGetUniformLocation(mlHandle, "spotNegRejectMap"), 5);
+		glUniform1i(glGetUniformLocation(mlHandle, "specularMap"), 6);
+		glUseProgram(0);
+
+		return true;
+	}
+
+	void cGLSLProgram::Bind()
+	{
+		if (mlCurrentProgram == mlHandle)
+			return;
+
+		mlCurrentProgram = mlHandle;
+		glUseProgram(mlHandle);
+	}
+
+	void cGLSLProgram::UnBind()
+	{
+		if (mlCurrentProgram == 0)
+			return;
+
+		mlCurrentProgram = 0;
+		glUseProgram(0);
+	
+	}
+
+	bool cGLSLProgram::SetFloat(const tString& asName, float afX)
+	{
+		int loc = glGetUniformLocation(mlHandle, asName.c_str());
+		glUniform1f(loc, afX);
+		return loc != -1;
+	}
+
+	bool cGLSLProgram::SetVec2f(const tString& asName, float afX,float afY)
+	{
+		int loc = glGetUniformLocation(mlHandle, asName.c_str());
+		glUniform2f(loc, afX, afY);
+		return loc != -1;
+	}
+
+	bool cGLSLProgram::SetVec3f(const tString& asName, float afX,float afY,float afZ)
+	{
+		int loc = glGetUniformLocation(mlHandle, asName.c_str());
+		glUniform3f(loc, afX, afY, afZ);
+		return loc != -1;
+	}
+
+	bool cGLSLProgram::SetVec4f(const tString& asName, float afX,float afY,float afZ, float afW)
+	{
+		int loc = glGetUniformLocation(mlHandle, asName.c_str());
+		glUniform4f(loc, afX, afY, afZ, afW);
+		return loc != -1;
+	}
+
+	bool cGLSLProgram::SetMatrixf(const tString& asName, const cMatrixf& mMtx)
+	{
+		int loc = glGetUniformLocation(mlHandle, asName.c_str());
+		glUniformMatrix4fv(loc, 1, true, mMtx.v);
+		return loc != -1;
+	}
+
+	bool cGLSLProgram::SetMatrixf(const tString& asName, eGpuProgramMatrix mType,
+								eGpuProgramMatrixOp mOp)
+	{
+		if (mType == eGpuProgramMatrix::ViewProjection){
+			cMatrixf mtx = cMath::MatrixMul(mpLowLevelGfx->GetMatrix(eMatrix_Projection),
+					mpLowLevelGfx->GetMatrix(eMatrix_ModelView));
+			return SetMatrixf(asName, mtx);
+		}else{
+			Warning("cGLSLProgram::SetMatrixf unimplemented type %d\n", mType);
+		}
 		return false;
+	}
 
-	int vsl,fsl;
-	char *vs = LoadCharBuffer(asFileVertex, vsl);
-	char *fs = LoadCharBuffer(asFileFragment, fsl);
-	bool cr = Create(vs, fs);
-	hplDeleteArray(vs);
-	hplDeleteArray(fs);
-	if(!cr){
+	bool cGLSLProgram::SetTexture(const tString& asName,iTexture* apTexture, bool abAutoDisable)
+	{
+		Warning("cGLSLProgram::SetTexture unimplemented\n");
 		return false;
 	}
 
-	return true;
-}
-
-void cGLSLProgram::Bind()
-{
-	glUseProgram(mId);
-}
-
-void cGLSLProgram::UnBind()
-{
-	
-}
-
-bool cGLSLProgram::SetFloat(const tString& asName, float afX)
-{
-	int loc = glGetUniformLocation(mId, asName.c_str());
-	glUniform1f(loc, afX);
-	return loc != -1;
-}
-
-bool cGLSLProgram::SetVec2f(const tString& asName, float afX,float afY)
-{
-	int loc = glGetUniformLocation(mId, asName.c_str());
-	glUniform2f(loc, afX, afY);
-	return loc != -1;
-}
-
-bool cGLSLProgram::SetVec3f(const tString& asName, float afX,float afY,float afZ)
-{
-	int loc = glGetUniformLocation(mId, asName.c_str());
-	glUniform3f(loc, afX, afY, afZ);
-	return loc != -1;
-}
-
-bool cGLSLProgram::SetVec4f(const tString& asName, float afX,float afY,float afZ, float afW)
-{
-	int loc = glGetUniformLocation(mId, asName.c_str());
-	glUniform4f(loc, afX, afY, afZ, afW);
-	return loc != -1;
-}
-
-bool cGLSLProgram::SetMatrixf(const tString& asName, const cMatrixf& mMtx)
-{
-	int loc = glGetUniformLocation(mId, asName.c_str());
-	glUniformMatrix4fv(loc, 1, true, &mMtx.m[0][0]);
-	return loc != -1;
-}
-
-bool cGLSLProgram::SetMatrixf(const tString& asName, eGpuProgramMatrix mType,
-							eGpuProgramMatrixOp mOp)
-{
-	Warning("cGLSLProgram::SetMatrixf unimplemented type %d op %d\n",mType, mOp);
-	return false;
-}
-
-bool cGLSLProgram::SetTexture(const tString& asName,iTexture* apTexture, bool abAutoDisable)
-{
-	Warning("cGLSLProgram::SetTexture unimplemented\n");
-	return false;
-}
-
-bool cGLSLProgram::SetTextureToUnit(int alUnit, iTexture* apTexture)
-{
-	Warning("cGLSLProgram::SetTextureToUnit unimplemented\n");
-	return false;
-}
-
-int CreateShader(int type, const char *src)
-{
-	int s = glCreateShader(type);
-	glShaderSource(s, 1, &src, 0);
-	glCompileShader(s);
-	int status = 0;
-	glGetShaderiv(s, GL_COMPILE_STATUS, &status);
-	if(!status){
-		Log("%s shader compile status %d\n",type==GL_VERTEX_SHADER ? "Vertex" : "Fragment", status);
-		
-		int size = 0;
-		glGetShaderiv(s, GL_INFO_LOG_LENGTH, &size);
-		char data[size];
-		glGetShaderInfoLog(s, size, &size, data);
-		
-		Log("Compile log:\n%s\n===========\n",data);
-	}
-	return s;
-}
-
-bool cGLSLProgram::Create(const char *vt, const char *ft)
-{
-	int vs = CreateShader(GL_VERTEX_SHADER,vt);
-	int fs = CreateShader(GL_FRAGMENT_SHADER,ft);
-
-	mId = glCreateProgram();
-	glBindAttribLocation(mId,eVtxAttr_Position,"a_position");
-	glBindAttribLocation(mId,eVtxAttr_Color0,"a_color");
-	glBindAttribLocation(mId,eVtxAttr_Normal,"a_normal");
-	glBindAttribLocation(mId,eVtxAttr_Texture0,"a_uv");
-	glBindAttribLocation(mId,eVtxAttr_Tangent,"a_tangent");
-
-	glAttachShader(mId,vs);
-	glAttachShader(mId,fs);
-	glLinkProgram(mId);
-
-	glDeleteShader(vs);
-	glDeleteShader(fs);
-
-	int status = 0;
-	glGetProgramiv(mId,GL_LINK_STATUS,&status);
-	if(!status)
-		Log("link status %d\n",status);
-
-	int size=0;
-	glGetProgramiv(mId, GL_INFO_LOG_LENGTH, &size);
-	if(size){
-		char data[size];
-		glGetProgramInfoLog(mId, size, &size, data);
-		Log("Shader program log: %s\n",data);
-	}
-
-	if(!status)
+	bool cGLSLProgram::SetTextureToUnit(int alUnit, iTexture* apTexture)
+	{
+		Warning("cGLSLProgram::SetTextureToUnit unimplemented\n");
 		return false;
+	}
 
-	glUseProgram(mId);
-	glUniform1i(glGetUniformLocation(mId,"diffuseMap"),0);
-	glUniform1i(glGetUniformLocation(mId,"normalMap"),1);
-	glUniform1i(glGetUniformLocation(mId,"normalCubeMap"),2);
-	glUniform1i(glGetUniformLocation(mId,"falloffMap"),3);
-	glUniform1i(glGetUniformLocation(mId,"spotlightMap"),4);
-	glUniform1i(glGetUniformLocation(mId,"spotNegRejectMap"),5);
-	glUniform1i(glGetUniformLocation(mId,"specularMap"),6);
-	glUseProgram(0);
+	void cGLSLProgram::LogProgramInfoLog()
+	{
+		GLint infologLength = 0;
+		GLsizei charsWritten = 0;
+		char *infoLog;
 
-	return status;
-}
+		glGetProgramiv(mlHandle, GL_INFO_LOG_LENGTH, &infologLength);
 
+		if (infologLength > 0)
+		{
+			infoLog = (char *)hplMalloc(infologLength);
+			glGetProgramInfoLog(mlHandle, infologLength, &charsWritten, infoLog);
+			Log("-------------\n");
+			Log("%s\n", infoLog);
+			Log("-------------\n");
+			hplFree(infoLog);
+		}
+	}
 }

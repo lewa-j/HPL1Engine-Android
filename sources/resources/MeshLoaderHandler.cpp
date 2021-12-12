@@ -21,6 +21,7 @@
 #include "resources/MeshLoader.h"
 #include "system/String.h"
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 #include "resources/Resources.h"
 #include "scene/Scene.h"
 
@@ -29,7 +30,7 @@ namespace hpl {
 	bool iMeshLoader::mbRestricStaticLightToSector = false;
 	bool iMeshLoader::mbUseFastMaterial = false;
 	tString iMeshLoader::msFastMaterialFile = "";
-	tString iMeshLoader::msCacheDir = GetPlatformPath("core/cache/");
+	tString iMeshLoader::msCacheDir = cPlatform::GetPlatformPath("core/cache/");
 
 	//////////////////////////////////////////////////////////////////////////
 	// CONSTRUCTORS

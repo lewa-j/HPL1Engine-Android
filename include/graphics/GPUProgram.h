@@ -21,60 +21,29 @@
 
 #include "system/SystemTypes.h"
 #include "math/MathTypes.h"
-#include "resources/ResourceBase.h"
 #include "graphics/GraphicsTypes.h"
 
 namespace hpl {
 
 	class iTexture;
+	class cResources;
 
-	enum eGpuProgramType
-	{
-		eGpuProgramType_Vertex,
-		eGpuProgramType_Fragment,
-		eGpuProgramType_Linked,
-		eGpuProgramType_LastEnum
-	};
-
-	enum eGpuProgramMatrix
-	{
-		eGpuProgramMatrix_View,
-		eGpuProgramMatrix_Projection,
-		eGpuProgramMatrix_Texture,
-		eGpuProgramMatrix_ViewProjection,
-		eGpuProgramMatrix_LastEnum
-	};
-
-	enum eGpuProgramMatrixOp
-	{
-		eGpuProgramMatrixOp_Identity,
-		eGpuProgramMatrixOp_Inverse,
-		eGpuProgramMatrixOp_Transpose,
-		eGpuProgramMatrixOp_InverseTranspose,
-		eGpuProgramMatrixOp_LastEnum
-	};
-
-
-	class iGpuProgram : public iResourceBase
+	class iGpuProgram
 	{
 	public:
-		iGpuProgram(tString asName, eGpuProgramType aType) : iResourceBase(asName,0){
-			mProgramType = aType;
-		}
-		virtual ~iGpuProgram(){}
+		iGpuProgram(const tString &asName, eGpuProgramFormat aFormat);
+		virtual ~iGpuProgram();
+
+		const tString &GetName() { return msName; }
+
+		void SetShader(eGpuShaderType aType, iGpuShader *apShader);
+		iGpuShader* GetShader(eGpuShaderType aType) { return mpShader[static_cast<int>(aType)];}
+
+		void SetResources(cResources *apResources){ mpResources = apResources;}
 
 		static void SetLogDebugInformation(bool abX){mbDebugInfo = abX;}
 
-		/**
-		 * Create a from a file. Used internally
-		 * \param asFile
-		 * \param asEntry
-		 * \return
-		 */
-		virtual bool CreateFromFile(const tString& asFile, const tString& asEntry)=0;
-
-		virtual bool CreateFromFiles(const tString& asFileVertex, const tString& asFileFragment){return false;}
-
+		virtual bool Link() = 0;
 		/**
 		 * Bind the program to the GPU
 		 */
@@ -115,11 +84,12 @@ namespace hpl {
 		virtual bool SetTexture(const tString& asName,iTexture* apTexture, bool abAutoDisable=true)=0;
 		virtual bool SetTextureToUnit(int alUnit, iTexture* apTexture)=0;
 
-
-		eGpuProgramType GetType() { return mProgramType;}
-
 	protected:
-		eGpuProgramType mProgramType;
+		tString msName;
+		cResources *mpResources = nullptr;
+		eGpuProgramFormat mProgramFormat;
+		iGpuShader *mpShader[2]{ nullptr,nullptr };
+		bool mbAutoDestroyShaders = true;
 
 		static bool mbDebugInfo;
 	};

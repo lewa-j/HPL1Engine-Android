@@ -20,17 +20,17 @@
 #define HPL_MATERIAL_DIFFUSE_SPEC_H
 
 #include "graphics/Material_BaseLight.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
+
+	class cMaterialType_DiffuseSpec;
 
 	class cMaterial_DiffuseSpec : public iMaterial_BaseLight
 	{
 	public:
-		cMaterial_DiffuseSpec(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_DiffuseSpec();
+		cMaterial_DiffuseSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_DiffuseSpec();
 
 	private:
 	};
@@ -38,14 +38,14 @@ namespace hpl {
 	class cMaterialType_DiffuseSpec : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_DiffuseSpec(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="diffusespecular";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
 
 	};
 

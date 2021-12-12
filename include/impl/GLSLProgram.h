@@ -25,47 +25,36 @@
 #include "graphics/LowLevelGraphics.h"
 #include "impl/platform/gl.h"
 
-namespace hpl
-{
+namespace hpl {
+
 	class cGLSLProgram : public iGpuProgram
 	{
 	public:
-		cGLSLProgram(tString asName,eGpuProgramType aType);
-		~cGLSLProgram();
+		cGLSLProgram(const tString &asName, iLowLevelGraphics *apLowLevelGfx);
+		~cGLSLProgram() override;
 
-		bool Reload();
-		void Unload();
-		void Destroy();
+		bool Link() override;
+		void Bind() override;
+		void UnBind() override;
 
-		tString GetProgramName();
+		bool SetFloat(const tString& asName, float afX) override;
+		bool SetVec2f(const tString& asName, float afX,float afY) override;
+		bool SetVec3f(const tString& asName, float afX,float afY,float afZ) override;
+		bool SetVec4f(const tString& asName, float afX,float afY,float afZ, float afW) override;
 
-		bool CreateFromFile(const tString& asFile, const tString& asEntry);
-		bool CreateFromFiles(const tString& asFileVertex, const tString& asFileFragment);
-
-		void Bind();
-		void UnBind();
-
-		bool SetFloat(const tString& asName, float afX);
-		bool SetVec2f(const tString& asName, float afX,float afY);
-		bool SetVec3f(const tString& asName, float afX,float afY,float afZ);
-		bool SetVec4f(const tString& asName, float afX,float afY,float afZ, float afW);
-
-		bool SetMatrixf(const tString& asName, const cMatrixf& mMtx);
+		bool SetMatrixf(const tString& asName, const cMatrixf& mMtx) override;
 		bool SetMatrixf(const tString& asName, eGpuProgramMatrix mType,
-									eGpuProgramMatrixOp mOp);
+									eGpuProgramMatrixOp mOp) override;
 
-		bool SetTexture(const tString& asName,iTexture* apTexture, bool abAutoDisable=true);
-		bool SetTextureToUnit(int alUnit, iTexture* apTexture);
-
-
-		/// GLSL SPECIFIC //////////////////////
+		bool SetTexture(const tString& asName,iTexture* apTexture, bool abAutoDisable=true) override;
+		bool SetTextureToUnit(int alUnit, iTexture* apTexture) override;
 
 	protected:
-		bool Create(const char *vt, const char *ft);
+		void LogProgramInfoLog();
 
-		tString msName;
-		tString msFile;
-		int mId;
+		GLuint mlHandle;
+		static int mlCurrentProgram;
+		iLowLevelGraphics *mpLowLevelGfx = nullptr;
 	};
 };
 #endif // HPL_GLSLPROGRAM_H

@@ -21,6 +21,7 @@
 #include "scene/World3D.h"
 
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 #include "system/System.h"
 #include "system/String.h"
 
@@ -127,10 +128,10 @@ namespace hpl {
 			tString sPath = pFileSearcher->GetFilePath(mpWorld->GetFileName());
 			tWString sSaveFile = cString::To16Char(cString::SetFileExt(sPath,"ainodes"));
 
-			if(sPath != "" && FileExists(sSaveFile))
+			if(sPath != "" && cPlatform::FileExists(sSaveFile))
 			{
-				cDate mapDate = FileModifiedDate( cString::To16Char(sPath));
-				cDate saveDate = FileModifiedDate(sSaveFile);
+				cDate mapDate = cPlatform::FileModifiedDate( cString::To16Char(sPath));
+				cDate saveDate = cPlatform::FileModifiedDate(sSaveFile);
 
 				//If the save file is newer than the map load from it.
 				if(saveDate > mapDate)

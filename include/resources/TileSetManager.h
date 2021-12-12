@@ -33,7 +33,6 @@ namespace hpl {
 		cTileSetManager(cGraphics* apGraphics,cResources *apResources);
 		~cTileSetManager();
 
-		iResourceBase* Create(const tString& asName);
 		cTileSet* CreateTileSet(const tString& asName);
 
 		void Destroy(iResourceBase* apResource);

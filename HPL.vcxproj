@@ -111,6 +111,7 @@
     <ClInclude Include="include\graphics\FontData.h" />
     <ClInclude Include="include\graphics\GfxObject.h" />
     <ClInclude Include="include\graphics\GPUProgram.h" />
+    <ClInclude Include="include\graphics\GPUShader.h" />
     <ClInclude Include="include\graphics\Graphics.h" />
     <ClInclude Include="include\graphics\GraphicsDrawer.h" />
     <ClInclude Include="include\graphics\GraphicsTypes.h" />
@@ -119,6 +120,7 @@
     <ClInclude Include="include\graphics\LowLevelPicture.h" />
     <ClInclude Include="include\graphics\Material.h" />
     <ClInclude Include="include\graphics\MaterialHandler.h" />
+    <ClInclude Include="include\graphics\MaterialType.h" />
     <ClInclude Include="include\graphics\Material_Additive.h" />
     <ClInclude Include="include\graphics\Material_Alpha.h" />
     <ClInclude Include="include\graphics\Material_BaseLight.h" />
@@ -132,8 +134,6 @@
     <ClInclude Include="include\graphics\Material_DiffuseAlpha2D.h" />
     <ClInclude Include="include\graphics\Material_DiffuseSpec.h" />
     <ClInclude Include="include\graphics\Material_EnvMap_Reflect.h" />
-    <ClInclude Include="include\graphics\Material_Fallback01_BaseLight.h" />
-    <ClInclude Include="include\graphics\Material_Fallback02_BaseLight.h" />
     <ClInclude Include="include\graphics\Material_Flat.h" />
     <ClInclude Include="include\graphics\Material_FontNormal.h" />
     <ClInclude Include="include\graphics\Material_Modulative.h" />
@@ -190,12 +190,13 @@
     <ClInclude Include="include\haptic\HapticTypes.h" />
     <ClInclude Include="include\haptic\LowLevelHaptic.h" />
     <ClInclude Include="include\HPL.h" />
-    <ClInclude Include="include\impl\CGProgram.h" />
     <ClInclude Include="include\impl\CharacterBodyNewton.h" />
     <ClInclude Include="include\impl\CollideShapeNewton.h" />
     <ClInclude Include="include\impl\glad\glad.h" />
     <ClInclude Include="include\impl\glad\glad_wgl.h" />
     <ClInclude Include="include\impl\GLHelpers.h" />
+    <ClInclude Include="include\impl\GLSLProgram.h" />
+    <ClInclude Include="include\impl\GLSLShader.h" />
     <ClInclude Include="include\impl\KeyboardSDL.h" />
     <ClInclude Include="include\impl\LowLevelGraphicsSDL.h" />
     <ClInclude Include="include\impl\LowLevelInputSDL.h" />
@@ -232,6 +233,7 @@
     <ClInclude Include="include\impl\SqScript.h" />
     <ClInclude Include="include\impl\tinyXML\tinystr.h" />
     <ClInclude Include="include\impl\tinyXML\tinyxml.h" />
+    <ClInclude Include="include\impl\VertexBufferGLES.h" />
     <ClInclude Include="include\impl\VertexBufferOGL.h" />
     <ClInclude Include="include\impl\VertexBufferVBO.h" />
     <ClInclude Include="include\impl\VideoStreamTheora.h" />
@@ -283,7 +285,7 @@
     <ClInclude Include="include\resources\FrameBase.h" />
     <ClInclude Include="include\resources\FrameBitmap.h" />
     <ClInclude Include="include\resources\FrameTexture.h" />
-    <ClInclude Include="include\resources\GpuProgramManager.h" />
+    <ClInclude Include="include\resources\GpuShaderManager.h" />
     <ClInclude Include="include\resources\ImageEntityManager.h" />
     <ClInclude Include="include\resources\ImageManager.h" />
     <ClInclude Include="include\resources\LanguageFile.h" />
@@ -357,6 +359,7 @@
     <ClInclude Include="include\system\LogicTimer.h" />
     <ClInclude Include="include\system\LowLevelSystem.h" />
     <ClInclude Include="include\system\MemoryManager.h" />
+    <ClInclude Include="include\system\Platform.h" />
     <ClInclude Include="include\system\Script.h" />
     <ClInclude Include="include\system\SerializeClass.h" />
     <ClInclude Include="include\system\String.h" />
@@ -364,6 +367,7 @@
     <ClInclude Include="include\system\SystemTypes.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\graphics\MaterialType.cpp" />
     <ClCompile Include="sources\ai\AI.cpp" />
     <ClCompile Include="sources\ai\AINodeContainer.cpp" />
     <ClCompile Include="sources\ai\AINodeGenerator.cpp" />
@@ -385,6 +389,7 @@
     <ClCompile Include="sources\graphics\FontData.cpp" />
     <ClCompile Include="sources\graphics\GfxObject.cpp" />
     <ClCompile Include="sources\graphics\GPUProgram.cpp" />
+    <ClCompile Include="sources\graphics\GPUShader.cpp" />
     <ClCompile Include="sources\graphics\Graphics.cpp" />
     <ClCompile Include="sources\graphics\GraphicsDrawer.cpp" />
     <ClCompile Include="sources\graphics\ImageEntityData.cpp" />
@@ -403,8 +408,6 @@
     <ClCompile Include="sources\graphics\Material_DiffuseAlpha2D.cpp" />
     <ClCompile Include="sources\graphics\Material_DiffuseSpec.cpp" />
     <ClCompile Include="sources\graphics\Material_EnvMap_Reflect.cpp" />
-    <ClCompile Include="sources\graphics\Material_Fallback01_BaseLight.cpp" />
-    <ClCompile Include="sources\graphics\Material_Fallback02_BaseLight.cpp" />
     <ClCompile Include="sources\graphics\Material_Flat.cpp" />
     <ClCompile Include="sources\graphics\Material_FontNormal.cpp" />
     <ClCompile Include="sources\graphics\Material_Modulative.cpp" />
@@ -449,12 +452,13 @@
     <ClCompile Include="sources\gui\WidgetWindow.cpp" />
     <ClCompile Include="sources\haptic\Haptic.cpp" />
     <ClCompile Include="sources\haptic\LowLevelHaptic.cpp" />
-    <ClCompile Include="sources\impl\CGProgram.cpp" />
     <ClCompile Include="sources\impl\CharacterBodyNewton.cpp" />
     <ClCompile Include="sources\impl\CollideShapeNewton.cpp" />
     <ClCompile Include="sources\impl\glad.c" />
     <ClCompile Include="sources\impl\glad_wgl.c" />
     <ClCompile Include="sources\impl\GLHelpers.cpp" />
+    <ClCompile Include="sources\impl\GLSLProgram.cpp" />
+    <ClCompile Include="sources\impl\GLSLShader.cpp" />
     <ClCompile Include="sources\impl\KeyboardSDL.cpp" />
     <ClCompile Include="sources\impl\LowLevelGraphicsSDL.cpp" />
     <ClCompile Include="sources\impl\LowLevelInputSDL.cpp" />
@@ -481,6 +485,7 @@
     <ClCompile Include="sources\impl\PhysicsJointSliderNewton.cpp" />
     <ClCompile Include="sources\impl\PhysicsMaterialNewton.cpp" />
     <ClCompile Include="sources\impl\PhysicsWorldNewton.cpp" />
+    <ClCompile Include="sources\impl\PlatformWin32.cpp" />
     <ClCompile Include="sources\impl\platform\win32.cpp" />
     <ClCompile Include="sources\impl\scripthelper.cpp" />
     <ClCompile Include="sources\impl\scriptstdstring.cpp" />
@@ -493,6 +498,7 @@
     <ClCompile Include="sources\impl\tinyXml\tinyxml.cpp" />
     <ClCompile Include="sources\impl\tinyXml\tinyxmlerror.cpp" />
     <ClCompile Include="sources\impl\tinyXml\tinyxmlparser.cpp" />
+    <ClCompile Include="sources\impl\VertexBufferGLES.cpp" />
     <ClCompile Include="sources\impl\VertexBufferOGL.cpp" />
     <ClCompile Include="sources\impl\VertexBufferVBO.cpp" />
     <ClCompile Include="sources\impl\VideoStreamTheora.cpp" />
@@ -532,7 +538,7 @@
     <ClCompile Include="sources\resources\FontManager.cpp" />
     <ClCompile Include="sources\resources\FrameBitmap.cpp" />
     <ClCompile Include="sources\resources\FrameTexture.cpp" />
-    <ClCompile Include="sources\resources\GpuProgramManager.cpp" />
+    <ClCompile Include="sources\resources\GpuShaderManager.cpp" />
     <ClCompile Include="sources\resources\ImageEntityManager.cpp" />
     <ClCompile Include="sources\resources\ImageManager.cpp" />
     <ClCompile Include="sources\resources\LanguageFile.cpp" />
@@ -595,6 +601,7 @@
     <ClCompile Include="sources\system\Container.cpp" />
     <ClCompile Include="sources\system\LogicTimer.cpp" />
     <ClCompile Include="sources\system\MemoryManager.cpp" />
+    <ClCompile Include="sources\system\Platform.cpp" />
     <ClCompile Include="sources\system\SerializeClass.cpp" />
     <ClCompile Include="sources\system\String.cpp" />
     <ClCompile Include="sources\system\System.cpp" />

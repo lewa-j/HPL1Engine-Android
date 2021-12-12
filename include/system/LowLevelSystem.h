@@ -27,13 +27,13 @@ namespace hpl {
 
 #ifdef UPDATE_TIMING_ENABLED
 	#define START_TIMING_EX(x,y)	LogUpdate("Updating %s in file %s at line %d\n",x,__FILE__,__LINE__); \
-									unsigned int y##_lTime = GetApplicationTime();
+									unsigned int y##_lTime = cPlatform::GetApplicationTime();
 	#define START_TIMING(x)	LogUpdate("Updating %s in file %s at line %d\n",#x,__FILE__,__LINE__); \
-								unsigned int x##_lTime = GetApplicationTime();
-	#define STOP_TIMING(x)	LogUpdate(" Time spent: %d ms\n",GetApplicationTime() - x##_lTime);
+								unsigned int x##_lTime = cPlatform::GetApplicationTime();
+	#define STOP_TIMING(x)	LogUpdate(" Time spent: %d ms\n", cPlatform::GetApplicationTime() - x##_lTime);
 	#define START_TIMING_TAB(x)	LogUpdate("\tUpdating %s in file %s at line %d\n",#x,__FILE__,__LINE__); \
-							unsigned int x##_lTime = GetApplicationTime();
-	#define STOP_TIMING_TAB(x)	LogUpdate("\t Time spent: %d ms\n",GetApplicationTime() - x##_lTime);
+							unsigned int x##_lTime = cPlatform::GetApplicationTime();
+	#define STOP_TIMING_TAB(x)	LogUpdate("\t Time spent: %d ms\n", cPlatform::GetApplicationTime() - x##_lTime);
 #else
 	#define START_TIMING_EX(x,y)
 	#define START_TIMING(x)
@@ -55,54 +55,13 @@ namespace hpl {
 	extern void SetUpdateLogActive(bool abX);
 	extern void LogUpdate(const char* fmt, ...);
 
-//	extern void CreateMessageBox ( const char* asCaption, const char *fmt, ...);
-//	extern void CreateMessageBox ( eMsgBoxType eType, const char* asCaption, const char *fmt, ...);
-
-	extern void CreateMessageBoxW( const wchar_t* asCaption, const wchar_t* fmt, ...);
-	extern void CreateMessageBoxW( eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, ...);
-
-	extern void OpenBrowserWindow ( const tWString& asURL );
-
-	extern void CopyTextToClipboard(const tWString &asText);
-	extern tWString LoadTextFromClipboard();
-
-	extern tWString GetSystemSpecialPath(eSystemPath aPathType);
-
-	extern bool FileExists(const tWString& asFileName);
-	extern void RemoveFile(const tWString& asFileName);
-	extern bool CloneFile(const tWString& asSrcFileName,const tWString& asDestFileName,
-					bool abFailIfExists);
-	extern bool CreateFolder(const tWString& asPath);
-	extern bool FolderExists(const tWString& asPath);
-	extern bool IsFileLink(const tWString& asPath);
-	extern bool LinkFile(const tWString& asPointsTo, const tWString& asLink);
-	extern bool RenameFile(const tWString& asFrom, const tWString& asTo);
-	extern cDate FileModifiedDate(const tWString& asFilePath);
-	extern cDate FileCreationDate(const tWString& asFilePath);
-	extern tString GetPlatformPath(const tString& asFile);
-	extern tWString GetPlatformPath(const tWString& asFile);
-
 	extern void SetWindowCaption(const tString &asName);
-
 	extern bool HasWindowFocus(const tWString &asWindowCaption);
-
-	extern unsigned long GetApplicationTime();
 
 	class iLowLevelSystem
 	{
 	public:
 		virtual ~iLowLevelSystem(){}
-
-		/**
-		 * Remark: Usually not finer then 10ms accuracy.
-		 * \return Number of millisecs since start of app.
-		 */
-		virtual unsigned long GetTime()=0;
-
-		/**
-		* Gets the current date.
-		*/
-		virtual cDate GetDate()=0;
 
 		/**
 		 * Creates a ne script
@@ -125,13 +84,6 @@ namespace hpl {
 		 * \return
 		 */
 		virtual bool AddScriptVar(const tString& asVarDecl, void *pVar)=0;
-
-		/**
-		* Sets the main thread to rest for a number of milliseconds.
-		* \param alMillisecs
-		*/
-		virtual void Sleep ( const unsigned int alMillisecs )=0 ;
-
 	};
 };
 #endif // HPL_LOWLEVELSYSTEM_H

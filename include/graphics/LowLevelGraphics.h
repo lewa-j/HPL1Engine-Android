@@ -276,7 +276,8 @@ namespace hpl {
 
 		virtual iPixelFormat* GetPixelFormat()=0;
 
-		virtual iGpuProgram* CreateGpuProgram(const tString& asName, eGpuProgramType aType)=0;
+		virtual iGpuProgram *CreateGpuProgram(const tString &asName) = 0;
+		virtual iGpuShader *CreateGpuShader(const tString &asName, eGpuShaderType aType) = 0;
 
 		//TODO: Kinda quick and diry, better to have a screen to Bitmap.
 		// and then a save as in the Bitmap.
@@ -288,7 +289,8 @@ namespace hpl {
 		virtual void PopMatrix(eMatrix aMtxType)=0;
 		virtual void SetIdentityMatrix(eMatrix aMtxType)=0;
 
-		virtual void SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA)=0;
+		virtual void SetMatrix(eMatrix aMtxType, const cMatrixf &a_mtxA) = 0;
+		virtual cMatrixf GetMatrix(eMatrix aMtxType) = 0;
 
 		virtual void TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos)=0;
 		virtual void RotateMatrix(eMatrix aMtxType, const cVector3f &avRot)=0;

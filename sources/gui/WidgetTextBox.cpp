@@ -19,6 +19,7 @@
 #include "gui/WidgetTextBox.h"
 
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 
 #include "math/Math.h"
 
@@ -479,7 +480,7 @@ namespace hpl {
 			else if(key == eKey_c)
 			{
 				if(mlSelectedTextEnd >=0)
-					CopyTextToClipboard(cString::SubW(msText,lStart, lSelectSize));
+					cPlatform::CopyTextToClipboard(cString::SubW(msText,lStart, lSelectSize));
 			}
 			/////////////////////////////
 			// Cut
@@ -487,7 +488,7 @@ namespace hpl {
 			{
 				if(mlSelectedTextEnd >=0)
 				{
-					CopyTextToClipboard(cString::SubW(msText,lStart, lSelectSize));
+					cPlatform::CopyTextToClipboard(cString::SubW(msText,lStart, lSelectSize));
 					SetText(cString::SubW(msText,0,	lStart) + cString::SubW(msText,lEnd));
 					mlSelectedTextEnd = -1;
 				}
@@ -496,7 +497,7 @@ namespace hpl {
 			// Paste
 			else if(key == eKey_v)
 			{
-				tWString sExtra = LoadTextFromClipboard();
+				tWString sExtra = cPlatform::LoadTextFromClipboard();
 
 				if(mlSelectedTextEnd <0)
 				{

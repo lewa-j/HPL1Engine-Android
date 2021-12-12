@@ -17,11 +17,11 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material_EnvMap_Reflect.h"
+#include "graphics/Graphics.h"
 #include "graphics/Renderer2D.h"
 #include "graphics/Renderer3D.h"
 #include "scene/Light.h"
 #include "scene/Camera.h"
-#include "resources/GpuProgramManager.h"
 #include "resources/TextureManager.h"
 #include "graphics/GPUProgram.h"
 #include "math/Math.h"
@@ -48,10 +48,10 @@ namespace hpl {
 	{
 		//Put here so it is updated with every matrix, just aswell...
 		if(apModelMatrix)
-			apRenderSettings->mpVertexProgram->SetMatrixf("objectWorldMatrix",*apModelMatrix);
+			apRenderSettings->mpProgram->SetMatrixf("objectWorldMatrix",*apModelMatrix);
 		else
 		{
-			apRenderSettings->mpVertexProgram->SetMatrixf("objectWorldMatrix",cMatrixf::Identity);
+			apRenderSettings->mpProgram->SetMatrixf("objectWorldMatrix",cMatrixf::Identity);
 		}
 	}
 
@@ -65,6 +65,8 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	//FIXME write shader
+#if 0
 	cGLState_EnvMapReflect::cGLState_EnvMapReflect()
 		: iGLStateProgram("Internal_Diffuse")
 	{
@@ -88,36 +90,30 @@ namespace hpl {
 	//-----------------------------------------------------------------------
 
 	cGLState_EnvMapReflect gGLState_EnvMapReflect;
-
+#endif
 	//////////////////////////////////////////////////////////////////////////
 	// CONSTRUCTORS
 	//////////////////////////////////////////////////////////////////////////
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_EnvMap_Reflect::cMaterial_EnvMap_Reflect(	const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		: iMaterial(asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-		aPicture,apRenderer3D)
+	cMaterial_EnvMap_Reflect::cMaterial_EnvMap_Reflect(	const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+		: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = false;
 		mbIsGlowing= false;
 		mbUsesLights = false;
 
-		gGLState_EnvMapReflect.SetUp(apLowLevelGraphics);
+		///////////////////////////////////////////
+		//Load the Z pass vertex program
+		iGpuProgram *pProg = apGraphics->CreateGpuProgramFromShaders("ZPass", "Diffuse_Color.vert", "Diffuse_Color.frag");
+		SetProgram(pProg, 0);
+
 
 		///////////////////////////////////////////
 		//Load the Z pass vertex program
-		iGpuProgram *pVtxProg = mpProgramManager->CreateProgram("Diffuse_Color_vp.cg","main",eGpuProgramType_Vertex);
-		SetProgram(pVtxProg,eGpuProgramType_Vertex,0);
-
-
-		///////////////////////////////////////////
-		//Load the Z pass vertex program
-		pVtxProg = mpProgramManager->CreateProgram("Diffuse_EnvMap_Reflect_vp.cg","main",eGpuProgramType_Vertex);
-		SetProgram(pVtxProg,eGpuProgramType_Vertex,1);
+		pProg = apGraphics->CreateGpuProgramFromShaders("Diffuse_EnvMap_Reflect", "Diffuse_EnvMap_Reflect.vert", "Diffuse_EnvMap_Reflect.frag");
+		SetProgram(pProg, 1);
 	}
 
 	//-----------------------------------------------------------------------
@@ -134,12 +130,12 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iGpuProgram* cMaterial_EnvMap_Reflect::GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
+	iGpuProgram* cMaterial_EnvMap_Reflect::GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		if(aType == eMaterialRenderType_Z)
-			return mpProgram[eGpuProgramType_Vertex][0];
+			return mpProgram[0];
 		else
-			return mpProgram[eGpuProgramType_Vertex][1];
+			return mpProgram[1];
 	}
 
 	bool cMaterial_EnvMap_Reflect::VertexProgramUsesLight(eMaterialRenderType aType, int alPass, iLight3D *apLight)
@@ -156,12 +152,6 @@ namespace hpl {
 	{
 		if(aType == eMaterialRenderType_Diffuse) return &gEnvMaterialSetup;
 
-		return NULL;
-	}
-
-	iGpuProgram* cMaterial_EnvMap_Reflect::GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
-	{
-		if(aType == eMaterialRenderType_Diffuse) return &gGLState_EnvMapReflect;
 		return NULL;
 	}
 

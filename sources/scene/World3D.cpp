@@ -23,6 +23,7 @@
 #include "system/Script.h"
 #include "system/String.h"
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 
 #include "math/Math.h"
 #include "math/MathTypes.h"
@@ -946,10 +947,10 @@ namespace hpl {
 			}
 
 			bool bLoadedFromFile=false;
-			if(FileExists(cString::To16Char(sAiFileName)))
+			if(cPlatform::FileExists(cString::To16Char(sAiFileName)))
 			{
-				cDate dateMapFile = FileModifiedDate(cString::To16Char(sMapPath));
-				cDate dateAIFile = FileModifiedDate(cString::To16Char(sAiFileName));
+				cDate dateMapFile = cPlatform::FileModifiedDate(cString::To16Char(sMapPath));
+				cDate dateAIFile = cPlatform::FileModifiedDate(cString::To16Char(sAiFileName));
 
 				if(dateAIFile > dateMapFile)
 				{

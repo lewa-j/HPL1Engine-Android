@@ -23,6 +23,7 @@
 #include "graphics/VertexBuffer.h"
 #include "system/String.h"
 #include "system/System.h"
+#include "system/Platform.h"
 
 #include "graphics/Mesh.h"
 #include "graphics/SubMesh.h"
@@ -66,11 +67,11 @@ namespace hpl {
 		sCacheFile = msCacheDir+sCacheFile;
 
 		if(	abCache &&
-			FileExists(cString::To16Char(sCacheFile)) &&
-			FileExists(cString::To16Char(asFile)))
+			cPlatform::FileExists(cString::To16Char(sCacheFile)) &&
+			cPlatform::FileExists(cString::To16Char(asFile)))
 		{
-			cDate colladaDate = FileModifiedDate(cString::To16Char(asFile));
-			cDate cacheDate = FileModifiedDate(cString::To16Char(sCacheFile));
+			cDate colladaDate = cPlatform::FileModifiedDate(cString::To16Char(asFile));
+			cDate cacheDate = cPlatform::FileModifiedDate(cString::To16Char(sCacheFile));
 
 			//Check if cache is newer
 			if(cacheDate > colladaDate) bLoadCache = true;

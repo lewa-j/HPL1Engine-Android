@@ -17,12 +17,15 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
+#include "graphics/Graphics.h"
 #include "graphics/Renderer2D.h"
 #include "graphics/Renderer3D.h"
 #include "system/LowLevelSystem.h"
+#include "resources/Resources.h"
 #include "resources/TextureManager.h"
 #include "resources/ImageManager.h"
-#include "resources/GpuProgramManager.h"
+#include "resources/GpuShaderManager.h"
 #include "graphics/GPUProgram.h"
 #include "scene/Camera.h"
 #include "system/String.h"
@@ -37,12 +40,11 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iMaterial::iMaterial(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+	iMaterial::iMaterial(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
 		: iResourceBase(asName, 0)
 	{
+		mpType = apType;
+
 		if(aPicture==eMaterialPicture_Image){
 			mvImage.resize(eMaterialTexture_LastEnum);
 			mvImage.assign(mvImage.size(), NULL);
@@ -55,13 +57,13 @@ namespace hpl {
 		mType = eMaterialType_Null;
 		mPicture = aPicture;
 
-		mpLowLevelGraphics = apLowLevelGraphics;
-		mpImageManager = apImageManager;
-		mpTextureManager = apTextureManager;
-		mpRenderer = apRenderer;
-		mpRenderer3D = apRenderer3D;
+		mpLowLevelGraphics = apGraphics->GetLowLevel();
+		mpImageManager = apResources->GetImageManager();
+		mpTextureManager = apResources->GetTextureManager();
+		mpRenderer = apGraphics->GetRenderer2D();
+		mpRenderer3D = apGraphics->GetRenderer3D();
 		mpRenderSettings = mpRenderer3D->GetRenderSettings();
-		mpProgramManager = apProgramManager;
+		mpShaderManager = apResources->GetGpuShaderManager();
 
 		mbUsesLights = false;
 		mbIsTransperant = false;
@@ -70,8 +72,8 @@ namespace hpl {
 		mbDepthTest = true;
 		mfValue = 1;
 
-		for(int i=0;i<2;i++)
-			for(int j=0;j<kMaxProgramNum;j++) mpProgram[i][j]=NULL;
+		for (int j = 0; j < kMaxProgramNum; j++)
+			mpProgram[j] = nullptr;
 
 		mlPassCount=0;
 
@@ -82,21 +84,18 @@ namespace hpl {
 	{
 		int i;
 
-		for(i=0;i<(int)mvImage.size();i++){
-			if(mvImage[i])
+		for (i = 0; i < (int)mvImage.size(); i++) {
+			if (mvImage[i])
 				mpImageManager->Destroy(mvImage[i]);
 		}
-		for(i=0;i<(int)mvTexture.size();i++){
-			if(mvTexture[i])
+		for (i = 0; i < (int)mvTexture.size(); i++) {
+			if (mvTexture[i])
 				mpTextureManager->Destroy(mvTexture[i]);
 		}
 
-		for(i=0;i<2;i++){
-			for(int j=0;j<kMaxProgramNum;j++)
-			{
-				if(mpProgram[i][j])
-					mpProgramManager->Destroy(mpProgram[i][j]);
-			}
+		for (int j = 0; j < kMaxProgramNum; j++) {
+			if (mpProgram[j])
+				mpType->DestroyProgram(this, j, mpProgram[j]);
 		}
 	}
 
@@ -154,6 +153,16 @@ namespace hpl {
 		return SizeRect;
 	}
 
-
 	//-----------------------------------------------------------------------
+
+	iMaterialType::iMaterialType(cGraphics *apGraphics)
+	{
+		mpGraphics = apGraphics;
+	}
+
+	void iMaterialType::DestroyProgram(iMaterial *apMaterial, int i, iGpuProgram *apProgram)
+	{
+		mpGraphics->DestroyGpuProgram(apProgram);
+	}
+
 }

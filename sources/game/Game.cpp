@@ -19,6 +19,7 @@
 #include "game/Game.h"
 
 #include "system/System.h"
+#include "system/Platform.h"
 #include "system/LogicTimer.h"
 #include "system/String.h"
 #include "input/Input.h"
@@ -53,21 +54,21 @@ namespace hpl {
 
 		mpLowLevelSystem = apLowLevelSystem;
 
-		mfFrametimestart = ((float)GetApplicationTime()) / 1000.0f;
+		mfFrametimestart = ((float)cPlatform::GetApplicationTime()) / 1000.0f;
 	}
 
 	void cFPSCounter::AddFrame()
 	{
 		mlFramecounter++;
 
-		mfFrametime = (((float)GetApplicationTime()) / 1000.0f) - mfFrametimestart;
+		mfFrametime = (((float)cPlatform::GetApplicationTime()) / 1000.0f) - mfFrametimestart;
 
 		// update the timer
 		if (mfFrametime >= mfUpdateRate)
 		{
 			mfFPS = ((float)mlFramecounter)/mfFrametime;
 			mlFramecounter = 0;
-			mfFrametimestart = ((float)GetApplicationTime()) / 1000.0f;
+			mfFrametimestart = ((float)cPlatform::GetApplicationTime()) / 1000.0f;
 		}
 	}
 
@@ -350,7 +351,7 @@ namespace hpl {
 		mpLogicTimer->Reset();
 
 		//Loop the game... fix the var...
-		unsigned long lTempTime = GetApplicationTime();
+		unsigned long lTempTime = cPlatform::GetApplicationTime();
 
 		//reset the mouse, really reset the damn thing :P
 		for(int i=0;i<10;i++) mpInput->GetMouse()->Reset();
@@ -360,7 +361,7 @@ namespace hpl {
 		Log("--------------------------------------------------------\n");
 
 		mfFrameTime = 0;
-		unsigned long lTempFrameTime = GetApplicationTime();
+		unsigned long lTempFrameTime = cPlatform::GetApplicationTime();
 
 		bool mbIsUpdated = true;
 
@@ -373,11 +374,11 @@ namespace hpl {
 			//Update logic.
 			while(mpLogicTimer->WantUpdate() && !mbGameIsDone)
 			{
-				unsigned int lUpdateTime = GetApplicationTime();
+				unsigned int lUpdateTime = cPlatform::GetApplicationTime();
 
 				mpUpdater->Update(GetStepSize());
 
-				unsigned int lDeltaTime = GetApplicationTime() - lUpdateTime;
+				unsigned int lDeltaTime = cPlatform::GetApplicationTime() - lUpdateTime;
 				mfUpdateTime = (float)(lDeltaTime) / 1000.0f;
 
 				mbIsUpdated = true;
@@ -419,8 +420,8 @@ namespace hpl {
 				mbIsUpdated = false;
 
 				//Get the the from the last frame.
-				mfFrameTime = ((float)(GetApplicationTime() - lTempFrameTime))/1000;
-				lTempFrameTime = GetApplicationTime();
+				mfFrameTime = ((float)(cPlatform::GetApplicationTime() - lTempFrameTime))/1000;
+				lTempFrameTime = cPlatform::GetApplicationTime();
 
 				//Draw this frame
 				//unsigned long lFTime = GetApplicationTime();
@@ -454,7 +455,7 @@ namespace hpl {
 		Log("Statistics\n");
 		Log("--------------------------------------------------------\n");
 
-		unsigned long lTime = GetApplicationTime() - lTempTime;
+		unsigned long lTime = cPlatform::GetApplicationTime() - lTempTime;
 		fMediumTime = fNumOfTimes/(((double)lTime)/1000);
 
 		Log(" Medium framerate: %f\n", fMediumTime);

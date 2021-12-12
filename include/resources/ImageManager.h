@@ -43,8 +43,6 @@ namespace hpl {
 						iLowLevelResources *apLowLevelResources,iLowLevelSystem *apLowLevelSystem);
 		~cImageManager();
 
-		iResourceBase* Create(const tString& asName);
-
 		void Destroy(iResourceBase* apResource);
 
 		void Unload(iResourceBase* apResource);

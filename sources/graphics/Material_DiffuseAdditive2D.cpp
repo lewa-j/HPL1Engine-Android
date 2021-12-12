@@ -26,12 +26,8 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_DiffuseAdditive2D::cMaterial_DiffuseAdditive2D(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-	: iMaterial(asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-				aPicture,apRenderer3D)
+	cMaterial_DiffuseAdditive2D::cMaterial_DiffuseAdditive2D(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+	: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = true;
 		mbIsGlowing= true;

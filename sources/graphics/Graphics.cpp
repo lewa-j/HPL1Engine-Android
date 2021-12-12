@@ -30,6 +30,7 @@
 #include "graphics/MeshCreator.h"
 #include "game/Updateable.h"
 #include "resources/Resources.h"
+#include "resources/GpuShaderManager.h"
 
 //2D Materials
 #include "graphics/Material_BumpSpec2D.h"
@@ -89,6 +90,7 @@ namespace hpl {
 		hplDelete(mpMeshCreator);
 		hplDelete(mpMaterialHandler);
 		hplDelete(mpRenderList);
+		STLDeleteAll(mlstGpuPrograms);
 
 		Log("--------------------------------------------------------\n\n");
 	}
@@ -108,8 +110,10 @@ namespace hpl {
 		Log("Initializing Graphics Module\n");
 		Log("--------------------------------------------------------\n");
 
+		mpResources = apResources;
+
 		//Setup the graphic directories:
-		apResources->AddResourceDir("core/programs");
+		apResources->AddResourceDir("core/shaders");
 		apResources->AddResourceDir("core/textures");
 
 		Log(" Init low level graphics\n");
@@ -121,38 +125,37 @@ namespace hpl {
 		mpRenderer2D = hplNew( cRenderer2D,(mpLowLevelGraphics,apResources,mpDrawer));
 		mpRenderList = hplNew( cRenderList,(this));
 		mpMeshCreator = hplNew( cMeshCreator,(mpLowLevelGraphics, apResources));
-		mpRenderer3D = hplNew( cRenderer3D,(mpLowLevelGraphics,apResources,mpMeshCreator,mpRenderList));
-		mpRendererPostEffects = hplNew( cRendererPostEffects,(mpLowLevelGraphics,apResources,mpRenderList,
-														mpRenderer3D));
+		mpRenderer3D = hplNew( cRenderer3D,(this,apResources,mpMeshCreator,mpRenderList));
+		mpRendererPostEffects = hplNew( cRendererPostEffects,(this, apResources, mpRenderList));
 		mpRenderer3D->SetPostEffects(mpRendererPostEffects);
 
 
 		//Add all the materials.
 		//2D
 		Log(" Adding engine materials\n");
-		mpMaterialHandler->Add(hplNew( cMaterialType_BumpSpec2D,() ) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_DiffuseAdditive2D,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_DiffuseAlpha2D,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_Diffuse2D,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_Smoke2D,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_FontNormal,()) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_BumpSpec2D,(this) ) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_DiffuseAdditive2D,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_DiffuseAlpha2D,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Diffuse2D,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Smoke2D,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_FontNormal,(this)) );
 
 		//3D
-		mpMaterialHandler->Add(hplNew( cMaterialType_Diffuse,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_Bump,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_DiffuseSpec,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_BumpSpec,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_BumpColorSpec,()) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Diffuse,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Bump,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_DiffuseSpec,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_BumpSpec,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_BumpColorSpec,(this)) );
 
-		mpMaterialHandler->Add(hplNew( cMaterialType_Additive,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_Alpha,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_Flat,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_Modulative,()) );
-		mpMaterialHandler->Add(hplNew( cMaterialType_ModulativeX2,()) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Additive,(this, apResources)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Alpha,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Flat,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Modulative,(this)) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_ModulativeX2,(this)) );
 
-		mpMaterialHandler->Add(hplNew( cMaterialType_EnvMap_Reflect,()) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_EnvMap_Reflect,(this)) );
 
-		mpMaterialHandler->Add(hplNew( cMaterialType_Water,()) );
+		mpMaterialHandler->Add(hplNew( cMaterialType_Water,(this)) );
 
 		Log("--------------------------------------------------------\n\n");
 
@@ -182,4 +185,35 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
+	iGpuProgram *cGraphics::CreateGpuProgram(const tString &asName)
+	{
+		iGpuProgram *pProgram = mpLowLevelGraphics->CreateGpuProgram(asName);
+		pProgram->SetResources(mpResources);
+		mlstGpuPrograms.push_back(pProgram);
+
+		return pProgram;
+	}
+
+	iGpuProgram *cGraphics::CreateGpuProgramFromShaders(const tString &asName, const tString &asVtxShader, const tString &asFragShader)
+	{
+		iGpuShader *pVtxShader = mpResources->GetGpuShaderManager()->CreateShader(asVtxShader, eGpuShaderType::Vertex);
+		if (pVtxShader == NULL) return NULL;
+		iGpuShader *pFragShader = mpResources->GetGpuShaderManager()->CreateShader(asFragShader, eGpuShaderType::Fragment);
+		if (pFragShader == NULL) {
+			mpResources->GetGpuShaderManager()->Destroy(pVtxShader);
+			return NULL;
+		}
+
+		iGpuProgram *pProgram = CreateGpuProgram(asName);
+		pProgram->SetShader(eGpuShaderType::Vertex, pVtxShader);
+		pProgram->SetShader(eGpuShaderType::Fragment, pFragShader);
+		pProgram->Link();
+
+		return pProgram;
+	}
+
+	void cGraphics::DestroyGpuProgram(iGpuProgram *apProgram)
+	{
+		STLFindAndDelete(mlstGpuPrograms, apProgram);
+	}
 }

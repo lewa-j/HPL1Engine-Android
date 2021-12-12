@@ -64,13 +64,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iResourceBase* cParticleManager::Create(const tString& asName)
-	{
-		return NULL;
-	}
-
-	//-----------------------------------------------------------------------
-
 	iParticleSystem2D* cParticleManager::CreatePS2D(const tString& asName, cVector3f avSize)
 	{
 		/*tParticleSystemDataMapIt it = m_mapData.find(asName);

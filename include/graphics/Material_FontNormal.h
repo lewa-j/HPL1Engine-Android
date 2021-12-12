@@ -20,18 +20,15 @@
 #define HPL_MATERIAL_FONTNORMAL_H
 
 #include "graphics/Material.h"
-
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 
 	class cMaterial_FontNormal : public iMaterial
 	{
 	public:
-		cMaterial_FontNormal(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-		~cMaterial_FontNormal();
+		cMaterial_FontNormal(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		virtual ~cMaterial_FontNormal();
 
 		void Compile();
 		bool StartRendering(eMaterialRenderType aType,iCamera* apCam,iLight *pLight);
@@ -50,18 +47,16 @@ namespace hpl {
 	class cMaterialType_FontNormal : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_FontNormal(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="fontnormal";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
 		{
-			return hplNew( cMaterial_FontNormal, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_FontNormal, (asName, apGraphics, apResources, this, aPicture) );
 		}
 	};
 

@@ -20,6 +20,7 @@
 #define HPL_MATERIAL_ENVMAP_REFLECT_H
 
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 
 namespace hpl {
 
@@ -50,24 +51,18 @@ namespace hpl {
 	class cMaterial_EnvMap_Reflect : public iMaterial
 	{
 	public:
-		cMaterial_EnvMap_Reflect(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D);
-
+		cMaterial_EnvMap_Reflect(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
 		virtual ~cMaterial_EnvMap_Reflect();
 
 		tTextureTypeList GetTextureTypes();
 
 		bool UsesType(eMaterialRenderType aType);
 
-		iGpuProgram* GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
+		iGpuProgram* GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight) override;
 		bool VertexProgramUsesLight(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		bool VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 
 		iMaterialProgramSetup * GetVertexProgramSetup(eMaterialRenderType aType, int alPass, iLight3D *apLight);
-
-		iGpuProgram* GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 
 		eMaterialAlphaMode GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
 		eMaterialBlendMode GetBlendMode(eMaterialRenderType aType, int alPass, iLight3D *apLight);
@@ -94,18 +89,16 @@ namespace hpl {
 	class cMaterialType_EnvMap_Reflect : public iMaterialType
 	{
 	public:
-		bool IsCorrect(tString asName){
+		cMaterialType_EnvMap_Reflect(cGraphics *apGraphics)
+			: iMaterialType(apGraphics) {}
+
+		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="environmentmapreflect";
 		}
 
-		iMaterial* Create(const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-			cImageManager* apImageManager, cTextureManager *apTextureManager,
-			cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-			eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
+		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
 		{
-			return hplNew( cMaterial_EnvMap_Reflect, (asName,apLowLevelGraphics,
-				apImageManager,apTextureManager,apRenderer,
-				apProgramManager,aPicture,apRenderer3D) );
+			return hplNew( cMaterial_EnvMap_Reflect, (asName, apGraphics, apResources, this, aPicture) );
 		}
 	};
 

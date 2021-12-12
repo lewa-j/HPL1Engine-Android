@@ -17,10 +17,10 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material_Flat.h"
+#include "graphics/Graphics.h"
 #include "graphics/Renderer2D.h"
 #include "scene/Light.h"
 #include "scene/Camera.h"
-#include "resources/GpuProgramManager.h"
 #include "resources/TextureManager.h"
 #include "graphics/GPUProgram.h"
 #include "math/Math.h"
@@ -35,21 +35,17 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_Flat::cMaterial_Flat(	const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		: iMaterial(asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-					aPicture,apRenderer3D)
+	cMaterial_Flat::cMaterial_Flat(	const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+		: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = false;
-		mbIsGlowing= false;
+		mbIsGlowing = false;
 		mbUsesLights = false;
 
 		///////////////////////////////////////////
 		//Load the Z pass vertex program
-		iGpuProgram *pVtxProg = mpProgramManager->CreateProgram("Diffuse_Color_vp.cg","main",eGpuProgramType_Vertex);
-		SetProgram(pVtxProg,eGpuProgramType_Vertex,0);
+		iGpuProgram *pProg = apGraphics->CreateGpuProgramFromShaders("Diffuse_Color", "Diffuse_Color.vert", "Diffuse_Color.frag");
+		SetProgram(pProg, 0);
 	}
 
 	//-----------------------------------------------------------------------
@@ -66,7 +62,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iGpuProgram* cMaterial_Flat::GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
+	iGpuProgram* cMaterial_Flat::GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		return NULL;//return mpProgram[eGpuProgramType_Vertex][0];
 	}
@@ -79,11 +75,6 @@ namespace hpl {
 	bool cMaterial_Flat::VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		return false;
-	}
-
-	iGpuProgram* cMaterial_Flat::GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
-	{
-		return NULL;
 	}
 
 	eMaterialAlphaMode cMaterial_Flat::GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight)

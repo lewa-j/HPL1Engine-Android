@@ -17,55 +17,17 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material_ModulativeX2.h"
+#include "graphics/Graphics.h"
 #include "graphics/Renderer2D.h"
 #include "graphics/Renderer3D.h"
 #include "scene/Light.h"
 #include "scene/Camera.h"
-#include "resources/GpuProgramManager.h"
 #include "resources/TextureManager.h"
 #include "graphics/GPUProgram.h"
 #include "math/Math.h"
 
 
 namespace hpl {
-
-	//////////////////////////////////////////////////////////////////////////
-	// FRAGMENT PRORGAM SETUP
-	//////////////////////////////////////////////////////////////////////////
-
-	//-----------------------------------------------------------------------
-
-	class cGLState_ModulateX2Fog : public iGLStateProgram
-	{
-	public:
-
-		cGLState_ModulateX2Fog() : iGLStateProgram("ModulateX2Fog"){}
-
-		void Bind()
-		{
-			mpLowGfx->SetActiveTextureUnit(1);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorSource2,eTextureSource_Texture);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorSource0,eTextureSource_Constant);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorFunc, eTextureFunc_Interpolate);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorOp2,eTextureOp_OneMinusColor);
-			mpLowGfx->SetTextureConstantColor(cColor(0.5,1));
-		}
-
-		void UnBind()
-		{
-			mpLowGfx->SetActiveTextureUnit(1);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorSource0,eTextureSource_Texture);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorSource1,eTextureSource_Previous);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorSource2,eTextureSource_Constant);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorOp2,eTextureOp_Color);
-			mpLowGfx->SetTextureEnv(eTextureParam_ColorFunc, eTextureFunc_Modulate);
-		}
-
-	private:
-		void InitData(){}
-	};
-
-	static cGLState_ModulateX2Fog gModulateX2Fog;
 
 	//-----------------------------------------------------------------------
 
@@ -93,33 +55,21 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_ModulativeX2::cMaterial_ModulativeX2(	const tString& asName,iLowLevelGraphics* apLowLevelGraphics,
-		cImageManager* apImageManager, cTextureManager *apTextureManager,
-		cRenderer2D* apRenderer, cGpuProgramManager* apProgramManager,
-		eMaterialPicture aPicture, cRenderer3D *apRenderer3D)
-		: iMaterial(asName,apLowLevelGraphics,apImageManager,apTextureManager,apRenderer,apProgramManager,
-					aPicture,apRenderer3D)
+	cMaterial_ModulativeX2::cMaterial_ModulativeX2(	const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+		: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = true;
 		mbIsGlowing= false;
 		mbUsesLights = false;
 
-		gModulateX2Fog.SetUp(apLowLevelGraphics);
-
-		mpFogVtxProg = mpProgramManager->CreateProgram("Fog_Trans_vp.cg","main",eGpuProgramType_Vertex);
-
-		if(mpLowLevelGraphics->GetCaps(eGraphicCaps_GL_FragmentProgram))
-			mpFogFragProg = mpProgramManager->CreateProgram("Fog_Trans_ModX2_fp.cg","main",eGpuProgramType_Fragment);
-		else
-			mpFogFragProg = NULL;
+		mpFogProg = apGraphics->CreateGpuProgramFromShaders("cMaterial_ModulativeX2", "Fog_Trans.vert", "Fog_Trans_ModX2.frag");
 	}
 
 	//-----------------------------------------------------------------------
 
 	cMaterial_ModulativeX2::~cMaterial_ModulativeX2()
 	{
-		if(mpFogVtxProg) mpProgramManager->Destroy(mpFogVtxProg);
-		if(mpFogFragProg) mpProgramManager->Destroy(mpFogFragProg);
+		if (mpFogProg) mpType->DestroyProgram(this, 0, mpFogProg);
 	}
 
 	//-----------------------------------------------------------------------
@@ -130,10 +80,10 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iGpuProgram* cMaterial_ModulativeX2::GetVertexProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
+	iGpuProgram* cMaterial_ModulativeX2::GetProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		if(mpRenderSettings->mbFogActive)
-			return mpFogVtxProg;
+			return mpFogProg;
 		else
 			return NULL;
 	}
@@ -154,19 +104,6 @@ namespace hpl {
 	bool cMaterial_ModulativeX2::VertexProgramUsesEye(eMaterialRenderType aType, int alPass, iLight3D *apLight)
 	{
 		return false;
-	}
-
-	iGpuProgram* cMaterial_ModulativeX2::GetFragmentProgram(eMaterialRenderType aType, int alPass, iLight3D *apLight)
-	{
-		if(mpRenderSettings->mbFogActive)
-		{
-			if(mpFogFragProg)
-				return mpFogFragProg;
-			else
-				return &gModulateX2Fog;
-		}
-		else
-			return NULL;
 	}
 
 	eMaterialAlphaMode cMaterial_ModulativeX2::GetAlphaMode(eMaterialRenderType aType, int alPass, iLight3D *apLight)

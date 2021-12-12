@@ -50,14 +50,13 @@ namespace hpl {
 	{
 		switch(mType)
 		{
-		case eRenderStateType_Sector:				return CompareSector(apState);
-		case eRenderStateType_Pass:					return ComparePass(apState);
-		case eRenderStateType_DepthTest:			return CompareDepthTest(apState);
-		case eRenderStateType_Depth:				return CompareDepth(apState);
-		case eRenderStateType_AlphaMode:			return CompareAlpha(apState);
-		case eRenderStateType_BlendMode:			return CompareBlend(apState);
-		case eRenderStateType_VertexProgram:		return CompareVtxProg(apState);
-		case eRenderStateType_FragmentProgram:	return CompareFragProg(apState);
+		case eRenderStateType_Sector:			return CompareSector(apState);
+		case eRenderStateType_Pass:				return ComparePass(apState);
+		case eRenderStateType_DepthTest:		return CompareDepthTest(apState);
+		case eRenderStateType_Depth:			return CompareDepth(apState);
+		case eRenderStateType_AlphaMode:		return CompareAlpha(apState);
+		case eRenderStateType_BlendMode:		return CompareBlend(apState);
+		case eRenderStateType_Program:			return CompareProg(apState);
 		case eRenderStateType_Texture:			return CompareTexture(apState);
 		case eRenderStateType_VertexBuffer:		return CompareVtxBuff(apState);
 		case eRenderStateType_Matrix:			return CompareMatrix(apState);
@@ -73,14 +72,13 @@ namespace hpl {
 	{
 		switch(mType)
 		{
-		case eRenderStateType_Sector:				SetSectorMode(apSettings); break;
-		case eRenderStateType_Pass:					SetPassMode(apSettings); break;
-		case eRenderStateType_DepthTest:			SetDepthTestMode(apSettings); break;
-		case eRenderStateType_Depth:				SetDepthMode(apSettings); break;
-		case eRenderStateType_AlphaMode:			SetAlphaMode(apSettings); break;
-		case eRenderStateType_BlendMode:			SetBlendMode(apSettings); break;
-		case eRenderStateType_VertexProgram:		SetVtxProgMode(apSettings); break;
-		case eRenderStateType_FragmentProgram:	SetFragProgMode(apSettings); break;
+		case eRenderStateType_Sector:			SetSectorMode(apSettings); break;
+		case eRenderStateType_Pass:				SetPassMode(apSettings); break;
+		case eRenderStateType_DepthTest:		SetDepthTestMode(apSettings); break;
+		case eRenderStateType_Depth:			SetDepthMode(apSettings); break;
+		case eRenderStateType_AlphaMode:		SetAlphaMode(apSettings); break;
+		case eRenderStateType_BlendMode:		SetBlendMode(apSettings); break;
+		case eRenderStateType_Program:			SetProgMode(apSettings); break;
 		case eRenderStateType_Texture:			SetTextureMode(apSettings); break;
 		case eRenderStateType_VertexBuffer:		SetVtxBuffMode(apSettings); break;
 		case eRenderStateType_Matrix:			SetMatrixMode(apSettings); break;
@@ -111,15 +109,12 @@ namespace hpl {
 												mChannelMode = apState->mChannelMode;
 												break;
 
-		case eRenderStateType_VertexProgram:	mpVtxProgram = apState->mpVtxProgram;
+		case eRenderStateType_Program:			mpProgram = apState->mpProgram;
 												mpVtxProgramSetup = apState->mpVtxProgramSetup;
+												mpFragProgramSetup = apState->mpFragProgramSetup;
 												mbUsesEye = apState->mbUsesEye;
 												mbUsesLight = apState->mbUsesLight;
 												mpLight = apState->mpLight;
-												break;
-
-		case eRenderStateType_FragmentProgram:	mpFragProgram = apState->mpFragProgram;
-												mpFragProgramSetup = apState->mpFragProgramSetup;
 												break;
 
 		case eRenderStateType_Texture:			for(int i=0;i<MAX_TEXTUREUNITS;i++)
@@ -162,7 +157,7 @@ namespace hpl {
 		}
 
 		//To make sure that new ambient is set:
-		apSettings->mpFragmentProgram = NULL;
+		apSettings->mpProgram = NULL;
 	}
 
 	//-----------------------------------------------------------------------
@@ -300,46 +295,49 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	void iRenderState::SetVtxProgMode(cRenderSettings* apSettings)
+	void iRenderState::SetProgMode(cRenderSettings* apSettings)
 	{
-		if(mpVtxProgram != apSettings->mpVertexProgram)
+		if(mpProgram != apSettings->mpProgram)
 		{
 			if(apSettings->mbLog){
-				if(mpVtxProgram)
-					Log("Setting vertex program: '%s'/%d ",mpVtxProgram->GetName().c_str(),
-																		(size_t)mpVtxProgram);
+				if(mpProgram)
+					Log("Setting program: '%s'/%d ", mpProgram->GetName().c_str(),
+																		(size_t)mpProgram);
 				else
-					Log("Setting vertex program: NULL ");
+					Log("Setting program: NULL ");
 			}
 
-			if(mpVtxProgram==NULL && apSettings->mpVertexProgram)
+			//if(mpProgram==NULL && apSettings->mpProgram)
+			if (apSettings->mpProgram)
 			{
-				apSettings->mpVertexProgram->UnBind();
+				apSettings->mpProgram->UnBind();
 				if(apSettings->mbLog)Log("Unbinding old ");
 			}
-			apSettings->mpVertexProgram = mpVtxProgram;
+			apSettings->mpProgram = mpProgram;
 
-			if(mpVtxProgram)
+			if(mpProgram)
 			{
 				if(apSettings->mbLog)Log("Binding new ");
-				mpVtxProgram->Bind();
+				mpProgram->Bind();
 
 				if(mpVtxProgramSetup)
 				{
-					if(apSettings->mbLog)Log("Custom setup %d ", mpVtxProgram);
-					mpVtxProgramSetup->Setup(mpVtxProgram, apSettings);
+					if(apSettings->mbLog)Log("Custom setup %d ", mpProgram);
+					mpVtxProgramSetup->Setup(mpProgram, apSettings);
 				}
 				apSettings->mpVtxProgramSetup = mpVtxProgramSetup;
 
-				//reset this so all matrix setting are set to vertex program.
+				if (mpFragProgramSetup) mpFragProgramSetup->Setup(mpProgram, apSettings);
+
+				//reset this so all matrix setting are set to program.
 				apSettings->mbMatrixWasNULL = false;
 
 				if(mbUsesLight)
 				{
 					if(apSettings->mbLog)Log("Setting light properites ");
 
-					//mpVtxProgram->SetFloat("LightRadius",mpLight->GetFarAttenuation());
-					mpVtxProgram->SetColor4f("LightColor",mpLight->GetDiffuseColor());
+					//mpProgram->SetFloat("LightRadius",mpLight->GetFarAttenuation());
+					mpProgram->SetColor4f("LightColor", mpLight->GetDiffuseColor());
 
 					apSettings->mpLight = mpLight;
 				}
@@ -355,48 +353,15 @@ namespace hpl {
 		}
 		else
 		{
-			if(apSettings->mpVertexProgram && mbUsesLight && mpLight != apSettings->mpLight)
+			if(apSettings->mpProgram && mbUsesLight && mpLight != apSettings->mpLight)
 			{
 				if(apSettings->mbLog)Log("Setting new light properites\n");
-				//mpVtxProgram->SetFloat("LightRadius",mpLight->GetFarAttenuation());
-				mpVtxProgram->SetColor4f("LightColor",mpLight->GetDiffuseColor());
+				//mpProgram->SetFloat("LightRadius",mpLight->GetFarAttenuation());
+				mpProgram->SetColor4f("LightColor",mpLight->GetDiffuseColor());
 
 				apSettings->mpLight = mpLight;
 			}
 		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	void iRenderState::SetFragProgMode(cRenderSettings* apSettings)
-	{
-		if(mpFragProgram != apSettings->mpFragmentProgram)
-		{
-			if(apSettings->mbLog)
-			{
-				if(mpFragProgram)
-					Log("Setting fragment program: '%s' /%d ",mpFragProgram->GetName().c_str(),
-																		(size_t) mpFragProgram);
-				else
-					Log("Setting fragment program: NULL");
-			}
-
-			//if(mpFragProgram==NULL && apSettings->mpFragmentProgram) apSettings->mpFragmentProgram->UnBind();
-			if(apSettings->mpFragmentProgram) apSettings->mpFragmentProgram->UnBind();
-
-			apSettings->mpFragmentProgram = mpFragProgram;
-
-			if(mpFragProgram)
-			{
-				if(apSettings->mbLog)Log("Binding new ");
-				mpFragProgram->Bind();
-
-				if(mpFragProgramSetup) mpFragProgramSetup->Setup(mpFragProgram,apSettings);
-			}
-
-			if(apSettings->mbLog)Log("\n");
-		}
-
 	}
 
 	//-----------------------------------------------------------------------
@@ -468,12 +433,12 @@ namespace hpl {
 			apSettings->mbMatrixWasNULL = true;
 		}
 
-		if(apSettings->mpVertexProgram)
+		if(apSettings->mpProgram)
 		{
 			//Might be quicker if this is set directly
-			apSettings->mpVertexProgram->SetMatrixf("worldViewProj",
-													eGpuProgramMatrix_ViewProjection,
-													eGpuProgramMatrixOp_Identity);
+			apSettings->mpProgram->SetMatrixf("worldViewProj",
+													eGpuProgramMatrix::ViewProjection,
+													eGpuProgramMatrixOp::Identity);
 			if(apSettings->mpVtxProgramSetup)
 			{
 				apSettings->mpVtxProgramSetup->SetupMatrix(	mpModelMatrix,apSettings);
@@ -487,11 +452,11 @@ namespace hpl {
 					//Light position
 					cVector3f vLocalLight = cMath::MatrixMul(*mpInvModelMatrix,
 													apSettings->mpLight->GetLightPosition());
-					apSettings->mpVertexProgram->SetVec3f("LightPos",vLocalLight);
+					apSettings->mpProgram->SetVec3f("LightPos",vLocalLight);
 
 					//LightDir Div, use scale to make attenuation correct!
 					cVector3f vLightDirDiv = mvScale / apSettings->mpLight->GetFarAttenuation();
-					apSettings->mpVertexProgram->SetVec3f("LightDirMul", vLightDirDiv);
+					apSettings->mpProgram->SetVec3f("LightDirMul", vLightDirDiv);
 
 					if(apSettings->mbLog) Log("(%s) LightDirMul (%s) ",vLocalLight.ToString().c_str(),vLightDirDiv.ToString().c_str());
 
@@ -500,24 +465,24 @@ namespace hpl {
 					{
 						if(apSettings->mbLog)Log("SpotLightViewProj ");
 						cLight3DSpot *pSpotLight = static_cast<cLight3DSpot*>(apSettings->mpLight);
-						apSettings->mpVertexProgram->SetMatrixf("spotViewProj",
+						apSettings->mpProgram->SetMatrixf("spotViewProj",
 							cMath::MatrixMul(pSpotLight->GetViewProjMatrix(),*mpModelMatrix));
 					}
 				}
 				else
 				{
 					//Light position
-					apSettings->mpVertexProgram->SetVec3f("LightPos",apSettings->mpLight->GetLightPosition());
+					apSettings->mpProgram->SetVec3f("LightPos",apSettings->mpLight->GetLightPosition());
 
 					//LightDir Div
-					apSettings->mpVertexProgram->SetVec3f("LightDirMul",1.0f / apSettings->mpLight->GetFarAttenuation());
+					apSettings->mpProgram->SetVec3f("LightDirMul",1.0f / apSettings->mpLight->GetFarAttenuation());
 
 					//Light view projection
 					if(apSettings->mpLight->GetLightType() == eLight3DType_Spot)
 					{
 						if(apSettings->mbLog)Log("SpotLightViewProj ");
 						cLight3DSpot *pSpotLight = static_cast<cLight3DSpot*>(apSettings->mpLight);
-						apSettings->mpVertexProgram->SetMatrixf("spotViewProj",pSpotLight->GetViewProjMatrix());
+						apSettings->mpProgram->SetMatrixf("spotViewProj",pSpotLight->GetViewProjMatrix());
 					}
 				}
 			}
@@ -529,11 +494,11 @@ namespace hpl {
 				{
 					cVector3f vLocalEye =  cMath::MatrixMul(*mpInvModelMatrix,
 															apSettings->mpCamera->GetEyePosition());
-					apSettings->mpVertexProgram->SetVec3f("EyePos",vLocalEye);
+					apSettings->mpProgram->SetVec3f("EyePos",vLocalEye);
 				}
 				else
 				{
-					apSettings->mpVertexProgram->SetVec3f("EyePos",apSettings->mpCamera->GetEyePosition());
+					apSettings->mpProgram->SetVec3f("EyePos",apSettings->mpCamera->GetEyePosition());
 				}
 			}
 		}
@@ -611,15 +576,9 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	int iRenderState::CompareVtxProg(const iRenderState* apState) const
+	int iRenderState::CompareProg(const iRenderState* apState) const
 	{
-		return GetCompareVal(mpVtxProgram, apState->mpVtxProgram);
-	}
-	//-----------------------------------------------------------------------
-
-	int iRenderState::CompareFragProg(const iRenderState* apState) const
-	{
-		return GetCompareVal(mpFragProgram, apState->mpFragProgram);
+		return GetCompareVal(mpProgram, apState->mpProgram);
 	}
 
 	//-----------------------------------------------------------------------

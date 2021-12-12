@@ -21,7 +21,7 @@
 #include "resources/LowLevelResources.h"
 #include "resources/FileSearcher.h"
 #include "resources/ImageManager.h"
-#include "resources/GpuProgramManager.h"
+#include "resources/GpuShaderManager.h"
 #include "resources/TileSetManager.h"
 #include "resources/ImageEntityManager.h"
 #include "resources/ParticleManager.h"
@@ -41,6 +41,7 @@
 #include "system/System.h"
 
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 
 #include "impl/tinyXML/tinyxml.h"
 
@@ -86,7 +87,7 @@ namespace hpl {
 		hplDelete(mpImageEntityManager);
 		hplDelete(mpMeshManager);
 		hplDelete(mpMaterialManager);
-		hplDelete(mpGpuProgramManager);
+		hplDelete(mpGpuShaderManager);
 		hplDelete(mpImageManager);
 		hplDelete(mpTextureManager);
 		hplDelete(mpSoundEntityManager);
@@ -124,8 +125,8 @@ namespace hpl {
 
 		mpImageManager = hplNew( cImageManager,(mpFileSearcher,mpLowLevelGraphics,mpLowLevelResources,mpLowLevelSystem) );
 		mlstManagers.push_back(mpImageManager);
-		mpGpuProgramManager = hplNew( cGpuProgramManager,(mpFileSearcher,mpLowLevelGraphics,mpLowLevelResources,mpLowLevelSystem) );
-		mlstManagers.push_back(mpGpuProgramManager);
+		mpGpuShaderManager = hplNew( cGpuShaderManager,(mpFileSearcher,mpLowLevelGraphics,mpLowLevelResources,mpLowLevelSystem) );
+		mlstManagers.push_back(mpGpuShaderManager);
 		mpTileSetManager = hplNew( cTileSetManager,(apGraphics,this) );
 		mlstManagers.push_back(mpTileSetManager);
 		mpImageEntityManager = hplNew( cImageEntityManager,(apGraphics, this) );
@@ -334,7 +335,7 @@ namespace hpl {
 
 	bool cResources::LoadResourceDirsFile(const tString &asFile)
 	{
-		TiXmlDocument* pXmlDoc = hplNew(TiXmlDocument, (GetPlatformPath(asFile).c_str()));
+		TiXmlDocument* pXmlDoc = hplNew(TiXmlDocument, (cPlatform::GetPlatformPath(asFile).c_str()));
 
 		if(pXmlDoc->LoadFile()==false)
 		{
