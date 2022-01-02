@@ -1,8 +1,8 @@
 #version 100
 precision highp float;
 
-varying vec4 v_color;//COLOR0
-varying float v_uv;//TEXCOORD0
+varying vec4 v_color;	//COLOR0
+varying float v_uv;		//TEXCOORD0
 
 uniform sampler2D diffuseMap;
 

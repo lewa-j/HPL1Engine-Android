@@ -228,11 +228,6 @@ namespace hpl {
 			mvImage[aType] = apImg;	}
 		cResourceImage* GetImage(eMaterialTexture aType){ return mvImage[aType];}
 
-		//resources stuff.
-		bool Reload(){ return false;}
-		void Unload(){}
-		void Destroy(){}
-
 		virtual void Compile()=0;
 
 		virtual void Update(float afTimeStep){}
@@ -346,6 +341,18 @@ namespace hpl {
 		static void SetQuality(eMaterialQuality aQuality){ mQuality = aQuality;}
 		static eMaterialQuality GetQuality(){ return mQuality;}
 
+		/**
+		 * This is used so that materials do not call type specific things after types have been destroyed!
+		 * Shall only be set by graphics!
+		 */
+		static void SetDestroyTypeSpecifics(bool abX) { mbDestroyTypeSpecifics = abX; }
+		static bool GetDestroyTypeSpecifics() { return mbDestroyTypeSpecifics; }
+
+		//resources stuff.
+		bool Reload() { return false; }
+		void Unload() {}
+		void Destroy() {}
+
 	protected:
 		iLowLevelGraphics* mpLowLevelGraphics;
 		cImageManager* mpImageManager;
@@ -381,6 +388,8 @@ namespace hpl {
 		int mlPassCount;
 
 		//void Destroy();
+
+		static bool mbDestroyTypeSpecifics;
 	};
 
 	typedef std::vector<iMaterial*> tMaterialVec;

@@ -36,17 +36,16 @@ namespace hpl {
 	{
 	public:
 		cRenderObject2D(iMaterial* apMaterial, tVertexVec* mpVtxVec,tUIntVec* mpIdxVec,
-					ePrimitiveType aType,float afZ,cRect2f& aRect,cMatrixf *apMtx=NULL,cVector3f* apTransform=NULL);
+					float afZ,cRect2f& aRect,cMatrixf *apMtx=NULL,cVector3f* apTransform=NULL);
 
 		cRenderObject2D(iMaterial* apMaterial, iRenderObject2DRenderer* apRenderer,
-			ePrimitiveType aType,float afZ);
+			float afZ);
 
 		~cRenderObject2D();
 
 		iMaterial* GetMaterial()const{ return mpMaterial;}
 		tVertexVec* GetVertexVec()const{ return mpVtxVec;}
 		tUIntVec* GetIndexVec()const{ return mpIdxVec;}
-		ePrimitiveType GetType()const{ return mType;}
 		cVector3f* GetTransform()const{ return mpTransform;	}
 		float GetZ() const { return mfZ;}
 		const cRect2f& GetRect() const { return mRect;}
@@ -56,7 +55,6 @@ namespace hpl {
 		iMaterial* mpMaterial;
 		tVertexVec* mpVtxVec;
 		tUIntVec* mpIdxVec;
-		ePrimitiveType mType;
 		cMatrixf *mpMtx;
 		cVector3f *mpTransform;
 		float mfZ;

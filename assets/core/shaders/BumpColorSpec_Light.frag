@@ -1,17 +1,15 @@
 #version 100
 precision highp float;
 
-varying vec4 v_color;//COLOR0
-varying vec2 v_uv;//TEXCOORD0
-varying vec3 v_lightDir;//TEXCOORD1
-varying vec3 v_halfVec;//TEXCOORD2
+varying vec4 v_color;		//COLOR0
+varying vec2 v_uv;			//TEXCOORD0
+varying vec3 v_lightDir;	//TEXCOORD1
+varying vec3 v_halfVec;		//TEXCOORD2
 
-uniform sampler2D diffuseMap;//TEXUNIT0
-uniform sampler2D normalMap;//TEXUNIT1
-uniform samplerCube normalCubeMap;//TEXUNIT2
-uniform sampler2D falloffMap;//TEXUNIT3
-
-uniform sampler2D specularMap;//TEXUNIT6
+uniform sampler2D diffuseMap;		//TEXUNIT0
+uniform sampler2D normalMap;		//TEXUNIT1
+uniform sampler2D falloffMap;		//TEXUNIT3
+uniform sampler2D specularMap;		//TEXUNIT6
 
 void main()
 {

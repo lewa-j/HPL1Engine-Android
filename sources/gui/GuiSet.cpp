@@ -298,7 +298,7 @@ namespace hpl {
 			cMatrixf mtxModel = cMath::MatrixMul(m_mtx3DTransform, mtxPreMul);
 			mtxModel = cMath::MatrixMul(pCam->GetViewMatrix(), mtxModel);
 
-			pLowLevelGraphics->SetMatrix(eMatrix_ModelView, mtxModel);
+			pLowLevelGraphics->SetMatrix(eMatrix::ModelView, mtxModel);
 
 			//No need for projection matrix, should be setup, right? :)
 
@@ -308,7 +308,7 @@ namespace hpl {
 		else
 		{
 			pLowLevelGraphics->SetDepthTestActive(false);
-			pLowLevelGraphics->SetIdentityMatrix(eMatrix_ModelView);
+			pLowLevelGraphics->SetIdentityMatrix(eMatrix::ModelView);
 
 			pLowLevelGraphics->SetOrthoProjection(mvVirtualSize,mfVirtualMinZ,mfVirtualMaxZ);
 		}

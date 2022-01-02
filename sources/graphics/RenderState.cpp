@@ -206,7 +206,7 @@ namespace hpl {
 
 				//apSettings->mpLowLevel->SetAlphaTestActive(false);
 				apSettings->mpLowLevel->SetAlphaTestActive(true);
-				apSettings->mpLowLevel->SetAlphaTestFunc(eAlphaTestFunc_GreaterOrEqual, 0.6f);
+				apSettings->mpLowLevel->SetAlphaTestFunc(eAlphaTestFunc::GreaterOrEqual, 0.6f);
 				if(apSettings->mbLog)Log("Trans");
 			}
 
@@ -235,27 +235,27 @@ namespace hpl {
 				switch(mBlendMode)
 				{
 				case eMaterialBlendMode_Add:
-					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc_One,eBlendFunc_One);
+					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc::One,eBlendFunc::One);
 					if(apSettings->mbLog)Log("Add");
 					break;
 				case eMaterialBlendMode_Replace:
-					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc_One,eBlendFunc_Zero);
+					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc::One,eBlendFunc::Zero);
 					if(apSettings->mbLog)Log("Replace");
 					break;
 				case eMaterialBlendMode_Mul:
-					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc_Zero,eBlendFunc_SrcColor);
+					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc::Zero,eBlendFunc::SrcColor);
 					if(apSettings->mbLog)Log("Mul");
 					break;
 				case eMaterialBlendMode_MulX2:
-					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc_DestColor,eBlendFunc_SrcColor);
+					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc::DestColor,eBlendFunc::SrcColor);
 					if(apSettings->mbLog)Log("MulX2");
 					break;
 				case eMaterialBlendMode_Alpha:
-					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc_SrcAlpha,eBlendFunc_OneMinusSrcAlpha);
+					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc::SrcAlpha,eBlendFunc::OneMinusSrcAlpha);
 					if(apSettings->mbLog)Log("Alpha");
 					break;
 				case eMaterialBlendMode_DestAlphaAdd:
-					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc_DestAlpha,eBlendFunc_One);
+					apSettings->mpLowLevel->SetBlendFunc(eBlendFunc::DestAlpha,eBlendFunc::One);
 					if(apSettings->mbLog)Log("DestAlphaAdd");
 					break;
 				}
@@ -416,7 +416,7 @@ namespace hpl {
 
 			if(apSettings->mbLog)Log("Setting model matrix: %s ",cMath::MatrixToChar(*mpModelMatrix));
 
-			apSettings->mpLowLevel->SetMatrix(eMatrix_ModelView,mtxModel);
+			apSettings->mpLowLevel->SetMatrix(eMatrix::ModelView,mtxModel);
 
 			apSettings->mbMatrixWasNULL = false;
 		}
@@ -428,7 +428,7 @@ namespace hpl {
 
 			if(apSettings->mbLog)Log("Setting model matrix: Identity (NULL) ");
 
-			apSettings->mpLowLevel->SetMatrix(eMatrix_ModelView,apSettings->mpCamera->GetViewMatrix());
+			apSettings->mpLowLevel->SetMatrix(eMatrix::ModelView,apSettings->mpCamera->GetViewMatrix());
 
 			apSettings->mbMatrixWasNULL = true;
 		}
@@ -475,7 +475,7 @@ namespace hpl {
 					apSettings->mpProgram->SetVec3f("LightPos",apSettings->mpLight->GetLightPosition());
 
 					//LightDir Div
-					apSettings->mpProgram->SetVec3f("LightDirMul",1.0f / apSettings->mpLight->GetFarAttenuation());
+					apSettings->mpProgram->SetVec3f("LightDirMul", cVector3f(1.0f) / apSettings->mpLight->GetFarAttenuation());
 
 					//Light view projection
 					if(apSettings->mpLight->GetLightType() == eLight3DType_Spot)

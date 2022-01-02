@@ -31,7 +31,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_BumpColorSpec::cMaterial_BumpColorSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+	cMaterial_BumpColorSpec::cMaterial_BumpColorSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BaseLight *apType, eMaterialPicture aPicture)
 		: iMaterial_BaseLight(	"DiffuseSpec_Light.vert",
 								"BumpColorSpec_Light.frag",
 			asName, apGraphics, apResources, apType, aPicture)
@@ -55,6 +55,11 @@ namespace hpl {
 	//////////////////////////////////////////////////////////////////////////
 
 	//-----------------------------------------------------------------------
+
+	cMaterialType_BumpColorSpec::cMaterialType_BumpColorSpec(cGraphics *apGraphics)
+		: cMaterialType_BaseLight("DiffuseSpec_Light.vert", "BumpColorSpec_Light.frag", apGraphics)
+	{
+	}
 
 	iMaterial* cMaterialType_BumpColorSpec::Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture)
 	{

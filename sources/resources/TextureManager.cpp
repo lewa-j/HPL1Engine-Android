@@ -392,9 +392,9 @@ namespace hpl {
 
 		BeginLoad(asName);
 
-		pTexture = FindTexture2D(asName,sPath);
+		pTexture = FindTexture2D(asName, sPath);
 
-		if(pTexture==NULL && sPath!="")
+		if (pTexture == NULL && sPath != "")
 		{
 			//Load the bitmap
 			iBitmap2D *pBmp;
@@ -437,8 +437,9 @@ namespace hpl {
 	{
 		iTexture *pTexture=NULL;
 
+		pTexture = static_cast<iTexture *> (FindLoadedResource(asName, asFilePath));
 
-		if(cString::GetFileExt(asName)=="")
+		if (!pTexture && cString::GetFileExt(asName)=="")
 		{
 			for(tStringListIt it = mlstFileFormats.begin();it!=mlstFileFormats.end();++it)
 			{
@@ -447,10 +448,6 @@ namespace hpl {
 
 				if((pTexture==NULL && asFilePath!="") || pTexture!=NULL)break;
 			}
-		}
-		else
-		{
-			pTexture = static_cast<iTexture*> (FindLoadedResource(asName, asFilePath));
 		}
 
 		return pTexture;

@@ -40,24 +40,19 @@ namespace hpl {
 		eMaterialType GetType(eMaterialRenderType aType);
 		void EditVertexes(eMaterialRenderType aType, iCamera* apCam, iLight *pLight,
 			tVertexVec *apVtxVec,cVector3f *apTransform,unsigned int alIndexAdd);
-
-	private:
 	};
 
 	class cMaterialType_FontNormal : public iMaterialType
 	{
 	public:
-		cMaterialType_FontNormal(cGraphics *apGraphics)
-			: iMaterialType(apGraphics) {}
+		cMaterialType_FontNormal(cGraphics *apGraphics);
+		virtual ~cMaterialType_FontNormal();
 
 		bool IsCorrect(tString asName) override{
 			return cString::ToLowerCase(asName)=="fontnormal";
 		}
 
-		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override
-		{
-			return hplNew( cMaterial_FontNormal, (asName, apGraphics, apResources, this, aPicture) );
-		}
+		iMaterial *Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
 	};
 
 };

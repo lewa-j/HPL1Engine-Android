@@ -115,7 +115,7 @@ public:
 	void OnPostSceneDraw()
 	{
 		cCamera3D *pCam = static_cast<cCamera3D*>(gpGame->GetScene()->GetCamera());
-		mpLowLevelGraphics->SetMatrix(eMatrix_ModelView, pCam->GetViewMatrix());
+		mpLowLevelGraphics->SetMatrix(eMatrix::ModelView, pCam->GetViewMatrix());
 
 		mpLowLevelGraphics->SetDepthTestActive(false);
 

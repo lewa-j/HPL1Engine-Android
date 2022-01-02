@@ -43,19 +43,18 @@ namespace hpl {
 	class cAmbProgramSetup : public iMaterialProgramSetup
 	{
 	public:
-		void Setup(iGpuProgram *apProgram,cRenderSettings* apRenderSettings)
+		void Setup(iGpuProgram *apProgram, cRenderSettings *apRenderSettings)
 		{
-			if(apRenderSettings->mpSector)
-				apProgram->SetColor3f("ambientColor",apRenderSettings->mAmbientColor * apRenderSettings->mpSector->GetAmbientColor());
+			if (apRenderSettings->mpSector)
+				apProgram->SetColor3f("ambientColor", apRenderSettings->mAmbientColor * apRenderSettings->mpSector->GetAmbientColor());
 			else
-				apProgram->SetColor3f("ambientColor",apRenderSettings->mAmbientColor);
+				apProgram->SetColor3f("ambientColor", apRenderSettings->mAmbientColor);
 		}
 	};
 
 	static cAmbProgramSetup gAmbProgramSetup;
 
 	//-----------------------------------------------------------------------
-
 
 	//////////////////////////////////////////////////////////////////////////
 	// CONSTRUCTORS
@@ -65,15 +64,15 @@ namespace hpl {
 
 	iMaterial_BaseLight::iMaterial_BaseLight(const tString& asLightVertexProgram,
 										const tString& asLightFragmentProgram,
-		const tString &asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+		const tString &asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BaseLight *apType, eMaterialPicture aPicture)
 		: iMaterial(asName, apGraphics, apResources, apType, aPicture)
 	{
 		mbIsTransperant = false;
-		mbIsGlowing= false;
+		mbIsGlowing = false;
 		mbUsesLights = true;
 		mbUseColorSpecular = false;
 
-		for(int i=0; i<eBaseLightProgram_LastEnum; i++) {
+		for (int i = 0; i < eBaseLightProgram_LastEnum; i++) {
 			mvPrograms[i] = NULL;
 		}
 
@@ -114,14 +113,14 @@ namespace hpl {
 
 		///////////////////////////////////////////
 		//Load the Z pass vertex program
-		iGpuProgram *pProg = apGraphics->CreateGpuProgramFromShaders("ZPass", "Diffuse_Color.vert", "Diffuse_Color.vert");
-		SetProgram(pProg,1);
+		iGpuProgram *pProg = apType->mpZPassP;
+		SetProgram(pProg, 1);
 
 
 		///////////////////////////////////////////
 		//More fragment programs
-		mpSimpleP = apGraphics->CreateGpuProgramFromShaders("iMaterial_BaseLight_Simple", "Diffuse_Color.vert", "Diffuse_Color.frag");
-		mpAmbientP = apGraphics->CreateGpuProgramFromShaders("iMaterial_BaseLight_Ambient", "Diffuse_Color.vert", "Ambient_Color.frag");
+		mpSimpleP = apType->mpSimpleP;
+		mpAmbientP = apType->mpAmbientP;
 
 		///////////////////////////////////////////
 		//Normalization map
@@ -132,7 +131,7 @@ namespace hpl {
 
 		///////////////////////////////////////////
 		//Negative rejection
-		mpSpotNegativeRejectMap = mpTextureManager->Create2D("core_spot_negative_reject",false);
+		mpSpotNegativeRejectMap = mpTextureManager->Create2D("core_spot_negative_reject.tga",false);
 		if(mpSpotNegativeRejectMap)
 		{
 			mpSpotNegativeRejectMap->SetWrapS(eTextureWrap_ClampToEdge);
@@ -150,14 +149,11 @@ namespace hpl {
 		if(mpNormalizationMap) mpTextureManager->Destroy(mpNormalizationMap);
 		if(mpSpotNegativeRejectMap) mpTextureManager->Destroy(mpSpotNegativeRejectMap);
 
-		for(int i=0; i<eBaseLightProgram_LastEnum; i++)
-		{
-			if(mvPrograms[i]) mpType->DestroyProgram(this, i, mvPrograms[i]);
-		}
-
-		if (mpSimpleP) mpType->DestroyProgram(this, 0, mpSimpleP);
-		if (mpAmbientP) mpType->DestroyProgram(this, 0, mpAmbientP);
-
+		if (mbDestroyTypeSpecifics && mpType)
+			for (int i = 0; i < eBaseLightProgram_LastEnum; i++)
+			{
+				if(mvPrograms[i]) mpType->DestroyProgram(this, i, mvPrograms[i]);
+			}
 	}
 
 	//-----------------------------------------------------------------------
@@ -435,4 +431,30 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
+
+	cMaterialType_BaseLight::cMaterialType_BaseLight(const tString &asLightVertexProgram, const tString &asLightFragmentProgram, cGraphics *apGraphics)
+		: iMaterialType(apGraphics)
+	{
+		///////////////////////////////////////////
+		//Load the Z pass program
+		mpZPassP = apGraphics->CreateGpuProgramFromShaders("ZPass", "Diffuse_Color.vert", "Diffuse_Color.vert");
+
+		///////////////////////////////////////////
+		//More programs
+		mpSimpleP = apGraphics->CreateGpuProgramFromShaders("BaseLight_Simple", "Diffuse_Color.vert", "Diffuse_Color.frag");
+		mpAmbientP = apGraphics->CreateGpuProgramFromShaders("BaseLight_Ambient", "Diffuse_Color.vert", "Ambient_Color.frag");
+	}
+
+	cMaterialType_BaseLight::~cMaterialType_BaseLight()
+	{
+		if (mpZPassP) mpGraphics->DestroyGpuProgram(mpZPassP);
+		if (mpSimpleP) mpGraphics->DestroyGpuProgram(mpSimpleP);
+		if (mpAmbientP) mpGraphics->DestroyGpuProgram(mpAmbientP);
+	}
+
+	void cMaterialType_BaseLight::DestroyProgram(iMaterial *apMaterial, int i, iGpuProgram *apProgram)
+	{
+		if (apProgram != mpZPassP)
+			mpGraphics->DestroyGpuProgram(apProgram);
+	}
 }

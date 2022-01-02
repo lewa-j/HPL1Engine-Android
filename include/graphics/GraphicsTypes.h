@@ -29,13 +29,14 @@ namespace hpl {
 	#define MAX_TEXTUREUNITS (8)
 	#define MAX_NUM_OF_LIGHTS (30)
 
-	enum eMatrix
+	enum class eMatrix
 	{
-		eMatrix_ModelView,
-		eMatrix_Projection,
-		eMatrix_Texture,
-		eMatrix_LastEnum
+		ModelView,
+		Projection,
+		Texture,
+		LastEnum
 	};
+	constexpr int eMatrix_LastEnum = static_cast<int>(eMatrix::LastEnum);
 
 	enum eTileRotation
 	{
@@ -44,13 +45,6 @@ namespace hpl {
 		eTileRotation_180,
 		eTileRotation_270,
 		eTileRotation_LastEnum
-	};
-
-	enum ePrimitiveType
-	{
-		ePrimitiveType_Tri,
-		ePrimitiveType_Quad,
-		ePrimitiveType_LastEnum
 	};
 
 	typedef tFlag tAnimTransformFlag;

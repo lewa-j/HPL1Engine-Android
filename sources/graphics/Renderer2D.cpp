@@ -242,7 +242,7 @@ namespace hpl {
 
 		mpLowLevelGraphics->SetDepthWriteActive(true);
 		mpLowLevelGraphics->SetColorWriteActive(false,false,false,false);
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 
 		tRenderObjectSetIt ObjectIt = m_mapObject.begin();
 		if(ObjectIt != m_mapObject.end())
@@ -315,11 +315,11 @@ namespace hpl {
 					continue;
 			}
 
-			mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_Equal);
+			mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::Equal);
 			//Set up stencil so shaodws are not drawn
 			mpLowLevelGraphics->SetStencilActive(true);
-			mpLowLevelGraphics->SetStencil(eStencilFunc_NotEqual, 0x1,0x1,
-											eStencilOp_Keep,eStencilOp_Keep,eStencilOp_Keep);
+			mpLowLevelGraphics->SetStencil(eStencilFunc::NotEqual, 0x1,0x1,
+											eStencilOp::Keep,eStencilOp::Keep,eStencilOp::Keep);
 
 			///////////////////////////
 			//Set up scissortest:
@@ -432,9 +432,9 @@ namespace hpl {
 			LightIt++;
 		}
 
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 		mpLowLevelGraphics->SetBlendActive(true);
-		mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One,eBlendFunc_One);
+		mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One,eBlendFunc::One);
 
 		mpLowLevelGraphics->FlushTriBatch(eVtxBatchFlag_Position | eVtxBatchFlag_Color0,true);*/
 
@@ -448,7 +448,7 @@ namespace hpl {
 
 
 		////// BEGIN RENDER DIFFUSE ////////////
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_Equal);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::Equal);
 
 		ObjectIt = m_mapObject.begin();
 		if(ObjectIt != m_mapObject.end())
@@ -521,7 +521,7 @@ namespace hpl {
 		////// BEGIN RENDER TRANS ////////////
 		apCamera->SetModelViewMatrix(mpLowLevelGraphics);
 		mpLowLevelGraphics->SetDepthWriteActive(false);
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 
 		tRenderTransObjectSetIt TransIt = m_mapTransObject.begin();
 
@@ -569,7 +569,7 @@ namespace hpl {
 		mpLowLevelGraphics->SetStencilActive(false);
 		mpLowLevelGraphics->SetDepthWriteActive(true);
 		mpLowLevelGraphics->SetColorWriteActive(true,true,true,true);
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 
 
 		mlstLights.clear();
@@ -616,8 +616,8 @@ namespace hpl {
 		mpLowLevelGraphics->SetColorWriteActive(false,false,false,false);//just draw to stencil
 		mpLowLevelGraphics->SetTexture(0,NULL);
 
-		mpLowLevelGraphics->SetStencil(eStencilFunc_Always, 0x0,0x0,
-								eStencilOp_Replace,eStencilOp_Replace,eStencilOp_Replace);
+		mpLowLevelGraphics->SetStencil(eStencilFunc::Always, 0x0,0x0,
+								eStencilOp::Replace,eStencilOp::Replace,eStencilOp::Replace);
 
 		mpLowLevelGraphics->DrawFilledRect2D(mPrevLightRect, 10, cColor(0,0,0,0));
 
@@ -638,7 +638,7 @@ namespace hpl {
 
 		apCamera->GetClipRect(ClipRect);
 
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 		mpLowLevelGraphics->SetDepthWriteActive(false);
 		mpLowLevelGraphics->SetColorWriteActive(false,false,false,false);//just draw to stencil
 		mpLowLevelGraphics->SetTexture(0,NULL);
@@ -659,8 +659,8 @@ namespace hpl {
 			mpLowLevelGraphics->SetClearStencilActive(false);
 		}*/
 
-		mpLowLevelGraphics->SetStencil(eStencilFunc_Always, 0x1,0x1,
-								eStencilOp_Keep,eStencilOp_Keep,eStencilOp_Replace);
+		mpLowLevelGraphics->SetStencil(eStencilFunc::Always, 0x1,0x1,
+								eStencilOp::Keep,eStencilOp::Keep,eStencilOp::Replace);
 
 		apCamera->SetModelViewMatrix(mpLowLevelGraphics);
 

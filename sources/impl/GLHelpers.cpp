@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 - lewa_j
+ * Copyright (C) 2020-2022 - lewa_j
  *
  * This file is part of HPL1 Engine.
  *
@@ -79,17 +79,17 @@ namespace hpl
 	{
 		switch(aType)
 		{
-		case eBlendFunc_Zero:					return GL_ZERO;
-		case eBlendFunc_One:					return GL_ONE;
-		case eBlendFunc_SrcColor:				return GL_SRC_COLOR;
-		case eBlendFunc_OneMinusSrcColor:		return GL_ONE_MINUS_SRC_COLOR;
-		case eBlendFunc_DestColor:				return GL_DST_COLOR;
-		case eBlendFunc_OneMinusDestColor:		return GL_ONE_MINUS_DST_COLOR;
-		case eBlendFunc_SrcAlpha:				return GL_SRC_ALPHA;
-		case eBlendFunc_OneMinusSrcAlpha:		return GL_ONE_MINUS_SRC_ALPHA;
-		case eBlendFunc_DestAlpha:				return GL_DST_ALPHA;
-		case eBlendFunc_OneMinusDestAlpha:		return GL_ONE_MINUS_DST_ALPHA;
-		case eBlendFunc_SrcAlphaSaturate:		return GL_SRC_ALPHA_SATURATE;
+		case eBlendFunc::Zero:					return GL_ZERO;
+		case eBlendFunc::One:					return GL_ONE;
+		case eBlendFunc::SrcColor:				return GL_SRC_COLOR;
+		case eBlendFunc::OneMinusSrcColor:		return GL_ONE_MINUS_SRC_COLOR;
+		case eBlendFunc::DestColor:				return GL_DST_COLOR;
+		case eBlendFunc::OneMinusDestColor:		return GL_ONE_MINUS_DST_COLOR;
+		case eBlendFunc::SrcAlpha:				return GL_SRC_ALPHA;
+		case eBlendFunc::OneMinusSrcAlpha:		return GL_ONE_MINUS_SRC_ALPHA;
+		case eBlendFunc::DestAlpha:				return GL_DST_ALPHA;
+		case eBlendFunc::OneMinusDestAlpha:		return GL_ONE_MINUS_DST_ALPHA;
+		case eBlendFunc::SrcAlphaSaturate:		return GL_SRC_ALPHA_SATURATE;
 		}
 		return 0;
 	}
@@ -172,14 +172,14 @@ namespace hpl
 	{
 		switch(aType)
 		{
-		case eDepthTestFunc_Never:			return GL_NEVER;
-		case eDepthTestFunc_Less:				return GL_LESS;
-		case eDepthTestFunc_LessOrEqual:		return GL_LEQUAL;
-		case eDepthTestFunc_Greater:			return GL_GREATER;
-		case eDepthTestFunc_GreaterOrEqual:	return GL_GEQUAL;
-		case eDepthTestFunc_Equal:			return GL_EQUAL;
-		case eDepthTestFunc_NotEqual:			return GL_NOTEQUAL;
-		case eDepthTestFunc_Always:			return GL_ALWAYS;
+		case eDepthTestFunc::Never:				return GL_NEVER;
+		case eDepthTestFunc::Less:				return GL_LESS;
+		case eDepthTestFunc::LessOrEqual:		return GL_LEQUAL;
+		case eDepthTestFunc::Greater:			return GL_GREATER;
+		case eDepthTestFunc::GreaterOrEqual:	return GL_GEQUAL;
+		case eDepthTestFunc::Equal:				return GL_EQUAL;
+		case eDepthTestFunc::NotEqual:			return GL_NOTEQUAL;
+		case eDepthTestFunc::Always:			return GL_ALWAYS;
 		}
 		return 0;
 	}
@@ -190,14 +190,14 @@ namespace hpl
 	{
 		switch(aType)
 		{
-		case eAlphaTestFunc_Never:			return GL_NEVER;
-		case eAlphaTestFunc_Less:				return GL_LESS;
-		case eAlphaTestFunc_LessOrEqual:		return GL_LEQUAL;
-		case eAlphaTestFunc_Greater:			return GL_GREATER;
-		case eAlphaTestFunc_GreaterOrEqual:	return GL_GEQUAL;
-		case eAlphaTestFunc_Equal:			return GL_EQUAL;
-		case eAlphaTestFunc_NotEqual:			return GL_NOTEQUAL;
-		case eAlphaTestFunc_Always:			return GL_ALWAYS;
+		case eAlphaTestFunc::Never:				return GL_NEVER;
+		case eAlphaTestFunc::Less:				return GL_LESS;
+		case eAlphaTestFunc::LessOrEqual:		return GL_LEQUAL;
+		case eAlphaTestFunc::Greater:			return GL_GREATER;
+		case eAlphaTestFunc::GreaterOrEqual:	return GL_GEQUAL;
+		case eAlphaTestFunc::Equal:				return GL_EQUAL;
+		case eAlphaTestFunc::NotEqual:			return GL_NOTEQUAL;
+		case eAlphaTestFunc::Always:			return GL_ALWAYS;
 		}
 		return 0;
 	}
@@ -208,14 +208,14 @@ namespace hpl
 	{
 		switch(aType)
 		{
-		case eStencilFunc_Never:			return GL_NEVER;
-		case eStencilFunc_Less:				return GL_LESS;
-		case eStencilFunc_LessOrEqual:		return GL_LEQUAL;
-		case eStencilFunc_Greater:			return GL_GREATER;
-		case eStencilFunc_GreaterOrEqual:	return GL_GEQUAL;
-		case eStencilFunc_Equal:			return GL_EQUAL;
-		case eStencilFunc_NotEqual:			return GL_NOTEQUAL;
-		case eStencilFunc_Always:			return GL_ALWAYS;
+		case eStencilFunc::Never:			return GL_NEVER;
+		case eStencilFunc::Less:			return GL_LESS;
+		case eStencilFunc::LessOrEqual:		return GL_LEQUAL;
+		case eStencilFunc::Greater:			return GL_GREATER;
+		case eStencilFunc::GreaterOrEqual:	return GL_GEQUAL;
+		case eStencilFunc::Equal:			return GL_EQUAL;
+		case eStencilFunc::NotEqual:		return GL_NOTEQUAL;
+		case eStencilFunc::Always:			return GL_ALWAYS;
 		}
 		return 0;
 	}
@@ -226,14 +226,14 @@ namespace hpl
 	{
 		switch(aType)
 		{
-		case eStencilOp_Keep:			return GL_KEEP;
-		case eStencilOp_Zero:			return GL_ZERO;
-		case eStencilOp_Replace:		return GL_REPLACE;
-		case eStencilOp_Increment:		return GL_INCR;
-		case eStencilOp_Decrement:		return GL_DECR;
-		case eStencilOp_Invert:			return GL_INVERT;
-		case eStencilOp_IncrementWrap:	return GL_INCR_WRAP;
-		case eStencilOp_DecrementWrap:	return GL_DECR_WRAP;
+		case eStencilOp::Keep:			return GL_KEEP;
+		case eStencilOp::Zero:			return GL_ZERO;
+		case eStencilOp::Replace:		return GL_REPLACE;
+		case eStencilOp::Increment:		return GL_INCR;
+		case eStencilOp::Decrement:		return GL_DECR;
+		case eStencilOp::Invert:		return GL_INVERT;
+		case eStencilOp::IncrementWrap:	return GL_INCR_WRAP;
+		case eStencilOp::DecrementWrap:	return GL_DECR_WRAP;
 		}
 		return 0;
 	}

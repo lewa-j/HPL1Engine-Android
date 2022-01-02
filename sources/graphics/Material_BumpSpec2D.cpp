@@ -88,7 +88,7 @@ namespace hpl {
 			mpLowLevelGraphics->SetTexture(0, GetTexture(eMaterialTexture_Diffuse));
 			mpLowLevelGraphics->SetTextureEnv(eTextureParam_AlphaFunc,eTextureFunc_Replace);
 			mpLowLevelGraphics->SetAlphaTestActive(true);
-			mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc_GreaterOrEqual, 0.6f);
+			mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc::GreaterOrEqual, 0.6f);
 		}
 		else if(aType == eMaterialRenderType_Light)
 		{
@@ -101,7 +101,7 @@ namespace hpl {
 			}
 
 			mpLowLevelGraphics->SetBlendActive(true);
-			mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One,eBlendFunc_One);
+			mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One,eBlendFunc::One);
 
 			mpLowLevelGraphics->SetTexture(0, GetTexture(eMaterialTexture_NMap));
 			mpLowLevelGraphics->SetTexture(1, mpRenderer->GetLightMap(0));
@@ -124,7 +124,7 @@ namespace hpl {
 		else if(aType == eMaterialRenderType_Diffuse)
 		{
 			mpLowLevelGraphics->SetBlendActive(true);
-			mpLowLevelGraphics->SetBlendFunc(eBlendFunc_DestColor,eBlendFunc_DestAlpha);
+			mpLowLevelGraphics->SetBlendFunc(eBlendFunc::DestColor,eBlendFunc::DestAlpha);
 
 			mpLowLevelGraphics->SetTexture(0, GetTexture(eMaterialTexture_Diffuse));
 			mpLowLevelGraphics->SetTextureEnv(eTextureParam_ColorFunc,eTextureFunc_Add);

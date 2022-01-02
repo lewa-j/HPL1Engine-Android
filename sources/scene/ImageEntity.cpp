@@ -314,7 +314,7 @@ namespace hpl {
 		cRenderObject2D _obj = cRenderObject2D(
 			mpEntityData->GetImageFrame(mlFrame)->mpMaterial,
 			&mvVtx,&mvIdxVec,
-			ePrimitiveType_Quad, GetWorldPosition().z,
+			GetWorldPosition().z,
 			mBoundingBox, NULL, &mvTransform);
 		// Add the render object.
 		mpGraphics->GetRenderer2D()->AddObject(_obj);

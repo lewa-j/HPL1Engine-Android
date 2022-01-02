@@ -77,7 +77,7 @@ namespace hpl {
 	{
 		iVertexBuffer* pSkyBox = mpLowLevelGraphics->CreateVertexBuffer(
 										eVertexFlag_Color0 | eVertexFlag_Position | eVertexFlag_Texture0,
-										eVertexBufferDrawType_Quad,eVertexBufferUsageType_Static);
+										eVertexBufferDrawType_Tri,eVertexBufferUsageType_Static);
 
 		float fSize = afSize;
 
@@ -135,7 +135,20 @@ namespace hpl {
 					//Log("\n");
 				}
 
-		for(int i=0;i<24;i++) pSkyBox->AddIndex(i);
+		//for (int i = 0; i < 24; i++)
+		//	pSkyBox->AddIndex(i);
+
+		int i = 0;
+		for (int s = 0; s < 6; s++)
+		{
+			pSkyBox->AddIndex(i + 0);
+			pSkyBox->AddIndex(i + 1);
+			pSkyBox->AddIndex(i + 2);
+			pSkyBox->AddIndex(i + 0);
+			pSkyBox->AddIndex(i + 2);
+			pSkyBox->AddIndex(i + 3);
+			i += 4;
+		}
 
 		if(!pSkyBox->Compile(0))
 		{
@@ -152,7 +165,7 @@ namespace hpl {
 		iVertexBuffer* pBox = mpLowLevelGraphics->CreateVertexBuffer(
 			eVertexFlag_Color0 | eVertexFlag_Position | eVertexFlag_Texture0 |
 			eVertexFlag_Texture1 | eVertexFlag_Normal,
-			eVertexBufferDrawType_Tri,eVertexBufferUsageType_Static);
+			eVertexBufferDrawType_Tri, eVertexBufferUsageType_Static);
 
 		avSize = avSize*0.5;
 
@@ -215,7 +228,8 @@ namespace hpl {
 						//Log("%d: (%.1f : %.1f : %.1f) ", i,vSide.x,  vSide.y,vSide.z);
 					}
 
-					for(int i=0;i<3;i++)pBox->AddIndex(lVtxIdx + i);
+					for (int i = 0; i < 3; i++)
+						pBox->AddIndex(lVtxIdx + i);
 					pBox->AddIndex(lVtxIdx + 2);
 					pBox->AddIndex(lVtxIdx + 3);
 					pBox->AddIndex(lVtxIdx + 0);

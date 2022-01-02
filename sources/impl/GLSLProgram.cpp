@@ -27,7 +27,7 @@ namespace hpl {
 
 	int cGLSLProgram::mlCurrentProgram = 0;
 
-	cGLSLProgram::cGLSLProgram(const tString &asName, iLowLevelGraphics *apLowLevelGfx) : iGpuProgram(asName, eGpuProgramFormat::GLSL)
+	cGLSLProgram::cGLSLProgram(const tString &asName, cLowLevelGraphicsGL *apLowLevelGfx) : iGpuProgram(asName, eGpuProgramFormat::GLSL)
 	{
 		mpLowLevelGfx = apLowLevelGfx;
 		mlHandle = glCreateProgram();
@@ -90,7 +90,7 @@ namespace hpl {
 		glUniform1i(glGetUniformLocation(mlHandle, "spotlightMap"), 4);
 		glUniform1i(glGetUniformLocation(mlHandle, "spotNegRejectMap"), 5);
 		glUniform1i(glGetUniformLocation(mlHandle, "specularMap"), 6);
-		glUseProgram(0);
+		glUseProgram(mlCurrentProgram);
 
 		return true;
 	}
@@ -110,8 +110,17 @@ namespace hpl {
 			return;
 
 		mlCurrentProgram = 0;
-		glUseProgram(0);
-	
+		if (this != mpLowLevelGfx->mSimpleShader)
+		{
+			mpLowLevelGfx->mSimpleShader->Bind();
+			mpLowLevelGfx->mSimpleShader->SetMatrixf("worldViewProj",
+				eGpuProgramMatrix::ViewProjection,
+				eGpuProgramMatrixOp::Identity);
+		}
+		else
+		{
+			glUseProgram(0);
+		}
 	}
 
 	bool cGLSLProgram::SetFloat(const tString& asName, float afX)
@@ -121,21 +130,21 @@ namespace hpl {
 		return loc != -1;
 	}
 
-	bool cGLSLProgram::SetVec2f(const tString& asName, float afX,float afY)
+	bool cGLSLProgram::SetVec2f(const tString &asName, float afX, float afY)
 	{
 		int loc = glGetUniformLocation(mlHandle, asName.c_str());
 		glUniform2f(loc, afX, afY);
 		return loc != -1;
 	}
 
-	bool cGLSLProgram::SetVec3f(const tString& asName, float afX,float afY,float afZ)
+	bool cGLSLProgram::SetVec3f(const tString &asName, float afX, float afY, float afZ)
 	{
 		int loc = glGetUniformLocation(mlHandle, asName.c_str());
 		glUniform3f(loc, afX, afY, afZ);
 		return loc != -1;
 	}
 
-	bool cGLSLProgram::SetVec4f(const tString& asName, float afX,float afY,float afZ, float afW)
+	bool cGLSLProgram::SetVec4f(const tString &asName, float afX, float afY, float afZ, float afW)
 	{
 		int loc = glGetUniformLocation(mlHandle, asName.c_str());
 		glUniform4f(loc, afX, afY, afZ, afW);
@@ -153,8 +162,8 @@ namespace hpl {
 								eGpuProgramMatrixOp mOp)
 	{
 		if (mType == eGpuProgramMatrix::ViewProjection){
-			cMatrixf mtx = cMath::MatrixMul(mpLowLevelGfx->GetMatrix(eMatrix_Projection),
-					mpLowLevelGfx->GetMatrix(eMatrix_ModelView));
+			cMatrixf mtx = cMath::MatrixMul(mpLowLevelGfx->GetMatrix(eMatrix::Projection),
+					mpLowLevelGfx->GetMatrix(eMatrix::ModelView));
 			return SetMatrixf(asName, mtx);
 		}else{
 			Warning("cGLSLProgram::SetMatrixf unimplemented type %d\n", mType);
@@ -162,7 +171,7 @@ namespace hpl {
 		return false;
 	}
 
-	bool cGLSLProgram::SetTexture(const tString& asName,iTexture* apTexture, bool abAutoDisable)
+	bool cGLSLProgram::SetTexture(const tString &asName, iTexture *apTexture, bool abAutoDisable)
 	{
 		Warning("cGLSLProgram::SetTexture unimplemented\n");
 		return false;

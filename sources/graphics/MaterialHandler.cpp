@@ -46,6 +46,8 @@ namespace hpl {
 		}
 
 		mlstMatTypes.clear();
+
+		iMaterial::SetDestroyTypeSpecifics(false); //Material types are destroyed! Remaining materials may not call!
 	}
 
 	//-----------------------------------------------------------------------

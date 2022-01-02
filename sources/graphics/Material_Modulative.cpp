@@ -69,7 +69,8 @@ namespace hpl {
 
 	cMaterial_Modulative::~cMaterial_Modulative()
 	{
-		if(mpFogProg) mpType->DestroyProgram(this, 0, mpFogProg);
+		if(mpFogProg)
+			mpType->DestroyProgram(this, 0, mpFogProg);
 	}
 
 	//-----------------------------------------------------------------------

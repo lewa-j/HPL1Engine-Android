@@ -91,7 +91,7 @@ namespace hpl {
 
 	void cCamera2D::SetModelViewMatrix(iLowLevelGraphics* apLowLevel)
 	{
-		apLowLevel->SetIdentityMatrix(eMatrix_ModelView);
+		apLowLevel->SetIdentityMatrix(eMatrix::ModelView);
 
 		cRect2f ClipRect;
 		GetClipRect(ClipRect);
@@ -99,8 +99,8 @@ namespace hpl {
 		cVector3f vPos(-(ClipRect.x),-(ClipRect.y),0);
 		cVector3f vScale(vVirtSize.x/ClipRect.w, vVirtSize.y/ClipRect.h, 1 );
 
-		apLowLevel->ScaleMatrix(eMatrix_ModelView,vScale);
-		apLowLevel->TranslateMatrix(eMatrix_ModelView,vPos);
+		apLowLevel->ScaleMatrix(eMatrix::ModelView,vScale);
+		apLowLevel->TranslateMatrix(eMatrix::ModelView,vPos);
 	}
 
 	void cCamera2D::SetProjectionMatrix(iLowLevelGraphics* apLowLevel)

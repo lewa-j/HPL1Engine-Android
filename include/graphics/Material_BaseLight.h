@@ -19,8 +19,8 @@
 #ifndef HPL_MATERIAL_BASE_LIGHT_H
 #define HPL_MATERIAL_BASE_LIGHT_H
 
-#include <vector>
 #include "graphics/Material.h"
+#include "graphics/MaterialType.h"
 #include "scene/Light3D.h"
 
 enum eBaseLightProgram
@@ -36,12 +36,14 @@ enum eBaseLightProgram
 
 namespace hpl {
 
+	class cMaterialType_BaseLight;
+
 	class iMaterial_BaseLight : public iMaterial
 	{
 	public:
 		iMaterial_BaseLight(const tString& asLightVertexProgram,
 							const tString& asLightFragmentProgram,
-			const tString &asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+			const tString &asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BaseLight *apType, eMaterialPicture aPicture);
 		virtual ~iMaterial_BaseLight();
 
 		tTextureTypeList GetTextureTypes();
@@ -91,5 +93,17 @@ namespace hpl {
 		iGpuProgram* mvPrograms[eBaseLightProgram_LastEnum];
 	};
 
+	class cMaterialType_BaseLight : public iMaterialType
+	{
+	public:
+		cMaterialType_BaseLight(const tString &asLightVertexProgram, const tString &asLightFragmentProgram, cGraphics *apGraphics);
+		virtual ~cMaterialType_BaseLight();
+
+		virtual void DestroyProgram(iMaterial *apMaterial, int i, iGpuProgram *apProgram) override;
+
+		iGpuProgram *mpZPassP = nullptr;
+		iGpuProgram *mpSimpleP = nullptr;
+		iGpuProgram *mpAmbientP = nullptr;
+	};
 };
 #endif // HPL_MATERIAL_BASE_LIGHT_H

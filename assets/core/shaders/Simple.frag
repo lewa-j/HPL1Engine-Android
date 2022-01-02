@@ -1,8 +1,8 @@
 #version 100
 precision highp float;
 
-varying vec2 v_uv;
 varying vec4 v_color;
+varying vec2 v_uv;
 
 uniform sampler2D diffuseMap;
 

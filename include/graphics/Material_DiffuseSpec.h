@@ -24,29 +24,23 @@
 
 namespace hpl {
 
-	class cMaterialType_DiffuseSpec;
+	class cMaterialType_DiffuseSpec : public cMaterialType_BaseLight
+	{
+	public:
+		cMaterialType_DiffuseSpec(cGraphics *apGraphics);
+
+		bool IsCorrect(tString asName) override {
+			return cString::ToLowerCase(asName) == "diffusespecular";
+		}
+
+		iMaterial *Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
+	};
 
 	class cMaterial_DiffuseSpec : public iMaterial_BaseLight
 	{
 	public:
-		cMaterial_DiffuseSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		cMaterial_DiffuseSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BaseLight *apType, eMaterialPicture aPicture);
 		virtual ~cMaterial_DiffuseSpec();
-
-	private:
-	};
-
-	class cMaterialType_DiffuseSpec : public iMaterialType
-	{
-	public:
-		cMaterialType_DiffuseSpec(cGraphics *apGraphics)
-			: iMaterialType(apGraphics) {}
-
-		bool IsCorrect(tString asName) override{
-			return cString::ToLowerCase(asName)=="diffusespecular";
-		}
-
-		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
-
 	};
 
 };

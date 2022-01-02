@@ -1,13 +1,12 @@
 #version 100
 precision highp float;
 
-varying vec4 v_position;//WPOS
-varying vec2 v_uv;//TEXCOORD0
-varying vec4 v_color;//COLOR
+varying vec4 v_position;	//WPOS
+varying vec2 v_uv;			//TEXCOORD0
+varying vec4 v_color;		//COLOR
 
-uniform sampler2D screenMap;//TEXUNIT0
-uniform sampler2D refractMap;//TEXUNIT1
-uniform vec2 screenSize;
+uniform sampler2D screenMap;	//TEXUNIT0
+uniform sampler2D refractMap;	//TEXUNIT1
 uniform float scale;
 
 void main()

@@ -61,7 +61,7 @@ namespace hpl {
 		if(aType == eMaterialRenderType_Diffuse)
 		{
 			mpLowLevelGraphics->SetBlendActive(true);
-			mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha, eBlendFunc_OneMinusSrcAlpha);
+			mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha, eBlendFunc::OneMinusSrcAlpha);
 
 			mpLowLevelGraphics->SetTexture(0, GetTexture(eMaterialTexture_Diffuse));
 			//mpLowLevelGraphics->SetTextureParam(eTextureParam_ColorOp1,eTextureOp_Alpha);

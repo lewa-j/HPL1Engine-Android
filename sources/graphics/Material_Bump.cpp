@@ -29,7 +29,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cMaterial_Bump::cMaterial_Bump(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture)
+	cMaterial_Bump::cMaterial_Bump(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BaseLight *apType, eMaterialPicture aPicture)
 		: iMaterial_BaseLight(	"Diffuse_Light.vert",
 								"Bump_Light.frag",
 			asName, apGraphics, apResources, apType, aPicture)
@@ -54,7 +54,7 @@ namespace hpl {
 	//-----------------------------------------------------------------------
 
     cMaterialType_Bump::cMaterialType_Bump(cGraphics *apGraphics)
-		: iMaterialType(apGraphics)
+		: cMaterialType_BaseLight("Diffuse_Light.vert", "Bump_Light.frag", apGraphics)
 	{
 	}
 

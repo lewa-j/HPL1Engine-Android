@@ -22,7 +22,7 @@
 #include "system/SystemTypes.h"
 #include "math/MathTypes.h"
 #include "graphics/GPUProgram.h"
-#include "graphics/LowLevelGraphics.h"
+#include "impl/LowLevelGraphicsGL.h"
 #include "impl/platform/gl.h"
 
 namespace hpl {
@@ -30,31 +30,33 @@ namespace hpl {
 	class cGLSLProgram : public iGpuProgram
 	{
 	public:
-		cGLSLProgram(const tString &asName, iLowLevelGraphics *apLowLevelGfx);
+		cGLSLProgram(const tString &asName, cLowLevelGraphicsGL *apLowLevelGfx);
 		~cGLSLProgram() override;
 
 		bool Link() override;
 		void Bind() override;
 		void UnBind() override;
 
-		bool SetFloat(const tString& asName, float afX) override;
-		bool SetVec2f(const tString& asName, float afX,float afY) override;
-		bool SetVec3f(const tString& asName, float afX,float afY,float afZ) override;
-		bool SetVec4f(const tString& asName, float afX,float afY,float afZ, float afW) override;
+		bool SetFloat(const tString &asName, float afX) override;
+		bool SetVec2f(const tString &asName, float afX, float afY) override;
+		bool SetVec3f(const tString &asName, float afX, float afY, float afZ) override;
+		bool SetVec4f(const tString &asName, float afX, float afY, float afZ, float afW) override;
 
-		bool SetMatrixf(const tString& asName, const cMatrixf& mMtx) override;
+		bool SetMatrixf(const tString &asName, const cMatrixf &mMtx) override;
 		bool SetMatrixf(const tString& asName, eGpuProgramMatrix mType,
-									eGpuProgramMatrixOp mOp) override;
+						eGpuProgramMatrixOp mOp) override;
 
-		bool SetTexture(const tString& asName,iTexture* apTexture, bool abAutoDisable=true) override;
-		bool SetTextureToUnit(int alUnit, iTexture* apTexture) override;
+		bool SetTexture(const tString &asName, iTexture *apTexture, bool abAutoDisable = true) override;
+		bool SetTextureToUnit(int alUnit, iTexture *apTexture) override;
 
+		bool IsBound() { return mlHandle == mlCurrentProgram; }
 	protected:
 		void LogProgramInfoLog();
 
 		GLuint mlHandle;
 		static int mlCurrentProgram;
-		iLowLevelGraphics *mpLowLevelGfx = nullptr;
+		cLowLevelGraphicsGL *mpLowLevelGfx = nullptr;
+		friend class cLowLevelGraphicsGL;
 	};
 };
 #endif // HPL_GLSLPROGRAM_H

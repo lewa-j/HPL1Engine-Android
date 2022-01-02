@@ -404,7 +404,7 @@ namespace hpl {
 		mRenderSettings.mChannelMode = eMaterialChannelMode_RGBA;
 		mpLowLevelGraphics->SetColorWriteActive(true, true, true,true);
 
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_Equal);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::Equal);
 
 		if(mbLog) Log("Rendering Lighting:\n");
 		RenderLight(apCamera);
@@ -422,7 +422,7 @@ namespace hpl {
 
 		////////////////////////////
 		//Render sky box
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 
 		////////////////////////////
 		if(mbLog) Log("Rendering Skybox:\n");
@@ -544,7 +544,7 @@ namespace hpl {
 		mpLowLevelGraphics->SetClearDepthActive(true);
 		mpLowLevelGraphics->SetClearDepth(1);
 
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 
 		mpLowLevelGraphics->SetClearStencilActive(false);
 		mpLowLevelGraphics->ClearScreen();
@@ -553,10 +553,10 @@ namespace hpl {
 		// Cull and depth mode.
 		mpLowLevelGraphics->SetCullActive(true);
 
-		mpLowLevelGraphics->SetCullMode(eCullMode_CounterClockwise);
+		mpLowLevelGraphics->SetCullMode(eCullMode::CounterClockwise);
 		mpLowLevelGraphics->SetDepthTestActive(true);
 
-		mpLowLevelGraphics->SetMatrix(eMatrix_Projection, apCamera->GetProjectionMatrix());
+		mpLowLevelGraphics->SetMatrix(eMatrix::Projection, apCamera->GetProjectionMatrix());
 
 		mpLowLevelGraphics->SetColor(cColor(1,1,1,1));
 
@@ -604,8 +604,8 @@ namespace hpl {
 		//////////////////////////////////
 		// Blend mode
 		mpLowLevelGraphics->SetBlendActive(true);
-		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One,eBlendFunc_Zero);
-		mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha, eBlendFunc_OneMinusSrcAlpha);
+		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One,eBlendFunc::Zero);
+		mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha, eBlendFunc::OneMinusSrcAlpha);
 		mRenderSettings.mBlendMode = eMaterialBlendMode_LastEnum;
 
 		//////////////////////////////////////
@@ -627,7 +627,7 @@ namespace hpl {
 			//Non static models
 			if(pMtx)
 			{
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,cMath::MatrixMul(apCamera->GetViewMatrix(),
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,cMath::MatrixMul(apCamera->GetViewMatrix(),
 																				*pMtx));
 
 				mpSolidFogProgram->SetMatrixf("worldViewProj",	eGpuProgramMatrix::ViewProjection,
@@ -637,7 +637,7 @@ namespace hpl {
 			//NULL Model view matrix (static)
 			else
 			{
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 
 				mpSolidFogProgram->SetMatrixf("worldViewProj",	eGpuProgramMatrix::ViewProjection,
 																eGpuProgramMatrixOp::Identity);
@@ -697,7 +697,7 @@ namespace hpl {
 
 		mtxSky.SetTranslation(0);
 
-		mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,mtxSky);
+		mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,mtxSky);
 
 		mpLowLevelGraphics->SetTexture(0,mpSkyBoxTexture);
 		mRenderSettings.mpTexture[0] = mpSkyBoxTexture;
@@ -737,7 +737,7 @@ namespace hpl {
 			mRenderSettings.mpProgram = mpDiffuseProgram;
 
 			mpDiffuseProgram->Bind();
-			if (mbLog) Log(" Binding program %d\n", mpDiffuseProgram);
+			if (mbLog) Log(" Binding program '%s' (%p)\n", mpDiffuseProgram->GetName().c_str(), mpDiffuseProgram);
 		}
 
 		////////////////////////
@@ -775,9 +775,9 @@ namespace hpl {
 			{
 				//mpLowLevelGraphics->SetDepthTestActive(pObject->mbDepthTest);
 				if(pObject->mbDepthTest)
-					mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+					mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 				else
-					mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_Always);
+					mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::Always);
 
 				bPrevDepthTest = pObject->mbDepthTest;
 				if(mbLog) Log(" Setting depth test %d\n",pObject->mbDepthTest?1:0);
@@ -789,11 +789,11 @@ namespace hpl {
 			{
 				if(pObject->mpMatrix)
 				{
-					mpLowLevelGraphics->SetMatrix(eMatrix_ModelView, cMath::MatrixMul(apCamera->GetViewMatrix(),*pObject->mpMatrix));
+					mpLowLevelGraphics->SetMatrix(eMatrix::ModelView, cMath::MatrixMul(apCamera->GetViewMatrix(),*pObject->mpMatrix));
 				}
 				else
 				{
-					mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+					mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 				}
 				pPrevMatrix = pObject->mpMatrix;
 				//Set the vertex program matrix.
@@ -1019,7 +1019,7 @@ namespace hpl {
 
 				//////////////////////////////
 				//Render to alpha if water, (shitty test this is...)
-				if(pMaterial->GetRefractionSkipsStandardTrans())
+				if (pMaterial->GetRefractionSkipsStandardTrans())
 				{
 					if(bLog) Log("   Render alpha to screen\n");
 
@@ -1041,7 +1041,7 @@ namespace hpl {
 					////////////////////////////////////////////////
 					//Clear alpha using 2D quad.
 					mpLowLevelGraphics->SetOrthoProjection(mpLowLevelGraphics->GetScreenSize(),-1000,1000);
-					mpLowLevelGraphics->SetIdentityMatrix(eMatrix_ModelView);
+					mpLowLevelGraphics->SetIdentityMatrix(eMatrix::ModelView);
 
 					if(bHasClipRect)
 					{
@@ -1061,20 +1061,21 @@ namespace hpl {
 						mvVtxRect[3].pos = cVector3f(0,vScreenSizeFloat.y,0);
 					}
 
-					for(int i=0; i<4; ++i) mvVtxRect[i].col.a = 0;
+					for (int i = 0; i < 4; ++i)
+						mvVtxRect[i].col.a = 0;
 					mpLowLevelGraphics->DrawQuad(mvVtxRect);
 
 					//Set back to ordinary projection...
-					mpLowLevelGraphics->SetMatrix(eMatrix_Projection, apCamera->GetProjectionMatrix());
+					mpLowLevelGraphics->SetMatrix(eMatrix::Projection, apCamera->GetProjectionMatrix());
 
 					//Set Model matrix
 					if(pModelMatrix) {
 						cMatrixf mtxModel = cMath::MatrixMul(apCamera->GetViewMatrix(),	*pModelMatrix);
-						mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,mtxModel);
+						mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,mtxModel);
 						mRenderSettings.mbMatrixWasNULL = false;
 					}
 					else {
-						mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+						mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 						mRenderSettings.mbMatrixWasNULL = true;
 					}
 
@@ -1130,7 +1131,7 @@ namespace hpl {
 				//Gpu program
 				mRenderSettings.mpProgram = pRefractProgram;
 				pRefractProgram->Bind();
-				if (bLog) Log("   Binding program '%s' (%d)\n", pRefractProgram->GetName().c_str(), pRefractProgram);
+				if (bLog) Log("   Binding program '%s' (%p)\n", pRefractProgram->GetName().c_str(), pRefractProgram);
 				mRenderSettings.mbMatrixWasNULL = false;
 
 
@@ -1138,12 +1139,12 @@ namespace hpl {
 				if(pModelMatrix)
 				{
 					cMatrixf mtxModel = cMath::MatrixMul(apCamera->GetViewMatrix(),	*pModelMatrix);
-					mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,mtxModel);
+					mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,mtxModel);
 					mRenderSettings.mbMatrixWasNULL = false;
 				}
 				else
 				{
-					mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+					mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 					mRenderSettings.mbMatrixWasNULL = true;
 				}
 
@@ -1243,7 +1244,7 @@ namespace hpl {
 				else
 				{
 					mpLowLevelGraphics->SetAlphaTestActive(true);
-					mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc_GreaterOrEqual, 0.6f);
+					mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc::GreaterOrEqual, 0.6f);
 					if(bLog) Log("  Set alpha test on!\n");
 				}
 			}
@@ -1266,27 +1267,27 @@ namespace hpl {
 					switch(blendMode)
 					{
 					case eMaterialBlendMode_Add:
-						mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One,eBlendFunc_One);
+						mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One,eBlendFunc::One);
 						if(bLog) Log("  Set blend mode one-one!\n");
 						break;
 					case eMaterialBlendMode_Replace:
-						mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One,eBlendFunc_Zero);
+						mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One,eBlendFunc::Zero);
 						if(bLog) Log("  Set blend mode one-zero!\n");
 						break;
 					case eMaterialBlendMode_Mul:
-						mpLowLevelGraphics->SetBlendFunc(eBlendFunc_Zero,eBlendFunc_SrcColor);
+						mpLowLevelGraphics->SetBlendFunc(eBlendFunc::Zero,eBlendFunc::SrcColor);
 						if(bLog) Log("  Set blend mode zero-srccolor!\n");
 						break;
 					case eMaterialBlendMode_MulX2:
-						mpLowLevelGraphics->SetBlendFunc(eBlendFunc_DestColor,eBlendFunc_SrcColor);
+						mpLowLevelGraphics->SetBlendFunc(eBlendFunc::DestColor,eBlendFunc::SrcColor);
 						if(bLog) Log("  Set blend mode destcolor-srccolor!\n");
 						break;
 					case eMaterialBlendMode_Alpha:
-						mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha,eBlendFunc_OneMinusSrcAlpha);
+						mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha,eBlendFunc::OneMinusSrcAlpha);
 						if(bLog) Log("  Set blend mode srcalpha-oneminussrcalpha!\n");
 						break;
 					case eMaterialBlendMode_DestAlphaAdd:
-						mpLowLevelGraphics->SetBlendFunc(eBlendFunc_DestAlpha,eBlendFunc_One);
+						mpLowLevelGraphics->SetBlendFunc(eBlendFunc::DestAlpha,eBlendFunc::One);
 						if(bLog) Log("  Set blend mode destalpha-one!\n");
 						break;
 					}
@@ -1358,7 +1359,7 @@ namespace hpl {
 			{
 				cMatrixf mtxModel = cMath::MatrixMul(apCamera->GetViewMatrix(),	*pModelMatrix);
 
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,mtxModel);
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,mtxModel);
 
 				mRenderSettings.mbMatrixWasNULL = false;
 				bSetProgMatrix =true;
@@ -1366,7 +1367,7 @@ namespace hpl {
 			//NULL matrix
 			else if(mRenderSettings.mbMatrixWasNULL==false)
 			{
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 
 				mRenderSettings.mbMatrixWasNULL = true;
 				bSetProgMatrix =true;
@@ -1418,7 +1419,7 @@ namespace hpl {
 			if(mDebugFlags & eRendererDebugFlag_DrawLightBoundingBox)
 			{
 				mpLowLevelGraphics->SetDepthTestActive(false);
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 
 				cLight3DIterator lightIt = mpRenderList->GetLightIt();
 				while(lightIt.HasNext())
@@ -1449,7 +1450,7 @@ namespace hpl {
 
 		if(mDebugFlags & eRendererDebugFlag_DrawBoundingBox)
 		{
-			mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+			mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 
 			cBoundingVolume *pBV = apObject->GetBoundingVolume();
 
@@ -1458,7 +1459,7 @@ namespace hpl {
 
 		if(mDebugFlags & eRendererDebugFlag_DrawBoundingSphere)
 		{
-			mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,apCamera->GetViewMatrix());
+			mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,apCamera->GetViewMatrix());
 
 			cBoundingVolume *pBV = apObject->GetBoundingVolume();
 
@@ -1473,7 +1474,7 @@ namespace hpl {
 		else
 			mtxModel = cMath::MatrixMul(apCamera->GetViewMatrix(),cMatrixf::Identity);
 
-		mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,mtxModel);
+		mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,mtxModel);
 
 		//Draw the debug graphics for the object.
 		for(int i=0; i< pVtxBuffer->GetVertexNum(); i++)

@@ -951,30 +951,16 @@ namespace hpl {
 	tWString cString::ToStringW(int alX, int alPaddingZeros)
 	{
 		wchar_t buff[256];
-
 		tWString sFormat = _W("%0*d");
-
-#ifdef WIN32
-		swprintf(buff, sFormat.c_str(), alPaddingZeros, alX);
-#else
 		swprintf(buff, 256, sFormat.c_str(), alPaddingZeros, alX);
-#endif
-
 		return buff;
 	}
 
 	tWString cString::ToStringW(unsigned long alX, int alPaddingZeros)
 	{
 		wchar_t buff[256];
-
 		tWString sFormat = _W("%0*ld");
-
-#ifdef WIN32
-		swprintf(buff, sFormat.c_str(), alPaddingZeros, alX);
-#else
 		swprintf(buff, 256, sFormat.c_str(), alPaddingZeros, alX);
-#endif
-
 		return buff;
 	}
 
@@ -986,11 +972,7 @@ namespace hpl {
 		////////////////////////////////////////////////////////////
 		// Print the float into a wstring, using a given precision
 		tWString sFormat = _W("%.*f");
-#ifdef WIN32
-		swprintf(buff, sFormat.c_str(), alNumDecimals ,afX);
-#else
 		swprintf(buff, 256, sFormat.c_str(), alNumDecimals, afX);
-#endif
 
 		//////////////////////////////////////////
 		// Clean up decimal part

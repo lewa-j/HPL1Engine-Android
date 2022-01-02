@@ -20,32 +20,27 @@
 #define HPL_MATERIAL_DIFFUSE_H
 
 #include "graphics/Material_BaseLight.h"
-#include "graphics/MaterialType.h"
 
 namespace hpl {
+
+	class cMaterialType_Diffuse : public cMaterialType_BaseLight
+	{
+	public:
+		cMaterialType_Diffuse(cGraphics *apGraphics);
+		virtual ~cMaterialType_Diffuse() {}
+
+		bool IsCorrect(tString asName) override {
+			return cString::ToLowerCase(asName) == "diffuse";
+		}
+
+		iMaterial *Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
+	};
 
 	class cMaterial_Diffuse : public iMaterial_BaseLight
 	{
 	public:
-		cMaterial_Diffuse(const tString& asName, cGraphics *apGraphics, cResources *apResources, iMaterialType *apType, eMaterialPicture aPicture);
+		cMaterial_Diffuse(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BaseLight *apType, eMaterialPicture aPicture);
 		virtual ~cMaterial_Diffuse();
-
-	private:
-	};
-
-	class cMaterialType_Diffuse : public iMaterialType
-	{
-	public:
-		cMaterialType_Diffuse(cGraphics *apGraphics);
-
-		bool IsCorrect(tString asName) override{
-			return cString::ToLowerCase(asName)=="diffuse";
-		}
-
-		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
-
-	private:
-		int mlTechLevel;
 	};
 
 };

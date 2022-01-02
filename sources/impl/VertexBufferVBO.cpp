@@ -328,19 +328,20 @@ namespace hpl {
 		///////////////////////////////
 		//Get the draw type
 		GLenum mode = GL_TRIANGLES;
-		if(drawType==eVertexBufferDrawType_Quad)		mode = GL_QUADS;
-		else if(drawType==eVertexBufferDrawType_Lines)	mode = GL_LINE_STRIP;
+		if (drawType == eVertexBufferDrawType_Lines)
+			mode = GL_LINE_STRIP;
 
 		//////////////////////////////////
 		//Bind and draw the buffer
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,mlElementHandle);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mlElementHandle);
 
 		int lSize = mlElementNum;
-		if(mlElementNum<0) lSize = GetIndexNum();
+		if (mlElementNum < 0)
+			lSize = GetIndexNum();
 
 		glDrawElements(mode,lSize,GL_UNSIGNED_INT, (char*) NULL);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	//-----------------------------------------------------------------------
@@ -352,8 +353,8 @@ namespace hpl {
 		///////////////////////////////
 		//Get the draw type
 		GLenum mode = GL_TRIANGLES;
-		if(drawType==eVertexBufferDrawType_Quad)		mode = GL_QUADS;
-		else if(drawType==eVertexBufferDrawType_Lines)	mode = GL_LINE_STRIP;
+		if (drawType == eVertexBufferDrawType_Lines)
+			mode = GL_LINE_STRIP;
 
 		//////////////////////////////////
 		//Bind and draw the buffer

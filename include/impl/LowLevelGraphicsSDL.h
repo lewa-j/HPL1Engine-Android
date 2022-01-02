@@ -26,7 +26,7 @@
 // Unix's X11 Defines DestoryAll which collides with methods
 #undef DestroyAll
 
-#include "graphics/LowLevelGraphics.h"
+#include "impl/LowLevelGraphicsGL.h"
 #include "impl/SDLPixelFormat.h"
 #include "math/MathTypes.h"
 
@@ -35,257 +35,154 @@ namespace hpl
 
 	//-------------------------------------------------
 
-	class cLowLevelGraphicsSDL : public iLowLevelGraphics
+	class cLowLevelGraphicsSDL : public cLowLevelGraphicsGL
 	{
 	public:
 		cLowLevelGraphicsSDL();
 		~cLowLevelGraphicsSDL();
 
 		bool Init(	int alWidth, int alHeight, int alBpp, int abFullscreen, int alMultisampling,
-					const tString& asWindowCaption);
+					const tString& asWindowCaption) override;
 
-		int GetCaps(eGraphicCaps aType);
+		int GetCaps(eGraphicCaps aType) override;
 
-		void ShowCursor(bool abX);
+		void ShowCursor(bool abX) override;
 
-		void SetVsyncActive(bool abX);
+		void SetVsyncActive(bool abX) override;
 
-		void SetMultisamplingActive(bool abX);
+		void SetMultisamplingActive(bool abX) override;
+		int GetMultisampling() override { return mlMultisampling;}
 
-		void SetGammaCorrection(float afX);
-		float GetGammaCorrection();
+		void SetGammaCorrection(float afX) override;
+		float GetGammaCorrection() override;
 
-		int GetMultisampling(){ return mlMultisampling;}
+		void SetClipPlane(int alIdx, const cPlanef& aPlane) override;
+		cPlanef GetClipPlane(int alIdx, const cPlanef& aPlane) override;
+		void SetClipPlaneActive(int alIdx, bool abX) override;
 
-		void SetClipPlane(int alIdx, const cPlanef& aPlane);
-		cPlanef GetClipPlane(int alIdx, const cPlanef& aPlane);
-		void SetClipPlaneActive(int alIdx, bool abX);
+		void SaveScreenToBMP(const tString &asFile) override;
 
-		cVector2f GetScreenSize();
-		cVector2f GetVirtualSize();
-		void SetVirtualSize(cVector2f avSize);
+		iPixelFormat *GetPixelFormat() override { return mpPixelFormat; }
 
-		iBitmap2D* CreateBitmap2D(const cVector2l &avSize, unsigned int alBpp);
-		iFontData* CreateFontData(const tString &asName);
+		iBitmap2D* CreateBitmap2D(const cVector2l &avSize, unsigned int alBpp) override;
+		iFontData* CreateFontData(const tString &asName) override;
 
-		iTexture* CreateTexture(bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget);
-		iTexture* CreateTexture(const tString &asName,bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget);
-		iTexture* CreateTexture(iBitmap2D* apBmp,bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget);
+		iTexture* CreateTexture(bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget) override;
+		iTexture* CreateTexture(const tString &asName,bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget) override;
+		iTexture* CreateTexture(iBitmap2D* apBmp,bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget) override;
 		iTexture* CreateTexture(const cVector2l& avSize,int alBpp,cColor aFillCol,
-								bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget);
-
-
-		iPixelFormat* GetPixelFormat();
+								bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget) override;
 
 		iGpuProgram *CreateGpuProgram(const tString& asName) override;
 		iGpuShader *CreateGpuShader(const tString &asName, eGpuShaderType aType) override;
 
-		void SaveScreenToBMP(const tString& asFile);
+		iOcclusionQuery *CreateOcclusionQuery() override;
+		void DestroyOcclusionQuery(iOcclusionQuery *apQuery) override;
+
+		iVertexBuffer *CreateVertexBuffer(tVertexFlag aFlags, eVertexBufferDrawType aDrawType,
+			eVertexBufferUsageType aUsageType,
+			int alReserveVtxSize = 0, int alReserveIdxSize = 0) override;
 
 		/////////// MATRIX METHODS /////////////////////////
 
-		void PushMatrix(eMatrix aMtxType);
-		void PopMatrix(eMatrix aMtxType);
-		void SetIdentityMatrix(eMatrix aMtxType);
-
+		void PushMatrix(eMatrix aMtxType) override;
+		void PopMatrix(eMatrix aMtxType) override;
 		void SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA) override;
 		cMatrixf GetMatrix(eMatrix aMtxType) override;
 
-		void TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos);
-		void RotateMatrix(eMatrix aMtxType, const cVector3f &avRot);
-		void ScaleMatrix(eMatrix aMtxType, const cVector3f &avScale);
+		void SetIdentityMatrix(eMatrix aMtxType) override;
+		void TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos) override;
+		void RotateMatrix(eMatrix aMtxType, const cVector3f &avRot) override;
+		void ScaleMatrix(eMatrix aMtxType, const cVector3f &avScale) override;
 
-		void SetOrthoProjection(const cVector2f& avSize, float afMin, float afMax);
+		void SetOrthoProjection(const cVector2f& avSize, float afMin, float afMax) override;
 
 		/////////// DRAWING METHODS /////////////////////////
 
-		// OCCLUSION
-		iOcclusionQuery* CreateOcclusionQuery();
-		void DestroyOcclusionQuery(iOcclusionQuery *apQuery);
-
-		// CLEARING THE FRAMEBUFFER
-		void ClearScreen();
-
-		void SetClearColor(const cColor& aCol);
-		void SetClearDepth(float afDepth);
-		void SetClearStencil(int alVal);
-
-		void SetClearColorActive(bool abX);
-		void SetClearDepthActive(bool abX);
-		void SetClearStencilActive(bool abX);
-
-		void SetColorWriteActive(bool abR,bool abG,bool abB,bool abA);
-		void SetDepthWriteActive(bool abX);
-
-		void SetCullActive(bool abX);
-		void SetCullMode(eCullMode aMode);
-
-		//DEPTH
-		void SetDepthTestActive(bool abX);
-		void SetDepthTestFunc(eDepthTestFunc aFunc);
+		void SetClearDepth(float afDepth) override;
 
 		//ALPHA
-		void SetAlphaTestActive(bool abX);
-		void SetAlphaTestFunc(eAlphaTestFunc aFunc,float afRef);
-
-		//STENCIL
-		void SetStencilActive(bool abX);
-		void SetStencil(eStencilFunc aFunc,int alRef, unsigned int aMask,
-				eStencilOp aFailOp,eStencilOp aZFailOp,eStencilOp aZPassOp);
-		void SetStencilTwoSide(eStencilFunc aFrontFunc,eStencilFunc aBackFunc,
-				int alRef, unsigned int aMask,
-				eStencilOp aFrontFailOp,eStencilOp aFrontZFailOp,eStencilOp aFrontZPassOp,
-				eStencilOp aBackFailOp,eStencilOp aBackZFailOp,eStencilOp aBackZPassOp);
-		void SetStencilTwoSide(bool abX);
-
-
-		//SCISSOR
-		void SetScissorActive(bool abX);
-		void SetScissorRect(const cRect2l &aRect);
-
-		//BLENDING
-		void SetBlendActive(bool abX);
-		void SetBlendFunc(eBlendFunc aSrcFactor, eBlendFunc aDestFactor);
-		void SetBlendFuncSeparate(eBlendFunc aSrcFactorColor, eBlendFunc aDestFactorColor,
-			eBlendFunc aSrcFactorAlpha, eBlendFunc aDestFactorAlpha);
-
+		void SetAlphaTestActive(bool abX) override;
+		void SetAlphaTestFunc(eAlphaTestFunc aFunc,float afRef) override;
 
 		// TEXTURE
-		void SetTexture(unsigned int alUnit,iTexture* apTex);
-		void SetActiveTextureUnit(unsigned int alUnit);
-		void SetTextureEnv(eTextureParam aParam, int alVal);
-		void SetTextureConstantColor(const cColor &aColor);
+		void SetTextureEnv(eTextureParam aParam, int alVal) override;
+		void SetTextureConstantColor(const cColor &aColor) override;
 
-		void SetColor(const cColor &aColor);
+		void SetColor(const cColor &aColor) override;
 
 		// POLYGONS
-		iVertexBuffer* CreateVertexBuffer(tVertexFlag aFlags, eVertexBufferDrawType aDrawType,
-										eVertexBufferUsageType aUsageType,
-										int alReserveVtxSize=0,int alReserveIdxSize=0);
+		void DrawRect(const cVector2f &avPos,const cVector2f &avSize,float afZ) override;
 
-		void DrawRect(const cVector2f &avPos,const cVector2f &avSize,float afZ);
+		void DrawTri(const tVertexVec &avVtx) override;
+		void DrawTri(const cVertex* avVtx) override;
 
-		void DrawTri(const tVertexVec &avVtx);
-		void DrawTri(const cVertex* avVtx);
+		void DrawQuad(const tVertexVec &avVtx, const cColor aCol) override;
+		void DrawQuad(const tVertexVec &avVtx,const float afZ) override;
+		void DrawQuad(const tVertexVec &avVtx,const float afZ,const cColor &aCol) override;
+		void DrawQuadMultiTex(const tVertexVec &avVtx,const tVector3fVec &avExtraUvs) override;
 
-		void DrawQuad(const tVertexVec &avVtx);
-		void DrawQuad(const tVertexVec &avVtx, const cColor aCol);
-		void DrawQuad(const tVertexVec &avVtx,const float afZ);
-		void DrawQuad(const tVertexVec &avVtx,const float afZ,const cColor &aCol);
-		void DrawQuadMultiTex(const tVertexVec &avVtx,const tVector3fVec &avExtraUvs);
+		void AddTexCoordToBatch(unsigned int alUnit, const cVector3f *apCoord) override;
+		void SetBatchTextureUnitActive(unsigned int alUnit, bool abActive) override;
 
 		//PRIMITIVES
-		void DrawLine(const cVector3f& avBegin, const cVector3f& avEnd, cColor aCol);
-		void DrawBoxMaxMin(const cVector3f& avMax, const cVector3f& avMin, cColor aCol);
-		void DrawSphere(const cVector3f& avPos, float afRadius, cColor aCol);
+		void DrawBoxMaxMin(const cVector3f& avMax, const cVector3f& avMin, cColor aCol) override;
 
-		void DrawLine2D(const cVector2f& avBegin, const cVector2f& avEnd, float afZ, cColor aCol);
-		void DrawLineRect2D(const cRect2f& aRect, float afZ, cColor aCol);
-		void DrawLineCircle2D(const cVector2f& avCenter, float afRadius, float afZ, cColor aCol);
-
-		void DrawFilledRect2D(const cRect2f& aRect, float afZ, cColor aCol);
-
-		void AddVertexToBatch(const cVertex *apVtx);
-		void AddVertexToBatch(const cVertex *apVtx, const cVector3f* avTransform);
-		void AddVertexToBatch(const cVertex *apVtx, const cMatrixf* aMtx);
-
-		void AddVertexToBatch_Size2D(const cVertex *apVtx, const cVector3f* avTransform,
-										const cColor* apCol,const float& mfW, const float& mfH);
-
-		void AddVertexToBatch_Raw(	const cVector3f& avPos, const cColor &aColor,
-									const cVector3f& avTex);
-
-
-		void AddTexCoordToBatch(unsigned int alUnit,const cVector3f *apCoord);
-		void SetBatchTextureUnitActive(unsigned int alUnit,bool abActive);
-
-		void AddIndexToBatch(int alIndex);
-
-		void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear=true);
-		void ClearBatch();
-
+		void DrawLine2D(const cVector2f& avBegin, const cVector2f& avEnd, float afZ, cColor aCol) override;
+		void DrawLineRect2D(const cRect2f& aRect, float afZ, cColor aCol) override;
+		void DrawFilledRect2D(const cRect2f& aRect, float afZ, cColor aCol) override;
 
 		//FRAMEBUFFER
-		void CopyContextToTexure(iTexture* apTex, const cVector2l &avPos,
-			const cVector2l &avSize, const cVector2l &avTexOffset=0);
-		void SetRenderTarget(iTexture* pTex);
-		bool RenderTargetHasZBuffer();
-		void FlushRenderTarget();
+		void SetRenderTarget(iTexture* pTex) override;
+		bool RenderTargetHasZBuffer() override;
+		void FlushRenderTarget() override;
 
-		void FlushRendering();
-		void SwapBuffers();
+		void FlushRendering() override;
+		void SwapBuffers() override;
 
 		///// SDL Specific ////////////////////////////
+		virtual void BindTextureGL(iTexture *apTex, int aNewTarget) override;
+		virtual void UnbindRenderTargetTextureGL(iTexture *apTex, int aLastTarget) override;
 
 		iBitmap2D* CreateBitmap2DFromSurface(SDL_Surface* apSurface,const tString& asType);
 
 		void SetupGL();
 
 	private:
-		cVector2l mvScreenSize;
-		cVector2f mvVirtualSize;
-		int mlMultisampling;
-		int mlBpp;
+		int mlMultisampling = 0;
+		int mlBpp = 0;
 
 		//Windows stuff
 		#if defined(WIN32)
-			HGLRC mGLContext;
-			HDC   mDeviceContext;
-			HINSTANCE mhKeyTrapper;
+			HGLRC mGLContext = nullptr;
+			HDC   mDeviceContext = nullptr;
+			HINSTANCE mhKeyTrapper = nullptr;
 		#elif defined(__linux__)
-			Display *gDpy;
+			Display *gDpy = nullptr;
 			GLXContext glCtx;
 			GLXPbuffer gPBuffer;
 		#endif
 
 		//Gamma
-		Uint16 mvStartGammaArray[3][256];
-		float mfGammaCorrection;
+		Uint16 mvStartGammaArray[3][256]={};
+		float mfGammaCorrection = 1.0f;
+
+		//SDL Variables
+		SDL_Surface *mpScreen = nullptr;
+		cSDLPixelFormat *mpPixelFormat = nullptr;
 
 		//Clipping
 		cPlanef mvClipPlanes[kMaxClipPlanes];
 
-		//SDL Variables
-		SDL_Surface *mpScreen;
-		cSDLPixelFormat *mpPixelFormat;
-
-		//Vertex Array variables
-		//The vertex arrays used:
-		float* mpVertexArray;
-		unsigned int mlVertexCount;
-		unsigned int* mpIndexArray;
-		unsigned int mlIndexCount;
-
-		unsigned int mlBatchStride;
-
-		float *mpTexCoordArray[MAX_TEXTUREUNITS];
-		bool mbTexCoordArrayActive[MAX_TEXTUREUNITS];
-		unsigned int mlTexCoordArrayCount[MAX_TEXTUREUNITS];
-
-		unsigned int mlBatchArraySize;
-
-		//Clearing
-		bool mbClearColor;
-		bool mbClearDepth;
-		bool mbClearStencil;
-
 		//Rendertarget variables
-		iTexture* mpRenderTarget;
-
-		//Texture
-		iTexture* mpCurrentTexture[MAX_TEXTUREUNITS];
+		iTexture* mpRenderTarget = nullptr;
 
 		//Multisample
 		void CheckMultisampleCaps();
 
-		//Batch helper
-		void SetUpBatchArrays();
-
 		//Matrix Helper
 		void SetMatrixMode(eMatrix mType);
 
-		//Vtx helper
-		void SetVtxBatchStates(tVtxBatchFlag aFlags);
 	};
 };
 #endif // HPL_LOWLEVELGRAPHICS_SDL_H

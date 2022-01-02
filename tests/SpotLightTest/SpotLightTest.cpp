@@ -27,7 +27,6 @@ public:
 		//gpGame->SetRenderOnce(true);
 		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_LogRendering);
 
-
 		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_DrawNormals);
 
 														//eRendererDebugFlag_DisableLighting);
@@ -171,7 +170,7 @@ public:
 
 		cCamera3D *pCam = static_cast<cCamera3D*>(gpGame->GetScene()->GetCamera());
 
-		mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,pCam->GetViewMatrix());
+		mpLowLevelGraphics->SetMatrix(eMatrix::ModelView, pCam->GetViewMatrix());
 
 		//Draw the Spotlight!
 		mpLowLevelGraphics->SetStencilActive(false);
@@ -200,7 +199,7 @@ public:
 			iTexture *pSpotTex = mpSpotLight->GetTexture();
 
 			//Set model view matrix
-			//mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,
+			//mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,
 			//						cMath::MatrixMul(pCam->GetViewMatrix(), pEntity->GetWorldMatrix()));
 
 			//Set texture
@@ -208,12 +207,12 @@ public:
 
 			//Set Blend mode
 			mpLowLevelGraphics->SetBlendActive(true);
-			mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One,eBlendFunc_One);//eBlendFunc_DestColor, eBlendFunc_Zero);
+			mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One,eBlendFunc::One);//eBlendFunc::DestColor, eBlendFunc::Zero);
 
 			//GPU programs
 			//mpVertexProgram->SetMatrixf("worldViewProj",
-			//					eGpuProgramMatrix_ViewProjection,
-			//					eGpuProgramMatrixOp_Identity);
+			//					eGpuProgramMatrix::ViewProjection,
+			//					eGpuProgramMatrixOp::Identity);
 			cMatrixf mtxModelView = cMath::MatrixMul(pCam->GetViewMatrix(), pEntity->GetWorldMatrix());
 			mpVertexProgram->SetMatrixf("worldViewProj",
 								cMath::MatrixMul(pCam->GetProjectionMatrix(), mtxModelView));

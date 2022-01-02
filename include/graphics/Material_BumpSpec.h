@@ -24,28 +24,24 @@
 
 namespace hpl {
 
-	class cMaterialType_BumpSpec;
+	class cMaterialType_BumpSpec : public cMaterialType_BaseLight
+	{
+	public:
+		cMaterialType_BumpSpec(cGraphics *apGraphics);
+
+		bool IsCorrect(tString asName) override {
+			return cString::ToLowerCase(asName) == "bumpspecular";
+		}
+
+		iMaterial *Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
+	};
 
 	class cMaterial_BumpSpec : public iMaterial_BaseLight
 	{
 	public:
-		cMaterial_BumpSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BumpSpec *apType, eMaterialPicture aPicture);
+		cMaterial_BumpSpec(const tString& asName, cGraphics *apGraphics, cResources *apResources, cMaterialType_BaseLight *apType, eMaterialPicture aPicture);
 		virtual ~cMaterial_BumpSpec();
 
-	private:
-	};
-
-	class cMaterialType_BumpSpec : public iMaterialType
-	{
-	public:
-		cMaterialType_BumpSpec(cGraphics *apGraphics)
-			: iMaterialType(apGraphics) {}
-
-		bool IsCorrect(tString asName) override{
-			return cString::ToLowerCase(asName)=="bumpspecular";
-		}
-
-		iMaterial* Create(const tString& asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture) override;
 	};
 
 };

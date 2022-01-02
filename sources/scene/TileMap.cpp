@@ -274,7 +274,7 @@ namespace hpl {
 		cRenderObject2D _obj2 = cRenderObject2D(pData->GetMaterial(),
 								pData->GetVertexVec(apTile->GetAngle()),
 								pData->GetIndexVec(apTile->GetAngle()),
-								ePrimitiveType_Quad, apTile->GetPosition().z,
+								apTile->GetPosition().z,
 								_obj,
 								NULL,apTile->GetPositionPtr());
 		mpGraphics->GetRenderer2D()->AddObject(_obj2);

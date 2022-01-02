@@ -138,7 +138,7 @@ public:
 		cVector2f vVideoSize((float)mpVideoStream->GetSize().x, (float)mpVideoStream->GetSize().y);
 
 
-		mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,cMatrixf::Identity);
+		mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,cMatrixf::Identity);
 		mpLowLevelGraphics->SetOrthoProjection(mpLowLevelGraphics->GetVirtualSize(),-1000,1000);
 
 		mpLowLevelGraphics->SetBlendActive(false);
@@ -162,7 +162,7 @@ public:
 
 		//mpLowLevelGraphics->SetDepthTestActive(true);
 
-		//mpLowLevelGraphics->SetMatrix(eMatrix_Projection,((cCamera3D*)gpGame->GetScene()->GetCamera())->GetProjectionMatrix());
+		//mpLowLevelGraphics->SetMatrix(eMatrix::Projection,((cCamera3D*)gpGame->GetScene()->GetCamera())->GetProjectionMatrix());
 	}
 
 	//--------------------------------------------------

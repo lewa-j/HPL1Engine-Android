@@ -37,6 +37,7 @@ namespace hpl {
 	//////////////////////////////////////////////////////////////////////////
 
 	eMaterialQuality iMaterial::mQuality = eMaterialQuality_High;
+	bool iMaterial::mbDestroyTypeSpecifics = true;
 
 	//-----------------------------------------------------------------------
 
@@ -93,10 +94,11 @@ namespace hpl {
 				mpTextureManager->Destroy(mvTexture[i]);
 		}
 
-		for (int j = 0; j < kMaxProgramNum; j++) {
-			if (mpProgram[j])
-				mpType->DestroyProgram(this, j, mpProgram[j]);
-		}
+		if (mbDestroyTypeSpecifics && mpType)
+			for (int j = 0; j < kMaxProgramNum; j++) {
+				if (mpProgram[j])
+					mpType->DestroyProgram(this, j, mpProgram[j]);
+			}
 	}
 
 	//-----------------------------------------------------------------------

@@ -167,7 +167,6 @@ namespace hpl {
 	cMaterialType_Additive::cMaterialType_Additive(cGraphics *apGraphics, cResources *apResources)
 		: iMaterialType(apGraphics)
 	{
-		mpGraphics = apGraphics;
 		mpFogProg = apGraphics->CreateGpuProgramFromShaders("cMaterial_Additive", "Fog_Trans.vert", "Fog_Trans_Alpha.frag");
 	}
 

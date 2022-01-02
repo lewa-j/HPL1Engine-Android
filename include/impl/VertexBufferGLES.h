@@ -70,19 +70,13 @@ namespace hpl
 
 	private:
 		int GetElementNum(tVertexFlag aFlag);
-
 		void SetVertexStates(tVertexFlag aFlags);
 
 		unsigned int mlElementHandle = 0;
-
 		tFloatVec mvVertexArray[klNumOfVertexFlags];
-
-		unsigned int mvArrayHandle[klNumOfVertexFlags];
-
+		unsigned int mvArrayHandle[klNumOfVertexFlags] = {};
 		tUIntVec mvIndexArray;
-
 		bool mbHasShadowDouble = false;
-
 		bool mbCompiled = false;
 	};
 

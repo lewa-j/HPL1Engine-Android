@@ -149,7 +149,7 @@ namespace hpl {
 	{
 		//Set all states
 		mpLowLevelGraphics->SetDepthTestActive(false);
-		mpLowLevelGraphics->SetIdentityMatrix(eMatrix_ModelView);
+		mpLowLevelGraphics->SetIdentityMatrix(eMatrix::ModelView);
 
 		mpLowLevelGraphics->SetOrthoProjection(mpLowLevelGraphics->GetVirtualSize(),-1000,1000);
 
@@ -433,11 +433,11 @@ namespace hpl {
 
 	void cGraphicsDrawer::DrawBackgrounds(const cRect2f& aCollideRect)
 	{
-		mpLowLevelGraphics->SetIdentityMatrix(eMatrix_ModelView);
+		mpLowLevelGraphics->SetIdentityMatrix(eMatrix::ModelView);
 		mpLowLevelGraphics->SetDepthTestActive(true);
 		mpLowLevelGraphics->SetDepthWriteActive(false);
-		mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc_Greater,0.1f);
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc::Greater,0.1f);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 
 
 		tBackgroundImageMapIt it= m_mapBackgroundImages.begin();
@@ -446,7 +446,7 @@ namespace hpl {
 			it->second->Draw(aCollideRect,mpLowLevelGraphics);
 		}
 
-		mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc_Greater,0.05f);
+		mpLowLevelGraphics->SetAlphaTestFunc(eAlphaTestFunc::Greater,0.05f);
 		mpLowLevelGraphics->SetDepthWriteActive(true);
 	}
 

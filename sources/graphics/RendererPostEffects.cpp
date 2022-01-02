@@ -244,15 +244,15 @@ namespace hpl {
 		RenderMotionBlur();
 
 		mpLowLevelGraphics->SetDepthTestActive(false);
-		mpLowLevelGraphics->PushMatrix(eMatrix_ModelView);
-		mpLowLevelGraphics->SetIdentityMatrix(eMatrix_ModelView);
+		mpLowLevelGraphics->PushMatrix(eMatrix::ModelView);
+		mpLowLevelGraphics->SetIdentityMatrix(eMatrix::ModelView);
 		mpLowLevelGraphics->SetOrthoProjection(mpLowLevelGraphics->GetVirtualSize(),-1000,1000);
 
 		RenderBloom();
 
 		RenderImageTrail();
 
-		mpLowLevelGraphics->PopMatrix(eMatrix_ModelView);
+		mpLowLevelGraphics->PopMatrix(eMatrix::ModelView);
 	}
 
 	//-----------------------------------------------------------------------
@@ -380,7 +380,7 @@ namespace hpl {
 		//Set up things needed for blurring
 		mpLowLevelGraphics->SetDepthWriteActive(false);
 		mpLowLevelGraphics->SetDepthTestActive(false);
-		mpLowLevelGraphics->SetIdentityMatrix(eMatrix_ModelView);
+		mpLowLevelGraphics->SetIdentityMatrix(eMatrix::ModelView);
 		mpLowLevelGraphics->SetOrthoProjection(mpLowLevelGraphics->GetVirtualSize(),-1000,1000);
 
 		//Render blur texture
@@ -420,11 +420,11 @@ namespace hpl {
 		}
 
 		//Set things back to normal
-		mpLowLevelGraphics->SetMatrix(eMatrix_Projection, pCam->GetProjectionMatrix());
+		mpLowLevelGraphics->SetMatrix(eMatrix::Projection, pCam->GetProjectionMatrix());
 
 		///////////////////////////////////////////
 		//Draw motion blur objects
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_Equal);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::Equal);
 		mpLowLevelGraphics->SetDepthTestActive(true);
 		mpLowLevelGraphics->SetBlendActive(false);
 
@@ -446,7 +446,7 @@ namespace hpl {
 			//Non static models
 			if(pMtx)
 			{
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,cMath::MatrixMul(pCam->GetViewMatrix(), *pMtx));
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,cMath::MatrixMul(pCam->GetViewMatrix(), *pMtx));
 
 				mpDepthOfFieldP->SetMatrixf("worldViewProj",	eGpuProgramMatrix::ViewProjection,
 															eGpuProgramMatrixOp::Identity);
@@ -455,7 +455,7 @@ namespace hpl {
 			//NULL Model view matrix (static)
 			else
 			{
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,pCam->GetViewMatrix());
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,pCam->GetViewMatrix());
 
 				mpDepthOfFieldP->SetMatrixf("worldViewProj",	eGpuProgramMatrix::ViewProjection,
 					eGpuProgramMatrixOp::Identity);
@@ -472,7 +472,7 @@ namespace hpl {
 			if(pMtx) pObject->SetPrevMatrix(*pMtx);
 		}
 
-		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_LessOrEqual);
+		mpLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::LessOrEqual);
 		mpLowLevelGraphics->SetDepthWriteActive(true);
 
 		//Reset stuff
@@ -537,7 +537,7 @@ namespace hpl {
 			{
 				cMatrixf mtxPrev = pObject->GetPrevMatrix();
 
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,cMath::MatrixMul(pCam->GetViewMatrix(), *pMtx));
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,cMath::MatrixMul(pCam->GetViewMatrix(), *pMtx));
 
 				mpMotionBlurP->SetMatrixf("worldViewProj",	eGpuProgramMatrix::ViewProjection,
 															eGpuProgramMatrixOp::Identity);
@@ -555,7 +555,7 @@ namespace hpl {
 			//NULL Model view matrix (static)
 			else
 			{
-				mpLowLevelGraphics->SetMatrix(eMatrix_ModelView,pCam->GetViewMatrix());
+				mpLowLevelGraphics->SetMatrix(eMatrix::ModelView,pCam->GetViewMatrix());
 
 				mpMotionBlurP->SetMatrixf("worldViewProj",	eGpuProgramMatrix::ViewProjection,
 															eGpuProgramMatrixOp::Identity);
@@ -685,7 +685,7 @@ namespace hpl {
 
 					//Draw the new image to screen transparently
 					mpLowLevelGraphics->SetBlendActive(true);
-					mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha, eBlendFunc_Zero);
+					mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha, eBlendFunc::Zero);
 
 					mpLowLevelGraphics->SetTexture(0,mpScreenBuffer[mImageTrailData.mlCurrentBuffer==0?1:0]);
 
@@ -708,7 +708,7 @@ namespace hpl {
 				if(!mImageTrailData.mbFirstPass)
 				{
 					//Draw the old Blurred image to screen
-					mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha, eBlendFunc_One);
+					mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha, eBlendFunc::One);
 
 					mpLowLevelGraphics->SetTexture(0,mpScreenBuffer[mImageTrailData.mlCurrentBuffer]);
 

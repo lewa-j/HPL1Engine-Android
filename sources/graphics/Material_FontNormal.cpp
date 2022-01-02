@@ -17,6 +17,7 @@
  * along with HPL1 Engine.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "graphics/Material_FontNormal.h"
+#include "graphics/Graphics.h"
 
 namespace hpl {
 
@@ -61,7 +62,7 @@ namespace hpl {
 		if(aType == eMaterialRenderType_Diffuse)
 		{
 			mpLowLevelGraphics->SetBlendActive(true);
-			mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha,eBlendFunc_OneMinusSrcAlpha);
+			mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha, eBlendFunc::OneMinusSrcAlpha);
 
 			mpLowLevelGraphics->SetTexture(0, GetTexture(eMaterialTexture_Diffuse));
 
@@ -118,4 +119,19 @@ namespace hpl {
 	}
 
 	//-----------------------------------------------------------------------
+
+	cMaterialType_FontNormal::cMaterialType_FontNormal(cGraphics *apGraphics)
+		: iMaterialType(apGraphics)
+	{
+	}
+
+	cMaterialType_FontNormal::~cMaterialType_FontNormal()
+	{
+	}
+
+	iMaterial *cMaterialType_FontNormal::Create(const tString &asName, cGraphics *apGraphics, cResources *apResources, eMaterialPicture aPicture)
+	{
+		return hplNew(cMaterial_FontNormal, (asName, apGraphics, apResources, this, aPicture));
+	}
+
 }

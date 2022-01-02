@@ -31,7 +31,6 @@ namespace hpl {
 	enum eVertexBufferDrawType
 	{
 		eVertexBufferDrawType_Tri,
-		eVertexBufferDrawType_Quad,
 		eVertexBufferDrawType_Lines,
 		eVertexBufferDrawType_LastEnum
 	};

@@ -58,7 +58,7 @@ namespace hpl {
 		mpTextureManager = apResources->GetTextureManager();
 		mpFileSearcher = apResources->GetFileSearcher();
 
-		mpFalloffMap = mpTextureManager->Create2D("core_falloff_linear",false);
+		mpFalloffMap = mpTextureManager->Create2D("core_falloff_linear.jpg",false);
 		mpFalloffMap->SetWrapS(eTextureWrap_ClampToEdge);
 		mpFalloffMap->SetWrapT(eTextureWrap_ClampToEdge);
 
@@ -360,7 +360,7 @@ namespace hpl {
 
 			//Setup the depth test so that shadow volume is not rendered in front
 			//off the normal graphics.
-			apLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_Less);
+			apLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::Less);
 
 			//Resert the algo (zfail or zpass) used.
 			apRenderSettings->mlLastShadowAlgo=0;
@@ -395,13 +395,13 @@ namespace hpl {
 			//Make rendering ready for the objects.
 			//apLowLevelGraphics->SetStencilTwoSideActive(false);
 
-			apLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc_Equal);
+			apLowLevelGraphics->SetDepthTestFunc(eDepthTestFunc::Equal);
 
 			apLowLevelGraphics->SetColorWriteActive(true, true, true,true);
 			apLowLevelGraphics->SetCullActive(true);
 
-			apLowLevelGraphics->SetStencil(eStencilFunc_Equal,0,0xFF,
-											eStencilOp_Keep,eStencilOp_Keep, eStencilOp_Keep);
+			apLowLevelGraphics->SetStencil(eStencilFunc::Equal,0,0xFF,
+											eStencilOp::Keep,eStencilOp::Keep, eStencilOp::Keep);
 		}
 
 		//Reset this var so that the new light properties are set.
@@ -647,9 +647,9 @@ namespace hpl {
 			{
 				if(apRenderSettings->mlLastShadowAlgo!=1)
 				{
-					apLowLevelGraphics->SetStencilTwoSide(eStencilFunc_Always,eStencilFunc_Always,0,0x00,
-												eStencilOp_Keep,eStencilOp_DecrementWrap, eStencilOp_Keep,
-												eStencilOp_Keep,eStencilOp_IncrementWrap,eStencilOp_Keep);
+					apLowLevelGraphics->SetStencilTwoSide(eStencilFunc::Always,eStencilFunc::Always,0,0x00,
+												eStencilOp::Keep,eStencilOp::DecrementWrap, eStencilOp::Keep,
+												eStencilOp::Keep,eStencilOp::IncrementWrap,eStencilOp::Keep);
 
 					apRenderSettings->mlLastShadowAlgo =1;
 				}
@@ -658,9 +658,9 @@ namespace hpl {
 			{
 				if(apRenderSettings->mlLastShadowAlgo!=2)
 				{
-					apLowLevelGraphics->SetStencilTwoSide(eStencilFunc_Always,eStencilFunc_Always,0,0x00,
-						eStencilOp_Keep,eStencilOp_Keep, eStencilOp_IncrementWrap,
-						eStencilOp_Keep,eStencilOp_Keep, eStencilOp_DecrementWrap);
+					apLowLevelGraphics->SetStencilTwoSide(eStencilFunc::Always,eStencilFunc::Always,0,0x00,
+						eStencilOp::Keep,eStencilOp::Keep, eStencilOp::IncrementWrap,
+						eStencilOp::Keep,eStencilOp::Keep, eStencilOp::DecrementWrap);
 
 					apRenderSettings->mlLastShadowAlgo =2;
 				}
@@ -683,13 +683,13 @@ namespace hpl {
 		//Set the model matrix
 		cMatrixf *pModelMtx = apObject->GetModelMatrix(NULL);
 		if(pModelMtx){
-			apLowLevelGraphics->SetMatrix(eMatrix_ModelView, cMath::MatrixMul(
+			apLowLevelGraphics->SetMatrix(eMatrix::ModelView, cMath::MatrixMul(
 				apRenderSettings->mpCamera->GetViewMatrix(),
 				*pModelMtx));
 		}
 		else if(apRenderSettings->mbMatrixWasNULL==false)
 		{
-			apLowLevelGraphics->SetMatrix(eMatrix_ModelView, apRenderSettings->mpCamera->GetViewMatrix());
+			apLowLevelGraphics->SetMatrix(eMatrix::ModelView, apRenderSettings->mpCamera->GetViewMatrix());
 		}
 
 		/////////////////////////////////////////////////////////
@@ -859,40 +859,38 @@ namespace hpl {
 			if(bZFail)
 			{
 				//Front
-				apLowLevelGraphics->SetStencil(eStencilFunc_Always,0,0x0,
-												eStencilOp_Keep,eStencilOp_DecrementWrap, eStencilOp_Keep);
+				apLowLevelGraphics->SetStencil(eStencilFunc::Always,0,0x0,
+												eStencilOp::Keep,eStencilOp::DecrementWrap, eStencilOp::Keep);
 				pSubEntity->GetVertexBuffer()->DrawIndices(mpIndexArray, lIndexCount);
 
 				//Back
-				apLowLevelGraphics->SetCullMode(eCullMode_Clockwise);
-				apLowLevelGraphics->SetStencil(eStencilFunc_Always,0,0x0,
-												eStencilOp_Keep,eStencilOp_IncrementWrap,eStencilOp_Keep);
+				apLowLevelGraphics->SetCullMode(eCullMode::Clockwise);
+				apLowLevelGraphics->SetStencil(eStencilFunc::Always,0,0x0,
+												eStencilOp::Keep,eStencilOp::IncrementWrap,eStencilOp::Keep);
 				pSubEntity->GetVertexBuffer()->DrawIndices(mpIndexArray, lIndexCount);
 			}
 			else
 			{
 				//Front
-				apLowLevelGraphics->SetStencil(eStencilFunc_Always,0,0x0,
-												eStencilOp_Keep,eStencilOp_Keep, eStencilOp_IncrementWrap);
+				apLowLevelGraphics->SetStencil(eStencilFunc::Always,0,0x0,
+												eStencilOp::Keep,eStencilOp::Keep, eStencilOp::IncrementWrap);
 				pSubEntity->GetVertexBuffer()->DrawIndices(mpIndexArray, lIndexCount);
 
 				//Back
-				apLowLevelGraphics->SetCullMode(eCullMode_Clockwise);
-				apLowLevelGraphics->SetStencil(eStencilFunc_Always,0,0x0,
-												eStencilOp_Keep,eStencilOp_Keep, eStencilOp_DecrementWrap);
+				apLowLevelGraphics->SetCullMode(eCullMode::Clockwise);
+				apLowLevelGraphics->SetStencil(eStencilFunc::Always,0,0x0,
+												eStencilOp::Keep,eStencilOp::Keep, eStencilOp::DecrementWrap);
 				pSubEntity->GetVertexBuffer()->DrawIndices(mpIndexArray, lIndexCount);
 			}
 
-			apLowLevelGraphics->SetCullMode(eCullMode_CounterClockwise);
+			apLowLevelGraphics->SetCullMode(eCullMode::CounterClockwise);
 		}
 
 		if(apLowLevelGraphics->GetCaps(eGraphicCaps_TwoSideStencil))
 		{
-			apLowLevelGraphics->SetStencilTwoSide(false);
 			apRenderSettings->mlLastShadowAlgo=0;
 		}
 	}
-
 
 	//-----------------------------------------------------------------------
 

@@ -225,14 +225,14 @@ namespace hpl {
 		///////////////////////////////
 		//Get the draw type
 		GLenum mode = GL_TRIANGLES;
-		if(drawType==eVertexBufferDrawType_Quad)		mode = GL_QUADS;
-		else if(drawType==eVertexBufferDrawType_Lines)	mode = GL_LINE_STRIP;
+		if (drawType == eVertexBufferDrawType_Lines)
+			mode = GL_LINE_STRIP;
 
 
 		int lSize = mlElementNum;
 		if(mlElementNum<0) lSize = GetIndexNum();
 
-		glDrawElements(mode,lSize,GL_UNSIGNED_INT, &mvIndexArray[0]);
+		glDrawElements(mode, lSize, GL_UNSIGNED_INT, &mvIndexArray[0]);
 	}
 
 	void cVertexBufferOGL::DrawIndices(unsigned int *apIndices, int alCount,
@@ -243,8 +243,8 @@ namespace hpl {
 		///////////////////////////////
 		//Get the draw type
 		GLenum mode = GL_TRIANGLES;
-		if(drawType==eVertexBufferDrawType_Quad)		mode = GL_QUADS;
-		else if(drawType==eVertexBufferDrawType_Lines)	mode = GL_LINE_STRIP;
+		if (drawType == eVertexBufferDrawType_Lines)
+			mode = GL_LINE_STRIP;
 
 		//////////////////////////////////
 		//Bind and draw the buffer

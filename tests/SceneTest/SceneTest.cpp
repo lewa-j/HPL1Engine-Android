@@ -16,9 +16,9 @@
 
 using namespace hpl;
 
-cGame *gpGame=NULL;
+cGame *gpGame = NULL;
 
-cSceneCamera *gpCameraUpdate=NULL;
+cSceneCamera *gpCameraUpdate = NULL;
 
 class cSimpleUpdate : public iUpdateable, public iPhysicsRayCallback
 {
@@ -29,7 +29,7 @@ public:
 		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_LogRendering);
 		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_DrawLightBoundingBox);
 
-		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_DrawNormals);
+		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_DrawNormals | eRendererDebugFlag_DrawTangents);
 		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_DrawBoundingBox);
 
 		mpLowLevelGraphics = gpGame->GetGraphics()->GetLowLevel();
@@ -48,7 +48,7 @@ public:
 		mpWorld = gpGame->GetScene()->LoadWorld3D("maptest0_complex.dae", false, 0);
 #endif
 
-		gpGame->GetInput()->AddAction(new cActionKeyboard("Shadows",gpGame->GetInput(),eKey_1));
+		gpGame->GetInput()->AddAction(new cActionKeyboard("Shadows", gpGame->GetInput(), eKey_1));
 
 		//Create crate
 		/*cMeshEntity *pEntity;
@@ -77,10 +77,11 @@ public:
 	void Update(float afFrameTime)
 	{
 		//Log("Update!\n");
-		//if(gpGame->GetInput()->BecameTriggerd("Shadows")){
-		//	bool bShadows = gpGame->GetGraphics()->GetRenderer3D()->GetShowShadows();
-		//	gpGame->GetGraphics()->GetRenderer3D()->SetShowShadows(!bShadows);
-		//}
+		if(gpGame->GetInput()->BecameTriggerd("Shadows")){
+			eRendererShowShadows bShadows = gpGame->GetGraphics()->GetRenderer3D()->GetShowShadows();
+			bShadows = bShadows == eRendererShowShadows_All ? eRendererShowShadows_None : eRendererShowShadows_All;
+			gpGame->GetGraphics()->GetRenderer3D()->SetShowShadows(bShadows);
+		}
 
 		static bool bTest =true;
 
@@ -94,11 +95,11 @@ public:
 			mlPreTested =0;
 			mlTested =0;
 			mbPretest = true;
-			unsigned long lStartTime = gpGame->GetSystem()->GetLowLevel()->GetTime();
+			unsigned long lStartTime = cPlatform::GetApplicationTime();
 			for(int i=0; i< 10000; ++i)
 				mpWorld->GetPhysicsWorld()->CastRay(this,vStart,vEnd,true,true,true,true);
 
-			unsigned long lTime = gpGame->GetSystem()->GetLowLevel()->GetTime() - lStartTime;
+			unsigned long lTime = cPlatform::GetApplicationTime() - lStartTime;
 
 			Log("Time with pretest: %d tested: %d pretested: %d\n",lTime,mlTested/10000,
 																	mlPreTested/10000);
@@ -106,11 +107,11 @@ public:
 			mlPreTested =0;
 			mlTested =0;
 			mbPretest = false;
-			lStartTime = gpGame->GetSystem()->GetLowLevel()->GetTime();
+			lStartTime = cPlatform::GetApplicationTime();
 			for(int i=0; i< 10000; ++i)
 				mpWorld->GetPhysicsWorld()->CastRay(this,vStart,vEnd,true,true,true,false);
 
-			lTime = gpGame->GetSystem()->GetLowLevel()->GetTime() - lStartTime;
+			lTime = cPlatform::GetApplicationTime() - lStartTime;
 			Log("Time with out pretest: %d tested: %d\n",lTime,mlTested/10000);
 		}
 	}
@@ -152,7 +153,7 @@ public:
 	{
 		return;
 		cCamera3D *pCam = static_cast<cCamera3D*>(gpGame->GetScene()->GetCamera());
-		mpLowLevelGraphics->SetMatrix(eMatrix_ModelView, pCam->GetViewMatrix());
+		mpLowLevelGraphics->SetMatrix(eMatrix::ModelView, pCam->GetViewMatrix());
 
 		mpLowLevelGraphics->SetTexture(0,NULL);
 		mpLowLevelGraphics->SetBlendActive(false);

@@ -29,20 +29,20 @@
 
 namespace hpl {
 
-	enum eBlendFunc
+	enum class eBlendFunc
 	{
-		eBlendFunc_Zero,
-		eBlendFunc_One,
-		eBlendFunc_SrcColor,
-		eBlendFunc_OneMinusSrcColor,
-		eBlendFunc_DestColor,
-		eBlendFunc_OneMinusDestColor,
-		eBlendFunc_SrcAlpha,
-		eBlendFunc_OneMinusSrcAlpha,
-		eBlendFunc_DestAlpha,
-		eBlendFunc_OneMinusDestAlpha,
-		eBlendFunc_SrcAlphaSaturate,
-		eBlendFunc_LastEnum
+		Zero,
+		One,
+		SrcColor,
+		OneMinusSrcColor,
+		DestColor,
+		OneMinusDestColor,
+		SrcAlpha,
+		OneMinusSrcAlpha,
+		DestAlpha,
+		OneMinusDestAlpha,
+		SrcAlphaSaturate,
+		LastEnum
 	};
 
 	enum eTextureParam
@@ -97,17 +97,17 @@ namespace hpl {
 		eTextureFunc_LastEnum
 	};
 
-	enum eStencilFunc
+	enum class eStencilFunc
 	{
-		eStencilFunc_Never,
-		eStencilFunc_Less,
-		eStencilFunc_LessOrEqual,
-		eStencilFunc_Greater,
-		eStencilFunc_GreaterOrEqual,
-		eStencilFunc_Equal,
-		eStencilFunc_NotEqual,
-		eStencilFunc_Always,
-		eStencilFunc_LastEnum
+		Never,
+		Less,
+		LessOrEqual,
+		Greater,
+		GreaterOrEqual,
+		Equal,
+		NotEqual,
+		Always,
+		LastEnum
 	};
 
 	enum eStencilFace
@@ -117,50 +117,50 @@ namespace hpl {
 		eStencilFace_LastEnum,
 	};
 
-	enum eDepthTestFunc
+	enum class eDepthTestFunc
 	{
-		eDepthTestFunc_Never,
-		eDepthTestFunc_Less,
-		eDepthTestFunc_LessOrEqual,
-		eDepthTestFunc_Greater,
-		eDepthTestFunc_GreaterOrEqual,
-		eDepthTestFunc_Equal,
-		eDepthTestFunc_NotEqual,
-		eDepthTestFunc_Always,
-		eDepthTestFunc_LastEnum
+		Never,
+		Less,
+		LessOrEqual,
+		Greater,
+		GreaterOrEqual,
+		Equal,
+		NotEqual,
+		Always,
+		LastEnum
 	};
 
-	enum eAlphaTestFunc
+	enum class eAlphaTestFunc
 	{
-		eAlphaTestFunc_Never,
-		eAlphaTestFunc_Less,
-		eAlphaTestFunc_LessOrEqual,
-		eAlphaTestFunc_Greater,
-		eAlphaTestFunc_GreaterOrEqual,
-		eAlphaTestFunc_Equal,
-		eAlphaTestFunc_NotEqual,
-		eAlphaTestFunc_Always,
-		eAlphaTestFunc_LastEnum
+		Never,
+		Less,
+		LessOrEqual,
+		Greater,
+		GreaterOrEqual,
+		Equal,
+		NotEqual,
+		Always,
+		LastEnum
 	};
 
-	enum eStencilOp
+	enum class eStencilOp
 	{
-		eStencilOp_Keep,
-		eStencilOp_Zero,
-		eStencilOp_Replace,
-		eStencilOp_Increment,
-		eStencilOp_Decrement,
-		eStencilOp_Invert,
-		eStencilOp_IncrementWrap,
-		eStencilOp_DecrementWrap,
-		eStencilOp_LastEnum
+		Keep,
+		Zero,
+		Replace,
+		Increment,
+		Decrement,
+		Invert,
+		IncrementWrap,
+		DecrementWrap,
+		LastEnum
 	};
 
-	enum eCullMode
+	enum class eCullMode
 	{
-		eCullMode_Clockwise,
-		eCullMode_CounterClockwise,
-		eCullMode_LastEnum
+		Clockwise,
+		CounterClockwise,
+		LastEnum
 	};
 
 	enum eGraphicCaps
@@ -337,8 +337,6 @@ namespace hpl {
 						int alRef, unsigned int aMask,
 						eStencilOp aFrontFailOp,eStencilOp aFrontZFailOp,eStencilOp aFrontZPassOp,
 						eStencilOp aBackFailOp,eStencilOp aBackZFailOp,eStencilOp aBackZPassOp)=0;
-		virtual void SetStencilTwoSide(bool abX)=0;
-
 
 		//SCISSOR
 		virtual void SetScissorActive(bool abX)=0;
@@ -378,7 +376,6 @@ namespace hpl {
 		//VERTEX BATCHER
 		virtual void AddVertexToBatch(const cVertex *apVtx)=0;
 		virtual void AddVertexToBatch(const cVertex *apVtx, const cVector3f* avTransform)=0;
-		virtual void AddVertexToBatch(const cVertex *apVtx, const cMatrixf* aMtx)=0;
 
 		virtual void AddVertexToBatch_Size2D(const cVertex *apVtx, const cVector3f* avTransform,
 									const cColor* apCol,const float& mfW, const float& mfH)=0;
@@ -406,7 +403,6 @@ namespace hpl {
 
 		virtual void DrawLine2D(const cVector2f& avBegin, const cVector2f& avEnd, float afZ, cColor aCol)=0;
 		virtual void DrawLineRect2D(const cRect2f& aRect, float afZ, cColor aCol)=0;
-		virtual void DrawLineCircle2D(const cVector2f& avCenter, float afRadius, float afZ, cColor aCol)=0;
 
 		virtual void DrawFilledRect2D(const cRect2f& aRect, float afZ, cColor aCol)=0;
 		// GENERAL

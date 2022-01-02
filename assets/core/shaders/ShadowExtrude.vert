@@ -1,7 +1,7 @@
 #version 100
 precision highp float;
 
-attribute vec4 a_position;// POSITION
+attribute vec4 a_position;	//POSITION
 
 uniform mat4 worldViewProj;
 uniform vec3 lightPosition;

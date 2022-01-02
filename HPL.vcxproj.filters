@@ -904,6 +904,9 @@
     <ClInclude Include="include\impl\VertexBufferGLES.h">
       <Filter>Impl\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="include\impl\LowLevelGraphicsGL.h">
+      <Filter>Impl\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sources\system\Container.cpp">
@@ -1616,6 +1619,9 @@
       <Filter>Impl\System</Filter>
     </ClCompile>
     <ClCompile Include="sources\impl\VertexBufferGLES.cpp">
+      <Filter>Impl\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\impl\LowLevelGraphicsGL.cpp">
       <Filter>Impl\Graphics</Filter>
     </ClCompile>
   </ItemGroup>

@@ -386,7 +386,7 @@ namespace hpl {
 		cShadowVolumeBV *pVolume = GetShadowVolume(avLightPos, afLightRange, false);
 
 		apLowLevelGraphics->SetBlendActive(true);
-		apLowLevelGraphics->SetBlendFunc(eBlendFunc_One,eBlendFunc_One);
+		apLowLevelGraphics->SetBlendFunc(eBlendFunc::One,eBlendFunc::One);
 		apLowLevelGraphics->SetDepthWriteActive(false);
 		tVertexVec vVtx;
 		vVtx.resize(4);

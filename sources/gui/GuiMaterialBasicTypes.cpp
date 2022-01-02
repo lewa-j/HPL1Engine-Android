@@ -32,7 +32,7 @@ namespace hpl {
 	void cGuiMaterial_Diffuse::BeforeRender()
 	{
 		mpLowLevelGraphics->SetBlendActive(true);
-		mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One, eBlendFunc_Zero);
+		mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One, eBlendFunc::Zero);
 	}
 
 	//-----------------------------------------------------------------------
@@ -53,7 +53,7 @@ namespace hpl {
 	void cGuiMaterial_Alpha::BeforeRender()
 	{
 		mpLowLevelGraphics->SetBlendActive(true);
-		mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha, eBlendFunc_OneMinusSrcAlpha);
+		mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha, eBlendFunc::OneMinusSrcAlpha);
 	}
 
 	//-----------------------------------------------------------------------
@@ -61,7 +61,7 @@ namespace hpl {
 	void cGuiMaterial_Alpha::AfterRender()
 	{
 		//Not needed right?
-		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One, eBlendFunc_OneMinusSrcAlpha);
+		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One, eBlendFunc::OneMinusSrcAlpha);
 	}
 
 	//-----------------------------------------------------------------------
@@ -75,7 +75,7 @@ namespace hpl {
 	void cGuiMaterial_FontNormal::BeforeRender()
 	{
 		mpLowLevelGraphics->SetBlendActive(true);
-		mpLowLevelGraphics->SetBlendFunc(eBlendFunc_SrcAlpha, eBlendFunc_OneMinusSrcAlpha);
+		mpLowLevelGraphics->SetBlendFunc(eBlendFunc::SrcAlpha, eBlendFunc::OneMinusSrcAlpha);
 	}
 
 	//-----------------------------------------------------------------------
@@ -83,7 +83,7 @@ namespace hpl {
 	void cGuiMaterial_FontNormal::AfterRender()
 	{
 		//Not needed right?
-		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One, eBlendFunc_OneMinusSrcAlpha);
+		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One, eBlendFunc::OneMinusSrcAlpha);
 	}
 
 	//-----------------------------------------------------------------------
@@ -97,7 +97,7 @@ namespace hpl {
 	void cGuiMaterial_Additive::BeforeRender()
 	{
 		mpLowLevelGraphics->SetBlendActive(true);
-		mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One, eBlendFunc_One);
+		mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One, eBlendFunc::One);
 	}
 
 	//-----------------------------------------------------------------------
@@ -105,7 +105,7 @@ namespace hpl {
 	void cGuiMaterial_Additive::AfterRender()
 	{
 		//Not needed right?
-		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One, eBlendFunc_OneMinusSrcAlpha);
+		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One, eBlendFunc::OneMinusSrcAlpha);
 	}
 
 	//-----------------------------------------------------------------------
@@ -119,7 +119,7 @@ namespace hpl {
 	void cGuiMaterial_Modulative::BeforeRender()
 	{
 		mpLowLevelGraphics->SetBlendActive(true);
-		mpLowLevelGraphics->SetBlendFunc(eBlendFunc_DestColor, eBlendFunc_Zero);
+		mpLowLevelGraphics->SetBlendFunc(eBlendFunc::DestColor, eBlendFunc::Zero);
 	}
 
 	//-----------------------------------------------------------------------
@@ -127,7 +127,7 @@ namespace hpl {
 	void cGuiMaterial_Modulative::AfterRender()
 	{
 		//Not needed right?
-		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc_One, eBlendFunc_OneMinusSrcAlpha);
+		//mpLowLevelGraphics->SetBlendFunc(eBlendFunc::One, eBlendFunc::OneMinusSrcAlpha);
 	}
 
 	//-----------------------------------------------------------------------

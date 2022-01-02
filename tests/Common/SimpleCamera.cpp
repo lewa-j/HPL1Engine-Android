@@ -79,9 +79,9 @@ void cSimpleCamera::Update(float afFrameTime)
 	if(mpGame->GetInput()->IsTriggerd("Right")) mpCamera->MoveRight(mfSpeed * fMul);
 	if(mpGame->GetInput()->IsTriggerd("Left")) mpCamera->MoveRight(-mfSpeed * fMul);
 
-	//cVector2f vRel = mpGame->GetInput()->GetMouse()->GetRelPosition();
-	//mpCamera->AddYaw(-vRel.x * 0.003f);
-	//mpCamera->AddPitch(-vRel.y * 0.003f);
+	cVector2f vRel = mpGame->GetInput()->GetMouse()->GetRelPosition();
+	mpCamera->AddYaw(-vRel.x * 0.003f);
+	mpCamera->AddPitch(-vRel.y * 0.003f);
 
 	//Log("Input gotten: %d\n", GetApplicationTime());
 }

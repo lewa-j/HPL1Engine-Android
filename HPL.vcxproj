@@ -198,6 +198,7 @@
     <ClInclude Include="include\impl\GLSLProgram.h" />
     <ClInclude Include="include\impl\GLSLShader.h" />
     <ClInclude Include="include\impl\KeyboardSDL.h" />
+    <ClInclude Include="include\impl\LowLevelGraphicsGL.h" />
     <ClInclude Include="include\impl\LowLevelGraphicsSDL.h" />
     <ClInclude Include="include\impl\LowLevelInputSDL.h" />
     <ClInclude Include="include\impl\LowLevelPhysicsNewton.h" />
@@ -460,6 +461,7 @@
     <ClCompile Include="sources\impl\GLSLProgram.cpp" />
     <ClCompile Include="sources\impl\GLSLShader.cpp" />
     <ClCompile Include="sources\impl\KeyboardSDL.cpp" />
+    <ClCompile Include="sources\impl\LowLevelGraphicsGL.cpp" />
     <ClCompile Include="sources\impl\LowLevelGraphicsSDL.cpp" />
     <ClCompile Include="sources\impl\LowLevelInputSDL.cpp" />
     <ClCompile Include="sources\impl\LowLevelPhysicsNewton.cpp" />
