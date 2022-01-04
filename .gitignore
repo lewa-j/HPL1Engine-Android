@@ -23,3 +23,9 @@
 *.user
 android/libs/
 android/obj/
+android/.gradle/
+android/.externalNativeBuild/
+android/build
+android/local.properties
+assets/AS_DEBUG
+lib/
