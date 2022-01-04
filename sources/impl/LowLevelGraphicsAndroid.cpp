@@ -20,6 +20,7 @@
 #include "impl/AndroidBitmap2D.h"
 #include "impl/AndroidFontData.h"
 #include "impl/AndroidTexture.h"
+#include "impl/GLSLShader.h"
 #include "impl/GLSLProgram.h"
 #include "impl/VertexBufferGLES.h"
 #include "impl/GLHelpers.h"
@@ -168,16 +169,6 @@ namespace hpl
 
 		//glDisable(GL_ALPHA_TEST);
 
-		static const char* storage = getenv("EXTERNAL_STORAGE");
-		tString shadersPath = storage + tString("/hpl1/core/shaders/");
-
-		mSimpleShader = CreateGpuProgram("Simple", eGpuProgramType_Linked );
-		mSimpleShader->CreateFromFiles(shadersPath+"Simple.vs", shadersPath+"Simple.fs");
-
-		mSimpleShader->Bind();
-
-		mDefaultTexture = CreateTexture({ 1,1 }, 32, cColor(1, 1), false, eTextureType_Normal, eTextureTarget_2D);
-
 		//Show some info
 		Log("  Max texture image units: %d\n",GetCaps(eGraphicCaps_MaxTextureImageUnits));
 		Log("  Max texture coord units: %d\n",GetCaps(eGraphicCaps_MaxTextureCoordUnits));
@@ -187,6 +178,7 @@ namespace hpl
 			Log("  Max Anisotropic degree: %d\n",GetCaps(eGraphicCaps_MaxAnisotropicFiltering));
 
 	}
+
 	//-----------------------------------------------------------------------
 
 	int cLowLevelGraphicsAndroid::GetCaps(eGraphicCaps aType)
@@ -304,16 +296,6 @@ namespace hpl
 		//There is no glEnable(GL_MULTISAMPLE) in gles2
 	}
 
-	void cLowLevelGraphicsAndroid::SetGammaCorrection(float afX)
-	{
-		
-	}
-
-	float cLowLevelGraphicsAndroid::GetGammaCorrection()
-	{
-		return 1.0f;
-	}
-
 	//-----------------------------------------------------------------------
 	
 	iBitmap2D* cLowLevelGraphicsAndroid::CreateBitmap2D(const cVector2l &avSize, unsigned int alBpp)
@@ -355,9 +337,9 @@ namespace hpl
 	iTexture* cLowLevelGraphicsAndroid::CreateTexture(const cVector2l& avSize,int alBpp,cColor aFillCol,
 							bool abUseMipMaps, eTextureType aType, eTextureTarget aTarget)
 	{
-		cAndroidTexture *pTex=NULL;
+		cAndroidTexture *pTex = nullptr;
 
-		if(aType==eTextureType_RenderTarget)
+		if (aType == eTextureType_RenderTarget)
 		{
 			pTex = hplNew( cAndroidTexture, ("",/*mpPixelFormat*/nullptr,this,aType, abUseMipMaps, aTarget) );
 			pTex->Create(avSize.x, avSize.y, aFillCol);
@@ -372,24 +354,29 @@ namespace hpl
 			
 			hplDelete(pBmp);
 
-			if(bRet==false){
+			if (bRet == false){
 				hplDelete(pTex);
-				return NULL;
+				return nullptr;
 			}
 		}
 		return pTex;
 	}
 
-	iGpuProgram* cLowLevelGraphicsAndroid::CreateGpuProgram(const tString& asName, eGpuProgramType aType)
+	iGpuProgram* cLowLevelGraphicsAndroid::CreateGpuProgram(const tString& asName)
 	{
-		return hplNew( cGLSLProgram, (asName, aType) );
+		return hplNew( cGLSLProgram, (asName, this) );
+	}
+
+	iGpuShader *cLowLevelGraphicsAndroid::CreateGpuShader(const tString &asName, eGpuShaderType aType)
+	{
+		return hplNew(cGLSLShader, (asName, aType, this));
 	}
 	
 	iVertexBuffer* cLowLevelGraphicsAndroid::CreateVertexBuffer(tVertexFlag aFlags, eVertexBufferDrawType aDrawType,
 										eVertexBufferUsageType aUsageType,
 										int alReserveVtxSize,int alReserveIdxSize)
 	{
-		return hplNew( cVertexBufferGLES, (this, aFlags,aDrawType,aUsageType,alReserveVtxSize,alReserveIdxSize) );
+		return hplNew( cVertexBufferGLES, (this, aFlags, aDrawType, aUsageType, alReserveVtxSize, alReserveIdxSize) );
 	}
 
 	//-----------------------------------------------------------------------
@@ -420,36 +407,36 @@ namespace hpl
 
 	void cLowLevelGraphicsAndroid::PushMatrix(eMatrix aMtxType)
 	{
-		mMatrixStack[aMtxType].push(mMatrixStack[aMtxType].top());
+		mMatrixStack[(int)aMtxType].push(mMatrixStack[(int)aMtxType].top());
 	}
 
 	void cLowLevelGraphicsAndroid::PopMatrix(eMatrix aMtxType)
 	{
-		mMatrixStack[aMtxType].pop();
+		mMatrixStack[(int)aMtxType].pop();
 	}
 
 	void cLowLevelGraphicsAndroid::SetMatrix(eMatrix aMtxType, const cMatrixf& a_mtxA)
 	{
-		mMatrixStack[aMtxType].top() = a_mtxA;
+		mMatrixStack[(int)aMtxType].top() = a_mtxA;
 
-		UploadShaderMatrix();
+		cLowLevelGraphicsGL::SetMatrix(aMtxType, a_mtxA);
 	}
 
 	cMatrixf cLowLevelGraphicsAndroid::GetMatrix(eMatrix aMtxType)
 	{
-		return mMatrixStack[aMtxType].top();
+		return mMatrixStack[(int)aMtxType].top();
 	}
 
 	void cLowLevelGraphicsAndroid::SetIdentityMatrix(eMatrix aMtxType)
 	{
-		mMatrixStack[aMtxType].top() = cMatrixf::Identity;
+		mMatrixStack[(int)aMtxType].top() = cMatrixf::Identity;
 
-		UploadShaderMatrix();
+		cLowLevelGraphicsGL::SetIdentityMatrix(aMtxType);
 	}
 
 	void cLowLevelGraphicsAndroid::TranslateMatrix(eMatrix aMtxType, const cVector3f &avPos)
 	{
-		cMatrixf &r = mMatrixStack[aMtxType].top();
+		cMatrixf &r = mMatrixStack[(int)aMtxType].top();
 		cMatrixf m = r;
 		for(int i=0;i<4;i++)
 			r.m[i][3] = m.m[i][0] * avPos.x + m.m[i][1] * avPos.y + m.m[i][2] * avPos.z + m.m[i][3];
@@ -463,12 +450,12 @@ namespace hpl
 	void cLowLevelGraphicsAndroid::RotateMatrix(eMatrix aMtxType, const cVector3f &avRot)
 	{
 		//TODO its unused anyway
-		//mMatrixStack[aMtxType].top().Rotate(avRot);
+		//mMatrixStack[(int)aMtxType].top().Rotate(avRot);
 	}
 
 	void cLowLevelGraphicsAndroid::ScaleMatrix(eMatrix aMtxType, const cVector3f &avScale)
 	{
-		cMatrixf &r = mMatrixStack[aMtxType].top();
+		cMatrixf &r = mMatrixStack[(int)aMtxType].top();
 		cMatrixf m = r;
 		for(int i=0;i<3;i++)
 			for(int j=0;j<4;j++)
@@ -477,7 +464,7 @@ namespace hpl
 
 	void cLowLevelGraphicsAndroid::SetOrthoProjection(const cVector2f& avSize, float afMin, float afMax)
 	{
-		cMatrixf &r = mMatrixStack[eMatrix_Projection].top();
+		cMatrixf &r = mMatrixStack[(int)eMatrix::Projection].top();
 		r = cMatrixf::Identity;
 		r.m[0][0] = 2.0f / avSize.x;
 		r.m[1][1] = 2.0f / -avSize.y;
@@ -510,57 +497,14 @@ namespace hpl
 	}
 
 	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsAndroid::SetTexture(unsigned int alUnit,iTexture* apTex)
+	
+	void cLowLevelGraphicsAndroid::UnbindRenderTargetTextureGL(iTexture *apTex, int aLastTarget)
 	{
-		if(apTex == NULL){
-			apTex = mDefaultTexture;
-		}
-
-		if(apTex == mpCurrentTexture[alUnit])
-			return;
-
-		GLenum NewTarget = 0;
-		if(apTex)
-			NewTarget = GetGLTextureTargetEnum(apTex->GetTarget());
-		GLenum LastTarget = 0;
-		if(mpCurrentTexture[alUnit])
-			LastTarget = GetGLTextureTargetEnum(mpCurrentTexture[alUnit]->GetTarget());
-
-		glActiveTexture(GL_TEXTURE0 + alUnit);
-
-		glBindTexture(NewTarget, apTex->GetCurrentLowlevelHandle());
-
-		mpCurrentTexture[alUnit] = apTex;
 	}
 
-	void cLowLevelGraphicsAndroid::SetTextureEnv(eTextureParam aParam, int alVal)
+	void cLowLevelGraphicsAndroid::BindTextureGL(iTexture *apTex, int aNewTarget)
 	{
-
-	}
-
-	void cLowLevelGraphicsAndroid::SetTextureConstantColor(const cColor &aColor)
-	{
-
-	}
-
-	void cLowLevelGraphicsAndroid::SetColor(const cColor &aColor)
-	{
-
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsAndroid::DrawQuad(const tVertexVec &avVtx)
-	{
-		assert(avVtx.size() == 4);
-
-		glVertexAttribPointer(eVtxAttr_Position, 3, GL_FLOAT, false, sizeof(cVertex), &avVtx[0].pos.x);
-		glVertexAttribPointer(eVtxAttr_Color0, 4, GL_FLOAT, false, sizeof(cVertex), &avVtx[0].col.r);
-		glVertexAttribPointer(eVtxAttr_Texture0, 3, GL_FLOAT, false, sizeof(cVertex), &avVtx[0].tex.x);
-
-		uint16_t quadIndices[]{0,1,2,2,3,0};
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, quadIndices);
+		glBindTexture(aNewTarget, apTex->GetCurrentLowlevelHandle());
 	}
 
 	//-----------------------------------------------------------------------
@@ -574,23 +518,6 @@ namespace hpl
 	{
 		glFlush();
 		eglSwapBuffers(mEglDisplay, mEglSurface);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsAndroid::FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear)
-	{
-		mSimpleShader->Bind();
-		UploadShaderMatrix();
-		cLowLevelGraphicsGL::FlushTriBatch(aTypeFlags, abAutoClear);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cLowLevelGraphicsAndroid::UploadShaderMatrix()
-	{
-		cMatrixf mtx = cMath::MatrixMul(mMatrixStack[eMatrix_Projection].top(), mMatrixStack[eMatrix_ModelView].top());
-		mSimpleShader->SetMatrixf("worldViewProj", mtx);
 	}
 
 }

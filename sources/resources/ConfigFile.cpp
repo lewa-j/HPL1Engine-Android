@@ -19,6 +19,7 @@
 #include "resources/ConfigFile.h"
 #include "system/String.h"
 #include "system/LowLevelSystem.h"
+#include "system/Platform.h"
 #include "resources/FileSearcher.h"
 #include "impl/tinyXML/tinyxml.h"
 
@@ -36,7 +37,6 @@ namespace hpl {
 	{
 		msFile = asFile;
 		mpXmlDoc = hplNew( TiXmlDocument,() );
-		//mpFileSearcher = apFileSearcher;
 	}
 
 	cConfigFile::~cConfigFile()
@@ -57,7 +57,7 @@ namespace hpl {
 		#ifdef WIN32
 				FILE *pFile = _wfopen(msFile.c_str(),_W("rb"));
 		#else
-				FILE *pFile = fopen(cString::To8Char(GetPlatformPath(msFile)).c_str(),"rb");
+				FILE *pFile = fopen(cString::To8Char(cPlatform::GetPlatformPath(msFile)).c_str(),"rb");
 		#endif
 
 		bool bRet = mpXmlDoc->LoadFile(pFile);

@@ -85,7 +85,6 @@ void cLogWriter::Clear()
 
 //-----------------------------------------------------------------------
 
-
 void cLogWriter::SetFileName(const tWString& asFile)
 {
 	if (msFileName == asFile) return;
@@ -95,7 +94,6 @@ void cLogWriter::SetFileName(const tWString& asFile)
 }
 
 //-----------------------------------------------------------------------
-
 
 void cLogWriter::ReopenFile()
 {
@@ -124,6 +122,7 @@ void cScriptOutput::AddMessage(const asSMessageInfo* msg)
 
 	msMessage += sMess;
 }
+
 void cScriptOutput::Display()
 {
 	if (msMessage.size() > 500)
@@ -141,6 +140,7 @@ void cScriptOutput::Display()
 		Log(msMessage.c_str());
 	}
 }
+
 void cScriptOutput::Clear()
 {
 	msMessage = "";
@@ -266,39 +266,6 @@ void LogUpdate(const char* fmt, ...)
 
 //-----------------------------------------------------------------------
 
-cDate DateFromGMTIme(struct tm* apClock)
-{
-	cDate date;
-
-	date.seconds = apClock->tm_sec;
-	date.minutes = apClock->tm_min;
-	date.hours = apClock->tm_hour;
-	date.month_day = apClock->tm_mday;
-	date.month = apClock->tm_mon;
-	date.year = 1900 + apClock->tm_year;
-	date.week_day = apClock->tm_wday;
-	date.year_day = apClock->tm_yday;
-
-	return date;
-}
-
-//-----------------------------------------------------------------------
-
-void OpenBrowserWindow(const tWString& asURL)
-{
-#ifdef WIN32
-	ShellExecute(NULL, _W("open"), asURL.c_str(), NULL, NULL, SW_SHOWNORMAL);
-#elif defined(__linux__)
-	tString asTemp = "./openurl.sh " + cString::To8Char(asURL);
-	system(asTemp.c_str());
-#elif defined(__APPLE__)
-	tString asTemp = "open " + cString::To8Char(asURL);
-	system(asTemp.c_str());
-#endif
-}
-
-//-----------------------------------------------------------------------
-
 bool IsFileLink(const tWString& asPath)
 {
 	// Symbolic Links Not Supported under Windows
@@ -331,72 +298,6 @@ bool RenameFile(const tWString& asFrom, const tWString& asTo)
 	return false;
 #else
 	return (rename(cString::To8Char(asFrom).c_str(), cString::To8Char(asTo).c_str()) == 0);
-#endif
-}
-
-//-----------------------------------------------------------------------
-
-cDate FileModifiedDate(const tWString& asFilePath)
-{
-	struct tm* pClock;
-#ifdef WIN32
-	struct _stat attrib;
-	_wstat(asFilePath.c_str(), &attrib);
-#else
-	struct stat attrib;
-	stat(cString::To8Char(asFilePath).c_str(), &attrib);
-#endif
-
-	pClock = gmtime(&(attrib.st_mtime));	// Get the last modified time and put it into the time structure
-
-	cDate date = DateFromGMTIme(pClock);
-
-	return date;
-}
-
-//-----------------------------------------------------------------------
-
-cDate FileCreationDate(const tWString& asFilePath)
-{
-	struct tm* pClock;
-#ifdef WIN32
-	struct _stat attrib;
-	_wstat(asFilePath.c_str(), &attrib);
-#else
-	struct stat attrib;
-	stat(cString::To8Char(asFilePath).c_str(), &attrib);
-#endif
-
-	pClock = gmtime(&(attrib.st_ctime));	// Get the last modified time and put it into the time structure
-
-	cDate date = DateFromGMTIme(pClock);
-
-	return date;
-}
-
-//-----------------------------------------------------------------------
-
-tString GetPlatformPath(const tString& asFile)
-{
-#ifdef ANDROID
-	if (asFile[0] == '/' || asFile[0] == '\\')
-		return asFile;
-	static const char* storage = getenv("EXTERNAL_STORAGE");
-	return storage + tString("/hpl1/") + asFile;
-#else
-	return asFile;
-#endif
-}
-
-tWString GetPlatformPath(const tWString& asFile)
-{
-#ifdef ANDROID
-	if (asFile[0] == _W('/') || asFile[0] == _W('\\'))
-		return asFile;
-	static const char* storage = getenv("EXTERNAL_STORAGE");
-	return cString::To16Char(storage) + tWString(_W("/hpl1/")) + asFile;
-#else
-	return asFile;
 #endif
 }
 

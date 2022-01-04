@@ -181,24 +181,6 @@ namespace hpl
 		//if(gpLogWriter)	hplDelete(gpLogWriter);
 		//gpLogWriter = NULL;
 	}
-	
-	unsigned long cLowLevelSystemAndroid::GetTime()
-	{
-		return GetApplicationTime();
-	}
-
-	//-----------------------------------------------------------------------
-
-	cDate cLowLevelSystemAndroid::GetDate()
-	{
-		time_t lTime;
-		time(&lTime);
-
-		struct tm* pClock;
-		pClock = localtime(&lTime);
-
-		return DateFromGMTIme(pClock);
-	}
 
 	//-----------------------------------------------------------------------
 
@@ -236,95 +218,10 @@ namespace hpl
 
 	//-----------------------------------------------------------------------
 
-	void cLowLevelSystemAndroid::Sleep ( const unsigned int alMillisecs )
-	{
-		//TODO
-		//SDL_Delay ( alMillisecs );
-	}
-	
-	
-	void CreateMessageBoxW (eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, va_list ap)
-	{
-		wchar_t text[2048];
-
-		if (fmt == NULL)
-			return;
-		vswprintf(text, 2047, fmt, ap);
-
-		tWString sMess = _W("");
-
-		//TODO proper message box
-		sMess += asCaption;
-		sMess +=_W("\n\n");
-		sMess += text;
-		Error("%ls\n\n%ls",asCaption,text);
-	}
-
-	void CreateMessageBoxW ( eMsgBoxType eType, const wchar_t* asCaption, const wchar_t* fmt, ...)
-	{
-		va_list ap;
-
-		if (fmt == NULL)
-			return;
-		va_start(ap, fmt);
-		CreateMessageBoxW (eType, asCaption, fmt, ap);
-		va_end(ap);
-	}
-
-	void CreateMessageBoxW ( const wchar_t* asCaption, const wchar_t *fmt, ...)
-	{
-		va_list ap;
-		if (fmt == NULL)
-			return;
-		va_start(ap, fmt);
-		CreateMessageBoxW( eMsgBoxType_Default, asCaption, fmt, ap );
-		va_end(ap);
-	}
-
-	//-----------------------------------------------------------------------
-
-	tWString GetSystemSpecialPath(eSystemPath aPathType)
-	{
-		switch (aPathType)
-		{
-		case eSystemPath_Personal: {
-			return cString::To16Char(tString(gpAndroidApp->activity->externalDataPath));
-		}
-		default:
-			return _W("");
-		}
-	}
-
 	void SetWindowCaption(const tString &asName)
 	{
 		//TODO Implement
 	}
 
-	typedef long long unsigned int longtime_t;
-	unsigned long GetApplicationTime()
-	{
-		static longtime_t g_PerformanceFrequency;
-		static longtime_t g_ClockStart;
-		longtime_t CurrentTime;
-		struct timespec ts;
-
-		if( !g_PerformanceFrequency )
-		{
-			struct timespec res;
-			if( !clock_getres(CLOCK_MONOTONIC, &res) )
-				g_PerformanceFrequency = 1000000000LL/res.tv_nsec;
-		}
-		clock_gettime(CLOCK_MONOTONIC, &ts);
-		return ts.tv_sec*1000 + ts.tv_nsec/1000000;
-	}
-	
-	void CopyTextToClipboard(const tWString &asText)
-	{
-	}
-
-	tWString LoadTextFromClipboard()
-	{
-		return _W("");
-	}
 }
 

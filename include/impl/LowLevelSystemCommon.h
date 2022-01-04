@@ -59,8 +59,4 @@ private:
 	tString msMessage;
 };
 
-//------------------------------------------------------
-
-cDate DateFromGMTIme(struct tm* apClock);
-
 }

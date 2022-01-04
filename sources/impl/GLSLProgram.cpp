@@ -75,7 +75,7 @@ namespace hpl {
 		glGetProgramiv(mlHandle, GL_LINK_STATUS, &lStatus);
 		if (lStatus == GL_FALSE)
 		{
-			Error("Failed to link GLSL program %s\n", msName.c_str());
+			Error("Failed to link GLSL program %s (%s, %s)\n", msName.c_str(), mpShader[0]->GetName().c_str(), mpShader[1]->GetName().c_str());
 			LogProgramInfoLog();
 			return false;
 		}

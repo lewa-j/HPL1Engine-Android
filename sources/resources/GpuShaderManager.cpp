@@ -83,7 +83,7 @@ namespace hpl {
 		{
 			pShader = mpLowLevelGraphics->CreateGpuShader(asName, aType);
 
-			if(pShader->CreateFromFile(cString::To16Char(sPath))==false)
+			if(pShader->CreateFromFile(cString::To16Char(sPath)) == false)
 			{
 				Error("Couldn't create program '%s'\n",asName.c_str());
 				hplDelete(pShader);

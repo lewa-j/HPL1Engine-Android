@@ -1,3 +1,4 @@
+LOCAL_SHORT_COMMANDS := true
 LOCAL_PATH:= $(call my-dir)/../..
 
 include $(CLEAR_VARS)
@@ -16,6 +17,6 @@ LOCAL_LDFLAGS :=
 
 include $(BUILD_SHARED_LIBRARY)
 
-include $(LOCAL_PATH)/android/jni/engine.mk
+include $(LOCAL_PATH)/engine.mk
 
 

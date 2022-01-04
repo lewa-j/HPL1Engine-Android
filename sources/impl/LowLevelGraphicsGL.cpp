@@ -62,7 +62,7 @@ namespace hpl
 
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-		glClearDepth(1.0f);//Values buffer is cleared with
+		SetClearDepth(1.0);//Values buffer is cleared with
 		glEnable(GL_DEPTH_TEST); //enable depth testing
 		glDepthFunc(GL_LEQUAL); //function to do depth test with
 
@@ -272,7 +272,7 @@ namespace hpl
 	void cLowLevelGraphicsGL::SetTexture(unsigned int alUnit, iTexture *apTex)
 	{
 		//Bind default white texture if NULL
-		if (apTex == NULL)
+		if (apTex == nullptr)
 			apTex = mDefaultTexture;
 
 		if (apTex == mpCurrentTexture[alUnit])

@@ -43,8 +43,8 @@ namespace hpl
 		void SetVsyncActive(bool abX) override;
 		void SetMultisamplingActive(bool abX) override;
 		int GetMultisampling() override { return mlMultisampling; }
-		void SetGammaCorrection(float afX) override;
-		float GetGammaCorrection() override;
+		void SetGammaCorrection(float afX) override {}
+		float GetGammaCorrection() override { return 1.0f; }
 
 		void SetClipPlane(int alIdx, const cPlanef &aPlane) override {}
 		cPlanef GetClipPlane(int alIdx, const cPlanef &aPlane) override { return{}; }
@@ -95,18 +95,14 @@ namespace hpl
 		void SetAlphaTestFunc(eAlphaTestFunc aFunc,float afRef) override;
 
 		// TEXTURE
-		void SetTexture(unsigned int alUnit,iTexture* apTex) override;
-		void SetTextureEnv(eTextureParam aParam, int alVal) override;
-		void SetTextureConstantColor(const cColor &aColor) override;
-
-		void SetColor(const cColor &aColor) override;
+		void SetTextureEnv(eTextureParam aParam, int alVal) override {}
+		void SetTextureConstantColor(const cColor &aColor) override {}
 
 		// POLYGONS
 		void DrawRect(const cVector2f &avPos, const cVector2f &avSize, float afZ) override {}
 		void DrawTri(const tVertexVec &avVtx) override {}
 		void DrawTri(const cVertex *avVtx) override {}
 
-		void DrawQuad(const tVertexVec &avVtx) override;
 		void DrawQuad(const tVertexVec &avVtx, const cColor aCol) override {}
 		void DrawQuad(const tVertexVec &avVtx, const float afZ) override {}
 		void DrawQuad(const tVertexVec &avVtx, const float afZ, const cColor &aCol) override {}
@@ -114,16 +110,12 @@ namespace hpl
 
 		void AddTexCoordToBatch(unsigned int alUnit, const cVector3f *apCoord) override {}
 		void SetBatchTextureUnitActive(unsigned int alUnit, bool abActive) override {}
-		void FlushTriBatch(tVtxBatchFlag aTypeFlags, bool abAutoClear = true) override;
 
 		//PRIMITIVES
-		void DrawLine(const cVector3f& avBegin, const cVector3f& avEnd, cColor aCol) override {}
 		void DrawBoxMaxMin(const cVector3f& avMax, const cVector3f& avMin, cColor aCol) override {}
-		void DrawSphere(const cVector3f& avPos, float afRadius, cColor aCol) override {}
 
 		void DrawLine2D(const cVector2f& avBegin, const cVector2f& avEnd, float afZ, cColor aCol) override {}
 		void DrawLineRect2D(const cRect2f& aRect, float afZ, cColor aCol) override {}
-		void DrawLineCircle2D(const cVector2f& avCenter, float afRadius, float afZ, cColor aCol) override {}
 
 		void DrawFilledRect2D(const cRect2f& aRect, float afZ, cColor aCol) override {}
 
@@ -136,6 +128,9 @@ namespace hpl
 		void SwapBuffers() override;
 		
 		//Platform specific
+		virtual void BindTextureGL(iTexture *apTex, int aNewTarget) override;
+		virtual void UnbindRenderTargetTextureGL(iTexture *apTex, int aLastTarget) override;
+		
 		iBitmap2D* CreateBitmap2DFromData(uint8_t *data,int w, int h, int n,const tString& asType);
 		void SetupGL();
 
@@ -154,13 +149,6 @@ namespace hpl
 
 		//matrix stack
 		std::stack<cMatrixf> mMatrixStack[eMatrix_LastEnum];
-
-		//Batch helper
-		void SetUpBatchArrays();
-		void SetVtxBatchStates(tVtxBatchFlag aFlags);
-
-		iGpuProgram *mSimpleShader = nullptr;
-		iTexture *mDefaultTexture = nullptr;
 
 		//Rendertarget variables
 		iTexture* mpRenderTarget = nullptr;

@@ -12,6 +12,8 @@
 #include <impl/SDLGameSetup.h>
 #endif
 
+#include "graphics/GPUProgram.h"
+#include "graphics/GPUShader.h"
 #include "SceneCamera.h"
 
 using namespace hpl;
@@ -31,6 +33,8 @@ public:
 
 		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_DrawNormals | eRendererDebugFlag_DrawTangents);
 		//gpGame->GetGraphics()->GetRenderer3D()->SetDebugFlags(eRendererDebugFlag_DrawBoundingBox);
+		iGpuProgram::SetLogDebugInformation(true);
+		iGpuShader::SetLogDebugInformation(true);
 
 		mpLowLevelGraphics = gpGame->GetGraphics()->GetLowLevel();
 

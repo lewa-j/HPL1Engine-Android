@@ -2,7 +2,7 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := angelscript
-LOCAL_SRC_FILES := dependencies/$(TARGET_ARCH_ABI)/libangelscript.a
+LOCAL_SRC_FILES := ../dependencies/$(TARGET_ARCH_ABI)/libangelscript.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 #include $(CLEAR_VARS)
@@ -18,6 +18,7 @@ LOCAL_SRC_FILES := sources/impl/LowLevelGraphicsAndroid.cpp \
 sources/impl/LowLevelInputAndroid.cpp \
 sources/impl/LowLevelResourcesAndroid.cpp \
 sources/impl/LowLevelSystemAndroid.cpp \
+sources/impl/PlatformAndroid.cpp \
 sources/impl/LowLevelSystemCommon.cpp \
 sources/impl/LowLevelPhysicsNewton.cpp \
 sources/impl/AndroidBitmap2D.cpp \
@@ -34,6 +35,8 @@ sources/impl/PhysicsJointBallNewton.cpp \
 sources/impl/PhysicsJointHingeNewton.cpp \
 sources/impl/PhysicsJointScrewNewton.cpp \
 sources/impl/PhysicsJointSliderNewton.cpp \
+sources/impl/LowLevelGraphicsGL.cpp \
+sources/impl/GLSLShader.cpp \
 sources/impl/GLSLProgram.cpp \
 sources/impl/VertexBufferGLES.cpp \
 sources/impl/GLHelpers.cpp \
@@ -66,6 +69,7 @@ sources/graphics/BoneState.cpp \
 sources/graphics/Color.cpp \
 sources/graphics/FontData.cpp \
 sources/graphics/GfxObject.cpp \
+sources/graphics/GPUShader.cpp \
 sources/graphics/GPUProgram.cpp \
 sources/graphics/Graphics.cpp \
 sources/graphics/GraphicsDrawer.cpp \
@@ -84,8 +88,6 @@ sources/graphics/Material_DiffuseAdditive2D.cpp \
 sources/graphics/Material_DiffuseAlpha2D.cpp \
 sources/graphics/Material_DiffuseSpec.cpp \
 sources/graphics/Material_EnvMap_Reflect.cpp \
-sources/graphics/Material_Fallback01_BaseLight.cpp \
-sources/graphics/Material_Fallback02_BaseLight.cpp \
 sources/graphics/Material_Flat.cpp \
 sources/graphics/Material_FontNormal.cpp \
 sources/graphics/Material_Modulative.cpp \
@@ -166,7 +168,7 @@ sources/resources/FileSearcher.cpp \
 sources/resources/FontManager.cpp \
 sources/resources/FrameBitmap.cpp \
 sources/resources/FrameTexture.cpp \
-sources/resources/GpuProgramManager.cpp \
+sources/resources/GpuShaderManager.cpp \
 sources/resources/ImageEntityManager.cpp \
 sources/resources/ImageManager.cpp \
 sources/resources/LanguageFile.cpp \
@@ -243,7 +245,7 @@ else
 $(warning release build)
 LOCAL_CPPFLAGS += -DNDEBUG
 endif
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/include $(LOCAL_PATH)/dependencies
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/include $(LOCAL_PATH)/../dependencies/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 #LOCAL_EXPORT_LDFLAGS :=
 LOCAL_EXPORT_LDLIBS := -lEGL -lGLESv2

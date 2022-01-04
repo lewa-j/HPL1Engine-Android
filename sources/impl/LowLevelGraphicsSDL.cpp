@@ -725,56 +725,7 @@ namespace hpl
 	}
 
 	//-----------------------------------------------------------------------
-#if 0
-	void cLowLevelGraphicsSDL::SetTexture(unsigned int alUnit,iTexture* apTex)
-	{
-		if (apTex == mpCurrentTexture[alUnit]) return;
 
-		GLenum NewTarget = 0;
-		if(apTex)
-			NewTarget = GetGLTextureTargetEnum(apTex->GetTarget());
-		GLenum LastTarget=0;
-		if(mpCurrentTexture[alUnit])
-			LastTarget = GetGLTextureTargetEnum(mpCurrentTexture[alUnit]->GetTarget());
-
-		
-		glActiveTexture(GL_TEXTURE0 + alUnit);
-
-		//If the current texture in this unit is a render target, unbind it.
-		if(mpCurrentTexture[alUnit]){
-			if(mpCurrentTexture[alUnit]->GetTextureType() == eTextureType_RenderTarget)
-			{
-
-			}
-		}
-
-		//Disable this unit if NULL
-		if(apTex == NULL)
-		{
-			glDisable(LastTarget);
-			//glBindTexture(LastTarget,0);
-		}
-		//Enable the unit, set the texture handle and bind the pbuffer
-		else
-		{
-			if(NewTarget != LastTarget) glDisable(LastTarget);
-
-			cSDLTexture *pSDLTex = static_cast<cSDLTexture*> (apTex);
-
-			glBindTexture(NewTarget, pSDLTex->GetTextureHandle());
-			glEnable(NewTarget);
-
-			//if it is a render target we need to do some more binding.
-			if(pSDLTex->GetTextureType() == eTextureType_RenderTarget)
-			{
-				cPBuffer* pBuffer = pSDLTex->GetPBuffer();
-				pBuffer->Bind();
-			}
-		}
-
-		mpCurrentTexture[alUnit] = apTex;
-	}
-#endif
 	void cLowLevelGraphicsSDL::UnbindRenderTargetTextureGL(iTexture *apTex, int aLastTarget)
 	{
 		cSDLTexture *pSDLTex = static_cast<cSDLTexture *>(apTex);

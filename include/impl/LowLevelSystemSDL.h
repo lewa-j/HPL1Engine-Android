@@ -37,17 +37,10 @@ namespace hpl
 		cLowLevelSystemSDL();
 		~cLowLevelSystemSDL();
 
-		void SetWindowCaption(const tString &asName);
+		iScript* CreateScript(const tString& asName) override;
 
-		unsigned long GetTime();
-		cDate GetDate();
-
-		iScript* CreateScript(const tString& asName);
-
-		bool AddScriptFunc(const tString& asFuncDecl, void* pFunc, int callConv);
-		bool AddScriptVar(const tString& asVarDecl, void *pVar);
-
-		void Sleep ( const unsigned int alMillisecs );
+		bool AddScriptFunc(const tString& asFuncDecl, void* pFunc, int callConv) override;
+		bool AddScriptVar(const tString& asVarDecl, void *pVar) override;
 
 	private:
 		asIScriptEngine *mpScriptEngine;

@@ -437,7 +437,7 @@ namespace hpl {
 	{
 		///////////////////////////////////////////
 		//Load the Z pass program
-		mpZPassP = apGraphics->CreateGpuProgramFromShaders("ZPass", "Diffuse_Color.vert", "Diffuse_Color.vert");
+		mpZPassP = apGraphics->CreateGpuProgramFromShaders("ZPass", "Diffuse_Color.vert", "Diffuse_Color.frag");
 
 		///////////////////////////////////////////
 		//More programs

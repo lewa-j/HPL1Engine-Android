@@ -4,6 +4,8 @@
 
 namespace hpl
 {
+	class cGLSLProgram;
+	
 	class cLowLevelGraphicsGL : public iLowLevelGraphics
 	{
 	public:
@@ -157,7 +159,6 @@ namespace hpl
 		//Texture
 		iTexture *mpCurrentTexture[MAX_TEXTUREUNITS] = {nullptr};
 
-		friend class cGLSLProgram;
 		cGLSLProgram *mSimpleShader = nullptr;
 		iTexture *mDefaultTexture = nullptr;
 
@@ -166,5 +167,7 @@ namespace hpl
 		//Batch helper
 		void SetUpBatchArrays();
 		void SetVtxBatchStates(tVtxBatchFlag aFlags);
+		
+		friend class cGLSLProgram;
 	};
 };
