@@ -183,100 +183,106 @@ namespace hpl
 
 	int cLowLevelGraphicsAndroid::GetCaps(eGraphicCaps aType)
 	{
-		switch(aType)
+		switch (aType)
 		{
-		//Texture Rectangle
+			//Texture Rectangle
 		case eGraphicCaps_TextureTargetRectangle:
-			{
-				return 0;//ARB_texture_rectangle
-			}
+		{
+			return 0;//ARB_texture_rectangle
+		}
 
 		//Vertex Buffer Object
 		case eGraphicCaps_VertexBufferObject:
-			{
-				return 1;
-			}
+		{
+			return 1;
+		}
 
 		//Two Sided Stencil
 		case eGraphicCaps_TwoSideStencil:
-			{
-				return 1;
-			}
+		{
+			return 1;
+		}
 
 		//Max Texture Image Units
 		case eGraphicCaps_MaxTextureImageUnits:
-			{
-				//DEBUG:
-				//return 2;
+		{
+			//DEBUG:
+			//return 2;
 
-				int lUnits;
-				glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS,(GLint *)&lUnits);
-				return lUnits;
-			}
+			int lUnits;
+			glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, (GLint *)&lUnits);
+			return lUnits;
+		}
 
 		//Max Texture Coord Units
 		case eGraphicCaps_MaxTextureCoordUnits:
-			{
-				int lUnits;
-				glGetIntegerv(GL_MAX_VERTEX_ATTRIBS,(GLint *)&lUnits);
-				return lUnits;
-			}
+		{
+			int lUnits;
+			glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, (GLint *)&lUnits);
+			return lUnits;
+		}
 		//Texture Anisotropy
 		case eGraphicCaps_AnisotropicFiltering:
-			{
-				if(GLAD_GL_EXT_texture_filter_anisotropic) return 1;
-				else return 0;
-			}
+		{
+			if (GLAD_GL_EXT_texture_filter_anisotropic) return 1;
+			else return 0;
+		}
 
 		//Texture Anisotropy
 		case eGraphicCaps_MaxAnisotropicFiltering:
-			{
-				if(!GLAD_GL_EXT_texture_filter_anisotropic) return 0;
+		{
+			if (!GLAD_GL_EXT_texture_filter_anisotropic) return 0;
 
-				float fMax;
-				glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&fMax);
-				return (int)fMax;
-			}
+			float fMax;
+			glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fMax);
+			return (int)fMax;
+		}
 
 		//Multisampling
 		case eGraphicCaps_Multisampling:
-			{
-				return 1;
-			}
+		{
+			return 1;
+		}
 
 		//GL Vertex program
 		case eGraphicCaps_GL_VertexProgram:
-			{
-				//Debbug:
-				//return 0;
-				return 1;
-			}
+		{
+			//Debbug:
+			//return 0;
+			return 1;
+		}
 
 		//GL Fragment program
 		case eGraphicCaps_GL_FragmentProgram:
-			{
-				//Debbug:
-				//return 0;
-				return 1;
-			}
-		
+		{
+			//Debbug:
+			//return 0;
+			return 1;
+		}
+
 		//GL NV register combiners
 		case eGraphicCaps_GL_NVRegisterCombiners:
-			{
-				return 0;
-			}
+		{
+			return 0;
+		}
 
 		//GL NV register combiners Max stages
 		case eGraphicCaps_GL_NVRegisterCombiners_MaxStages:
-			{
-				return 0;
-			}
+		{
+			return 0;
+		}
 
 		//GL ATI Fragment Shader
 		case eGraphicCaps_GL_ATIFragmentShader:
-			{
-				return 0;
-			}
+		{
+			return 0;
+		}
+
+		case eGraphicsCaps_GL_AlphaTest:
+		{
+			if (GLAD_GL_QCOM_alpha_test) return 1;
+			else return 0;
+		}
 
 		default:
 			return 0;
@@ -486,14 +492,21 @@ namespace hpl
 
 	void cLowLevelGraphicsAndroid::SetAlphaTestActive(bool abX)
 	{
-		//TODO QCOM extension and shader emulation
-		//if(abX) glEnable(GL_ALPHA_TEST);
-		//else glDisable(GL_ALPHA_TEST);
+		if (GLAD_GL_QCOM_alpha_test)
+		{
+			if (abX) glEnable(GL_ALPHA_TEST_QCOM);
+			else glDisable(GL_ALPHA_TEST_QCOM);
+		}
+		//TODO shader emulation
 	}
 
 	void cLowLevelGraphicsAndroid::SetAlphaTestFunc(eAlphaTestFunc aFunc,float afRef)
 	{
-		//glAlphaFunc(GetGLAlphaTestFuncEnum(aFunc),afRef);
+		if (GLAD_GL_QCOM_alpha_test)
+		{
+			glAlphaFuncQCOM(GetGLAlphaTestFuncEnum(aFunc), afRef);
+		}
+		//TODO shader emulation
 	}
 
 	//-----------------------------------------------------------------------

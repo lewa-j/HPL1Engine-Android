@@ -368,6 +368,11 @@ namespace hpl
 			{
 				return GLAD_GL_ATI_fragment_shader;
 			}
+
+			case eGraphicsCaps_GL_AlphaTest:
+			{
+				return true;
+			}
 		}
 
 		return 0;

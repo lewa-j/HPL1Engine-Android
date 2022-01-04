@@ -153,14 +153,14 @@ namespace hpl {
 		void SetTangents(bool abX){ mbTangents = abX;}
 
 	protected:
-		tVertexFlag mVertexFlags;
+		tVertexFlag mVertexFlags = 0;
 		eVertexBufferDrawType mDrawType;
 		eVertexBufferUsageType mUsageType;
-		iLowLevelGraphics* mpLowLevelGraphics;
+		iLowLevelGraphics* mpLowLevelGraphics = nullptr;
 
-		int mlElementNum;
+		int mlElementNum = 0;
 
-		bool mbTangents;
+		bool mbTangents = false;
 	};
 
 };

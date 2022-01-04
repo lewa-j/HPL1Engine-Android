@@ -260,7 +260,7 @@ namespace hpl {
 					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 3);
 					mpLowLevelGraphics->AddIndexToBatch(lIdxAdd + 0);
 				}
-				lIdxAdd+=(int)pObj->mpObject->GetVertexVec()->size();
+				lIdxAdd += (int)pObj->mpObject->GetVertexVec()->size();
 
 				pPrevMat = pMat;
 				ObjectIt++;
@@ -280,7 +280,7 @@ namespace hpl {
 					pPrevMat->GetTexture(eMaterialTexture_Diffuse)
 				);
 
-			lIdxAdd =0;
+			lIdxAdd = 0;
 
 			do
 			{
@@ -306,13 +306,13 @@ namespace hpl {
 												bool abAddToList)
 	{
 		cResourceImage* pImage = mpResources->GetImageManager()->CreateImage(asFileName);
-		if(pImage==NULL){
+		if (pImage == NULL) {
 			FatalError("Couldn't load image '%s'!\n", asFileName.c_str());
 			return NULL;
 		}
 
 		iMaterial* pMat = mpMaterialHandler->Create(asMaterialName, eMaterialPicture_Image);
-		if(pMat==NULL){
+		if (pMat == NULL) {
 			FatalError("Couldn't create material '%s'!\n", asMaterialName.c_str());
 			return NULL;
 		}
