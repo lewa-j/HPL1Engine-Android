@@ -61,6 +61,7 @@
 #include "graphics/Mesh2d.h"
 #include "graphics/FontData.h"
 #include "graphics/Texture.h"
+#include "graphics/GPUShader.h"
 #include "graphics/GPUProgram.h"
 #include "graphics/ImageEntityData.h"
 #include "graphics/VertexBuffer.h"
