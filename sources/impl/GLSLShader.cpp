@@ -114,12 +114,9 @@ namespace hpl{
 			{
 				Error("Failed to compile GLSL shader '%s'!\n",cString::To8Char(GetFullPath()).c_str());
 				Log("Shader code:\n-------------------\n");
-				
 				LogShaderCode(apStringData);
-	            
-				
+
 				Log("---------------------\n");
-				Log("Compile log:\n");
 				LogShaderInfoLog();
 			}
 			return false;
@@ -129,12 +126,10 @@ namespace hpl{
 		//If debug is on, then show code + compile log
 		if(mbDebugInfo)
 		{
-			Log("Shader '%s' code:\n-------------------\n", msName.c_str());
-
+			//Log("Shader '%s' code:\n-------------------\n", msName.c_str());
 			//LogShaderCode(apStringData);
 
 			//Log("---------------------\n");
-			Log("Compile log:\n");
 			LogShaderInfoLog();
 		}
 
@@ -162,6 +157,7 @@ namespace hpl{
 		{
 			infoLog = (char *)hplMalloc(infologLength);
 			glGetShaderInfoLog(mlHandle, infologLength, &charsWritten, infoLog);
+			Log("Compile log:\n");
 			Log("---------------------\n");
 			Log("%s\n",infoLog);
 			Log("---------------------\n");
