@@ -32,4 +32,3 @@ void main()
 	gl_FragColor.rgb = diffuse * dot(lightVec, bumpVec.xyz) * v_color.rgb * spotColor.rgb + specular;
 	gl_FragColor.rgb *= attenuation * rejectNeg;
 }
-
