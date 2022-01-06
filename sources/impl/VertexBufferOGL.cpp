@@ -321,6 +321,8 @@ namespace hpl {
 	{
 		int idx = cMath::Log2ToInt((int)aType);
 
+		if (mvVertexArray[idx].empty())
+			return nullptr;
 		return &mvVertexArray[idx][0];
 	}
 
@@ -328,6 +330,9 @@ namespace hpl {
 
 	unsigned int* cVertexBufferOGL::GetIndices()
 	{
+		if (mvIndexArray.empty())
+			return nullptr;
+
 		return &mvIndexArray[0];
 	}
 

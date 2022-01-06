@@ -1455,6 +1455,9 @@ namespace hpl {
 												tColladaTextureVec &avColladaTextures,
 												tColladaImageVec &avColladaImages)
 	{
+		if (apGeom->mvVertexVec.empty())
+			return nullptr;
+
 		//Get the settings "in the name"
 		tStringVec vParams;
 		tString sSepp = "_";

@@ -1271,7 +1271,7 @@ namespace hpl {
 
 	void cString::FloatStringToArray(float *apArray, const char* apString,int alSize)
 	{
-		char vTempChar[20];
+		char vTempChar[32];
 		int lTempCharCount=0;
 
 		int lArrayCount=0;

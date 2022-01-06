@@ -167,7 +167,7 @@ namespace hpl
 		//Create the VBO vertex arrays
 		for (int i = 0; i < klNumOfVertexFlags; i++)
 		{
-			if (mVertexFlags & kvVertexFlags[i])
+			if (mVertexFlags & kvVertexFlags[i] && mvVertexArray[i].size())
 			{
 				glGenBuffers(1, (GLuint *)&mvArrayHandle[i]);
 				glBindBuffer(GL_ARRAY_BUFFER, mvArrayHandle[i]);
@@ -184,7 +184,8 @@ namespace hpl
 		//Create the VBO index array
 		glGenBuffers(1, (GLuint *)&mlElementHandle);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mlElementHandle);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, GetIndexNum()*sizeof(unsigned int),
+		if (mvIndexArray.size())
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, GetIndexNum()*sizeof(unsigned int),
 														&mvIndexArray[0], usageType);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
@@ -204,7 +205,7 @@ namespace hpl
 		//Create the VBO arrays
 		for (int i = 0; i < klNumOfVertexFlags; i++)
 		{
-			if((mVertexFlags & kvVertexFlags[i]) && (aTypes & kvVertexFlags[i]))
+			if((mVertexFlags & kvVertexFlags[i]) && (aTypes & kvVertexFlags[i]) && mvVertexArray[i].size())
 			{
 				glBindBuffer(GL_ARRAY_BUFFER, mvArrayHandle[i]);
 
@@ -264,6 +265,9 @@ namespace hpl
 
 	void cVertexBufferGLES::Transform(const cMatrixf &a_mtxTransform)
 	{
+		if (mvVertexArray[cMath::Log2ToInt((int)eVertexFlag_Position)].empty())
+			return;
+
 		float *pPosArray = GetArray(eVertexFlag_Position);
 		float *pNormalArray = GetArray(eVertexFlag_Normal);
 		float *pTangentArray = NULL;
@@ -372,7 +376,8 @@ namespace hpl
 	float* cVertexBufferGLES::GetArray(tVertexFlag aType)
 	{
 		int idx = cMath::Log2ToInt((int)aType);
-
+		if (mvVertexArray[idx].empty())
+			return nullptr;
 		return &mvVertexArray[idx][0];
 	}
 
@@ -380,6 +385,8 @@ namespace hpl
 
 	unsigned int* cVertexBufferGLES::GetIndices()
 	{
+		if (mvIndexArray.empty())
+			return nullptr;
 		return &mvIndexArray[0];
 	}
 

@@ -499,7 +499,7 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iVertexBuffer * cMeshLoaderCollada::CreateVertexBuffer(cColladaGeometry & aGeometry,
+	iVertexBuffer * cMeshLoaderCollada::CreateVertexBuffer(cColladaGeometry &aGeometry,
 		eVertexBufferUsageType aUsageType)
 		//,tColladaExtraVtxListVec &vExtraVtxVec)
 	{
@@ -519,11 +519,8 @@ namespace hpl {
 			eVertexBufferDrawType_Tri, aUsageType,
 			(int)aGeometry.mvVertexVec.size(), (int)aGeometry.mvIndexVec.size());
 
-		pVtxBuff->SetTangents(true);
-		pVtxBuff->ResizeArray(eVertexFlag_Texture1,(int)aGeometry.mvTangents.size());
-
 		//Add vertices
-		for(size_t j=0; j<aGeometry.mvVertexVec.size();j++)
+		for (size_t j = 0; j < aGeometry.mvVertexVec.size(); j++)
 		{
 			pVtxBuff->AddVertex(eVertexFlag_Position,aGeometry.mvVertexVec[j].pos);
 			pVtxBuff->AddVertex(eVertexFlag_Normal,aGeometry.mvVertexVec[j].norm);
@@ -533,8 +530,14 @@ namespace hpl {
 		}
 
 		//Add tangents
-		memcpy(pVtxBuff->GetArray(eVertexFlag_Texture1),&aGeometry.mvTangents[0],
-				aGeometry.mvTangents.size()*sizeof(float));
+		if (aGeometry.mvTangents.size())
+		{
+			pVtxBuff->SetTangents(true);
+			pVtxBuff->ResizeArray(eVertexFlag_Texture1, (int)aGeometry.mvTangents.size());
+
+			memcpy(pVtxBuff->GetArray(eVertexFlag_Texture1), &aGeometry.mvTangents[0],
+				aGeometry.mvTangents.size() * sizeof(float));
+		}
 
 		//Add indices
 		for(size_t j=0; j<aGeometry.mvIndexVec.size();j++)
@@ -550,8 +553,6 @@ namespace hpl {
 
 		return pVtxBuff;
 	}
-
-
 
 	//-----------------------------------------------------------------------
 
