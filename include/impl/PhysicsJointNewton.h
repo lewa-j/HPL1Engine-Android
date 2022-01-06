@@ -87,10 +87,10 @@ namespace hpl {
 		///////////////////////
 
 	protected:
-		NewtonJoint* mpNewtonJoint;
-		NewtonWorld* mpNewtonWorld;
-		NewtonBody* mpNewtonParentBody;
-		NewtonBody* mpNewtonChildBody;
+		NewtonJoint* mpNewtonJoint = nullptr;
+		NewtonWorld* mpNewtonWorld = nullptr;
+		NewtonBody* mpNewtonParentBody = nullptr;
+		NewtonBody* mpNewtonChildBody = nullptr;
 	};
 };
 #endif // HPL_PHYSICS_JOINT_NEWTON_H

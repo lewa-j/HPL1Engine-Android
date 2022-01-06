@@ -241,8 +241,8 @@ namespace hpl {
 	protected:
 		tString msName;
 
-		iPhysicsBody *mpParentBody;
-		iPhysicsBody *mpChildBody;
+		iPhysicsBody *mpParentBody = nullptr;
+		iPhysicsBody *mpChildBody = nullptr;
 		iPhysicsWorld *mpWorld;
 
 		cMatrixf m_mtxParentBodySetup;
@@ -262,7 +262,7 @@ namespace hpl {
 		cJointLimitEffect mMaxLimit;
 		cJointLimitEffect mMinLimit;
 
-		int mlSpeedCount;
+		int mlSpeedCount = 0;
 
 		cMatrixf m_mtxPrevChild;
 		cMatrixf m_mtxPrevParent;
@@ -289,15 +289,15 @@ namespace hpl {
 		float mfLimitAutoSleepDist;
 		int mlLimitAutoSleepNumSteps;
 
-		cSoundEntity *mpSound;
+		cSoundEntity *mpSound = nullptr;
 		bool mbHasCollided;
 
-		iPhysicsJointCallback *mpCallback;
+		iPhysicsJointCallback *mpCallback = nullptr;
 		bool mbAutoDeleteCallback;
 
 		int mlLimitStepCount;
 
-		void *mpUserData;
+		void *mpUserData = nullptr;
 
 		static void CheckLimitAutoSleep(iPhysicsJoint *apJoint, const float afMin, const float afMax,
 										const float afDist);
