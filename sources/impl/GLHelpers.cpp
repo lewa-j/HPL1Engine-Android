@@ -33,11 +33,11 @@ namespace hpl
 	{
 		switch(aFormat)
 		{
-		case eColorDataFormat_RGB:		return GL_RGB;
-		case eColorDataFormat_RGBA:		return GL_RGBA;
-		case eColorDataFormat_ALPHA:	return GL_ALPHA;
-		case eColorDataFormat_BGR:		return GL_BGR;
-		case eColorDataFormat_BGRA:		return GL_BGRA;
+		case eColorDataFormat::RGB:		return GL_RGB;
+		case eColorDataFormat::RGBA:	return GL_RGBA;
+		case eColorDataFormat::ALPHA:	return GL_ALPHA;
+		case eColorDataFormat::BGR:		return GL_BGR;
+		case eColorDataFormat::BGRA:	return GL_BGRA;
 		};
 
 		return 0;

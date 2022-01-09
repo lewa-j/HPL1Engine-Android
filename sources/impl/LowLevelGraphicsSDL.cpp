@@ -735,7 +735,7 @@ namespace hpl
 	{
 		cSDLTexture *pSDLTex = static_cast<cSDLTexture *>(apTex);
 
-		glBindTexture(aLastTarget, pSDLTex->GetTextureHandle());
+		glBindTexture(aLastTarget, pSDLTex->GetCurrentLowlevelHandle());
 		cPBuffer *pBuffer = pSDLTex->GetPBuffer();
 		pBuffer->UnBind();
 	}
@@ -744,7 +744,7 @@ namespace hpl
 	{
 		cSDLTexture *pSDLTex = static_cast<cSDLTexture *> (apTex);
 
-		glBindTexture(aNewTarget, pSDLTex->GetTextureHandle());
+		glBindTexture(aNewTarget, pSDLTex->GetCurrentLowlevelHandle());
 		glEnable(aNewTarget);
 
 		//if it is a render target we need to do some more binding.

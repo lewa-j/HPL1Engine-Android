@@ -19,10 +19,7 @@
 #include "impl/SDLTexture.h"
 #include "impl/SDLBitmap2D.h"
 #include "impl/GLHelpers.h"
-
-#include "system/LowLevelSystem.h"
 #include "math/Math.h"
-#include "math.h"
 
 namespace hpl {
 
@@ -32,44 +29,26 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	cSDLTexture::cSDLTexture(const tString &asName,iPixelFormat *apPxlFmt,iLowLevelGraphics* apLowLevelGraphics,
-								eTextureType aType, bool abUseMipMaps, eTextureTarget aTarget,
-								bool abCompress)
-	: iTexture(asName,"OGL",apPxlFmt,apLowLevelGraphics,aType,abUseMipMaps, aTarget, abCompress)
+	cSDLTexture::cSDLTexture(const tString &asName, iPixelFormat *apPxlFmt, iLowLevelGraphics *apLowLevelGraphics,
+		eTextureType aType, bool abUseMipMaps, eTextureTarget aTarget,
+		bool abCompress)
+		: cTextureGL(asName, apPxlFmt, apLowLevelGraphics, aType, abUseMipMaps, aTarget, abCompress)
 	{
-		mbContainsData = false;
+		mpPBuffer = nullptr;
 
-		mpPBuffer = NULL;
-
-		if(aType==eTextureType_RenderTarget)
+		if (aType == eTextureType_RenderTarget)
 		{
-			mpPBuffer = hplNew( cPBuffer, (mpLowLevelGraphics,true) );
+			mpPBuffer = hplNew(cPBuffer, (mpLowLevelGraphics, true));
 		}
 
-		//Cubemap does not like mipmaps
-		if(aTarget == eTextureTarget_CubeMap) mbUseMipMaps = false;
-
-		mpGfxSDL = static_cast<cLowLevelGraphicsSDL*>(mpLowLevelGraphics);
-
-		mlTextureIndex = 0;
-		mfTimeCount =0;
-
-		mfTimeDir = 1;
-
-		mlBpp = 0;
-
+		mpGfxSDL = static_cast<cLowLevelGraphicsSDL *>(mpLowLevelGraphics);
 	}
 
 	cSDLTexture::~cSDLTexture()
 	{
-		if(mpPBuffer)hplDelete(mpPBuffer);
-
-		for(size_t i=0; i<mvTextureHandles.size(); ++i)
-		{
-			glDeleteTextures(1,(GLuint *)&mvTextureHandles[i]);
-		}
+		if (mpPBuffer)
+			hplDelete(mpPBuffer);
 	}
-
 
 	//-----------------------------------------------------------------------
 
@@ -79,474 +58,51 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	bool cSDLTexture::CreateFromBitmap(iBitmap2D* pBmp)
-	{
-		//Generate handles
-		if(mvTextureHandles.empty())
-		{
-			mvTextureHandles.resize(1);
-			glGenTextures(1,(GLuint *)&mvTextureHandles[0]);
-		}
-		else
-		{
-			//Log("Delete + Generate!\n");
-			//glDeleteTextures(1,(GLuint *)&mvTextureHandles[0]);
-			//glGenTextures(1,(GLuint *)&mvTextureHandles[0]);
-		}
-
-		return CreateFromBitmapToHandle(pBmp,0);
-	}
-
-	//-----------------------------------------------------------------------
-
-	bool cSDLTexture::CreateAnimFromBitmapVec(tBitmap2DVec *avBitmaps)
-	{
-		mvTextureHandles.resize(avBitmaps->size());
-
-		for(size_t i=0; i< mvTextureHandles.size(); ++i)
-		{
-			glGenTextures(1,(GLuint *)&mvTextureHandles[i]);
-			if(CreateFromBitmapToHandle((*avBitmaps)[i],(int)i)==false)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	//-----------------------------------------------------------------------
-
-	bool cSDLTexture::CreateCubeFromBitmapVec(tBitmap2DVec *avBitmaps)
-	{
-		if(mType == eTextureType_RenderTarget || mTarget != eTextureTarget_CubeMap)
-		{
-			return false;
-		}
-
-		if(avBitmaps->size()<6){
-			Error("Only %d bitmaps supplied for creation of cube map, 6 needed.\n",avBitmaps->size());
-			return false;
-		}
-
-		//Generate handles
-		if(mvTextureHandles.empty())
-		{
-			mvTextureHandles.resize(1);
-			glGenTextures(1,(GLuint *)&mvTextureHandles[0]);
-		}
-		else
-		{
-			glDeleteTextures(1,(GLuint *)&mvTextureHandles[0]);
-			glGenTextures(1,(GLuint *)&mvTextureHandles[0]);
-		}
-
-		GLenum GLTarget = InitCreation(0);
-
-		//Create the cube map sides
-		for(int i=0; i< 6; i++)
-		{
-			cSDLBitmap2D *pSrc = static_cast<cSDLBitmap2D*>((*avBitmaps)[i]);
-
-			GLenum target = GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
-
-			int lChannels;
-			GLenum format;
-			GetSettings(pSrc, lChannels,format);
-
-			glTexImage2D(target, 0, lChannels, pSrc->GetWidth(), pSrc->GetHeight(),
-				0, format, GL_UNSIGNED_BYTE, pSrc->GetSurface()->pixels);
-
-			//No mip maps for cubemap
-			//if(mbUseMipMaps)
-			//{
-			//	int x = gluBuild2DMipmaps(target,4,pSrc->GetWidth(), pSrc->GetHeight(),
-			//		GL_RGBA, GL_UNSIGNED_BYTE, pSrc->GetSurface()->pixels);
-			//}
-
-			mlWidth = pSrc->GetWidth();
-			mlHeight = pSrc->GetHeight();
-			mlBpp = lChannels * 8;
-
-			if(!cMath::IsPow2(mlHeight) || !cMath::IsPow2(mlWidth))
-			{
-				Warning("Texture '%s' does not have a pow2 size!\n",msName.c_str());
-			}
-		}
-
-		PostCreation(GLTarget);
-
-		return true;
-	}
-
-
-	//-----------------------------------------------------------------------
-
 	bool cSDLTexture::Create(unsigned int alWidth, unsigned int alHeight, cColor aCol)
 	{
 		//Generate handles
 		mvTextureHandles.resize(1);
-		glGenTextures(1,(GLuint *)&mvTextureHandles[0]);
+		glGenTextures(1, (GLuint *)&mvTextureHandles[0]);
 
-
-		if(mType == eTextureType_RenderTarget)
-		{
-			if(!mpPBuffer->Init(alWidth,alHeight,aCol)){
-				return false;
-			}
-
-			mlWidth = alWidth;
-			mlHeight = alHeight;
-
-			if((!cMath::IsPow2(mlHeight) || !cMath::IsPow2(mlWidth)) && mTarget != eTextureTarget_Rect)
-			{
-				Warning("Texture '%s' does not have a pow2 size!\n",msName.c_str());
-			}
-
-			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
-
-			glEnable(GLTarget);
-			glBindTexture(GLTarget, mvTextureHandles[0]);
-			if(mbUseMipMaps && mTarget != eTextureTarget_Rect){
-				if(mFilter == eTextureFilter_Bilinear)
-					glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-				else
-					glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			}
-			else{
-				glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			}
-			glTexParameteri(GLTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GLTarget,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-			glTexParameteri(GLTarget,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-
-			glDisable(GLTarget);
-
-			mbContainsData = true;
-		}
-		else
+		if (mType != eTextureType_RenderTarget)
 		{
 			return false;
 		}
 
-		return true;
-	}
-
-	//-----------------------------------------------------------------------
-
-	bool cSDLTexture::CreateFromArray(unsigned char *apPixelData, int alChannels, const cVector3l &avSize)
-	{
-		if(mvTextureHandles.empty())
-		{
-			mvTextureHandles.resize(1);
-			glGenTextures(1,(GLuint *)&mvTextureHandles[0]);
+		if (!mpPBuffer->Init(alWidth, alHeight, aCol)) {
+			return false;
 		}
 
-		GLenum GLTarget = InitCreation(0);
+		mlWidth = alWidth;
+		mlHeight = alHeight;
 
-		int lChannels = alChannels;
-		GLenum format = 0;
-		switch(lChannels)
+		if ((!cMath::IsPow2(mlHeight) || !cMath::IsPow2(mlWidth)) && mTarget != eTextureTarget_Rect)
 		{
-		case 1: format = GL_LUMINANCE; break;
-		case 2: format = GL_LUMINANCE_ALPHA; break;
-		case 3: format = GL_RGB; break;
-		case 4: format = GL_RGBA; break;
+			Warning("Texture '%s' does not have a pow2 size!\n", msName.c_str());
 		}
-
-		mlWidth = avSize.x;
-		mlHeight = avSize.y;
-		mlDepth = avSize.z;
-		mlBpp = lChannels * 8;
-
-		if(!cMath::IsPow2(mlHeight) || !cMath::IsPow2(mlWidth) || !cMath::IsPow2(mlDepth))
-		{
-			Warning("Texture '%s' does not have a pow2 size!\n",msName.c_str());
-		}
-
-		if(mTarget == eTextureTarget_2D)
-		{
-			glTexImage2D(GLTarget, 0, lChannels, mlWidth, mlHeight,
-						0, format, GL_UNSIGNED_BYTE, apPixelData);
-		}
-		else if(mTarget == eTextureTarget_3D)
-		{
-			glTexImage3D(GLTarget, 0, lChannels, avSize.x, avSize.y,avSize.z,
-				0, format, GL_UNSIGNED_BYTE, apPixelData);
-		}
-
-		if(mbUseMipMaps && mTarget != eTextureTarget_Rect && mTarget != eTextureTarget_3D)
-		{
-			gluBuild2DMipmaps(GLTarget,lChannels,mlWidth, mlHeight,
-				format, GL_UNSIGNED_BYTE, apPixelData);
-		}
-
-		PostCreation(GLTarget);
-
-		return true;
-	}
-
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::SetPixels2D(	int alLevel, const cVector2l& avOffset, const cVector2l& avSize,
-									eColorDataFormat aDataFormat, void *apPixelData)
-	{
-		if(mTarget != eTextureTarget_2D && mTarget != eTextureTarget_Rect) return;
-
-		glTexSubImage2D(GetGLTextureTargetEnum(mTarget),alLevel,avOffset.x,avOffset.y, avSize.x,avSize.y,
-						ColorFormatToGL(aDataFormat),GL_UNSIGNED_BYTE,apPixelData);
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::Update(float afTimeStep)
-	{
-		if(mvTextureHandles.size() > 1)
-		{
-			float fMax = (float)(mvTextureHandles.size());
-			mfTimeCount += afTimeStep * (1.0f/mfFrameTime) * mfTimeDir;
-
-			if(mfTimeDir > 0)
-			{
-				if(mfTimeCount >= fMax)
-				{
-					if(mAnimMode == eTextureAnimMode_Loop)
-					{
-						mfTimeCount =0;
-					}
-					else
-					{
-						mfTimeCount = fMax - 1.0f;
-						mfTimeDir = -1.0f;
-					}
-				}
-			}
-			else
-			{
-				if(mfTimeCount < 0)
-				{
-					mfTimeCount =1;
-					mfTimeDir = 1.0f;
-				}
-			}
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	bool cSDLTexture::HasAnimation()
-	{
-		return mvTextureHandles.size() > 1;
-	}
-
-	void cSDLTexture::NextFrame()
-	{
-		mfTimeCount += mfTimeDir;
-
-		if(mfTimeDir > 0)
-		{
-			float fMax = (float)(mvTextureHandles.size());
-			if(mfTimeCount >= fMax)
-			{
-				if(mAnimMode == eTextureAnimMode_Loop)
-				{
-					mfTimeCount =0;
-				}
-				else
-				{
-					mfTimeCount = fMax - 1.0f;
-					mfTimeDir = -1.0f;
-				}
-			}
-		}
-		else
-		{
-			if(mfTimeCount < 0)
-			{
-				mfTimeCount =1;
-				mfTimeDir = 1.0f;
-			}
-		}
-	}
-
-	void cSDLTexture::PrevFrame()
-	{
-		mfTimeCount -= mfTimeDir;
-
-		if(mfTimeDir < 0)
-		{
-			float fMax = (float)(mvTextureHandles.size());
-			if(mfTimeCount >= fMax)
-			{
-				if(mAnimMode == eTextureAnimMode_Loop)
-				{
-					mfTimeCount =0;
-				}
-				else
-				{
-					mfTimeCount = fMax - 1.0f;
-					mfTimeDir = -1.0f;
-				}
-			}
-		}
-		else
-		{
-			if(mfTimeCount < 0)
-			{
-				mfTimeCount =1;
-				mfTimeDir = 1.0f;
-			}
-		}
-	}
-
-	float cSDLTexture::GetT()
-	{
-		return cMath::Modulus(mfTimeCount,1.0f);
-	}
-
-	float cSDLTexture::GetTimeCount()
-	{
-		return mfTimeCount;
-	}
-	void cSDLTexture::SetTimeCount(float afX)
-	{
-		mfTimeCount = afX;
-	}
-	int cSDLTexture::GetCurrentLowlevelHandle()
-	{
-		return GetTextureHandle();
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::SetFilter(eTextureFilter aFilter)
-	{
-		if(mFilter == aFilter) return;
-
-		mFilter = aFilter;
-		if(mbContainsData)
-		{
-			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
-
-			glEnable(GLTarget);
-			for(size_t i=0; i < mvTextureHandles.size(); ++i)
-			{
-				glBindTexture(GLTarget, mvTextureHandles[i]);
-
-				if(mbUseMipMaps && mTarget != eTextureTarget_Rect){
-					if(mFilter == eTextureFilter_Bilinear)
-						glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-					else
-						glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-				}
-				else{
-					glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				}
-			}
-
-			glDisable(GLTarget);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::SetAnisotropyDegree(float afX)
-	{
-		if(!mpLowLevelGraphics->GetCaps(eGraphicCaps_AnisotropicFiltering)) return;
-		if(afX < 1.0f) return;
-		if(afX > (float) mpLowLevelGraphics->GetCaps(eGraphicCaps_MaxAnisotropicFiltering)) return;
-
-		if(mfAnisotropyDegree == afX) return;
-
-		mfAnisotropyDegree = afX;
 
 		GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
 
 		glEnable(GLTarget);
-		for(size_t i=0; i < mvTextureHandles.size(); ++i)
-		{
-			glBindTexture(GLTarget, mvTextureHandles[i]);
-
-			glTexParameterf(GLTarget,GL_TEXTURE_MAX_ANISOTROPY_EXT ,mfAnisotropyDegree);
+		glBindTexture(GLTarget, mvTextureHandles[0]);
+		if (mbUseMipMaps && mTarget != eTextureTarget_Rect) {
+			if (mFilter == eTextureFilter_Bilinear)
+				glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			else
+				glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		}
+		else {
+			glTexParameteri(GLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+		glTexParameteri(GLTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GLTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GLTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		glDisable(GLTarget);
-	}
 
-	//-----------------------------------------------------------------------
+		mbContainsData = true;
 
-	void cSDLTexture::SetWrapS(eTextureWrap aMode)
-	{
-		if(mbContainsData)
-		{
-			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
-
-			glEnable(GLTarget);
-			for(size_t i=0; i < mvTextureHandles.size(); ++i)
-			{
-				glBindTexture(GLTarget, mvTextureHandles[i]);
-
-				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_S,GetGLWrapEnum(aMode));
-			}
-
-			glDisable(GLTarget);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::SetWrapT(eTextureWrap aMode)
-	{
-		if(mbContainsData)
-		{
-			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
-
-			glEnable(GLTarget);
-			for(size_t i=0; i < mvTextureHandles.size(); ++i)
-			{
-				glBindTexture(GLTarget, mvTextureHandles[i]);
-
-				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_T,GetGLWrapEnum(aMode));
-			}
-
-			glDisable(GLTarget);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::SetWrapR(eTextureWrap aMode)
-	{
-		if(mbContainsData)
-		{
-			GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
-
-			glEnable(GLTarget);
-			for(size_t i=0; i < mvTextureHandles.size(); ++i)
-			{
-				glBindTexture(GLTarget, mvTextureHandles[i]);
-
-				glTexParameteri(GLTarget,GL_TEXTURE_WRAP_R,GetGLWrapEnum(aMode));
-			}
-
-			glDisable(GLTarget);
-		}
-	}
-
-	//-----------------------------------------------------------------------
-
-	unsigned int cSDLTexture::GetTextureHandle()
-	{
-		if(mvTextureHandles.size() > 1)
-		{
-			int lFrame = (int) mfTimeCount;
-			return mvTextureHandles[lFrame];
-		}
-		else
-		{
-			return mvTextureHandles[0];
-		}
+		return true;
 	}
 
 	//-----------------------------------------------------------------------
@@ -557,157 +113,15 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	bool cSDLTexture::CreateFromBitmapToHandle(iBitmap2D* pBmp, int alHandleIdx)
+	void cSDLTexture::GetSettings(iBitmap2D* apSrc, int &alChannels, GLenum &aInternalFormat, GLenum &aFormat)
 	{
-		if(mType == eTextureType_RenderTarget)
-		{
-			Error("Rendertarget cannot be created from bitmap\n");
-			return false;
-		}
-
-		GLenum GLTarget = InitCreation(alHandleIdx);
-
-		cSDLBitmap2D *pBitmapSrc = static_cast<cSDLBitmap2D*>(pBmp);
-
-		mlWidth = pBitmapSrc->GetWidth();
-		mlHeight = pBitmapSrc->GetHeight();
-
-		if((!cMath::IsPow2(mlHeight) || !cMath::IsPow2(mlWidth)) && mTarget != eTextureTarget_Rect)
-		{
-			Warning("Texture '%s' does not have a pow2 size!\n",msName.c_str());
-		}
-
-		int lChannels =0;
-		GLenum format =0;
-		GetSettings(pBitmapSrc,lChannels,format);
-
-		mlBpp = lChannels * 8;
-
-		unsigned char *pPixelSrc = (unsigned char*)pBitmapSrc->GetSurface()->pixels;
-
-		unsigned char *pNewSrc = NULL;
-		if(mlSizeLevel>0 && (int)mlWidth > mvMinLevelSize.x*2)
-		{
-			//Log("OldSize: %d x %d ",mlWidth,mlHeight);
-
-			int lOldW = mlWidth;
-			int lOldH = mlHeight;
-
-			int lSizeDiv = (int)pow((float)2,(int)mlSizeLevel);
-
-			mlWidth /= lSizeDiv;
-			mlHeight /= lSizeDiv;
-
-			while(mlWidth < (unsigned int)mvMinLevelSize.x)
-			{
-				mlWidth*=2;
-				mlHeight*=2;
-				lSizeDiv/=2;
-			}
-
-			//Log("NewSize: %d x %d SizeDiv: %d\n",mlWidth,mlHeight,lSizeDiv);
-
-			pNewSrc = hplNewArray( unsigned char, lChannels * mlWidth * mlHeight);
-
-			int lWidthCount = mlWidth;
-			int lHeightCount = mlHeight;
-			int lOldAdd = lChannels*lSizeDiv;
-			int lOldHeightAdd = lChannels*lOldW*(lSizeDiv-1);
-
-			unsigned char *pOldPixel = pPixelSrc;
-			unsigned char *pNewPixel = pNewSrc;
-
-			while(lHeightCount)
-			{
-				memcpy(pNewPixel, pOldPixel,lChannels);
-
-				pOldPixel += lOldAdd;
-				pNewPixel += lChannels;
-
-				lWidthCount--;
-				if(!lWidthCount)
-				{
-					lWidthCount = mlWidth;
-					lHeightCount--;
-					pOldPixel += lOldHeightAdd;
-				}
-			}
-
-			pPixelSrc = pNewSrc;
-		}
-
-		//Log("Loading %s  %d x %d\n",msName.c_str(), pSrc->GetWidth(), pSrc->GetHeight());
-		//Log("Channels: %d Format: %x\n",lChannels, format);
-
-		//Clear error flags
-		while(glGetError()!=GL_NO_ERROR);
-
-		glTexImage2D(GLTarget, 0, lChannels, mlWidth, mlHeight,
-			0, format, GL_UNSIGNED_BYTE, pPixelSrc);
-
-		if(glGetError()!=GL_NO_ERROR) return false;
-
-		if(mbUseMipMaps && mTarget != eTextureTarget_Rect)
-		{
-			gluBuild2DMipmaps(GLTarget,lChannels,mlWidth, mlHeight,
-				format, GL_UNSIGNED_BYTE, pPixelSrc);
-		}
-
-		PostCreation(GLTarget);
-
-		if(mlSizeLevel>0 && pNewSrc)
-		{
-			hplDeleteArray(pNewSrc);
-		}
-
-		return true;
-	}
-
-	//-----------------------------------------------------------------------
-
-	GLenum cSDLTexture::InitCreation(int alHandleIdx)
-	{
-		GLenum GLTarget = GetGLTextureTargetEnum(mTarget);
-
-		glEnable(GLTarget);
-		glBindTexture(GLTarget, mvTextureHandles[alHandleIdx]);
-
-		return GLTarget;
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::PostCreation(GLenum aGLTarget)
-	{
-		if(mbUseMipMaps && mTarget != eTextureTarget_Rect)
-		{
-			if(mFilter == eTextureFilter_Bilinear)
-				glTexParameteri(aGLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-			else
-				glTexParameteri(aGLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		}
-		else{
-			glTexParameteri(aGLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		}
-		glTexParameteri(aGLTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(aGLTarget,GL_TEXTURE_WRAP_S,GL_REPEAT);
-		glTexParameteri(aGLTarget,GL_TEXTURE_WRAP_T,GL_REPEAT);
-		glTexParameteri(aGLTarget,GL_TEXTURE_WRAP_R,GL_REPEAT);
-
-		glDisable(aGLTarget);
-
-		mbContainsData = true;
-	}
-
-	//-----------------------------------------------------------------------
-
-	void cSDLTexture::GetSettings(cSDLBitmap2D* apSrc, int &alChannels, GLenum &aFormat)
-	{
-		SDL_Surface *pSurface =  apSrc->GetSurface();
+		cSDLBitmap2D *pSrc = static_cast<cSDLBitmap2D *>(apSrc);
+		SDL_Surface *pSurface =  pSrc->GetSurface();
 		alChannels = pSurface->format->BytesPerPixel;
 		aFormat = GL_RGBA;
+		aInternalFormat = GL_RGBA;
 
-		tString sType = cString::ToLowerCase(apSrc->msType);
+		tString sType = cString::ToLowerCase(pSrc->msType);
 
 		if(alChannels==4)
 		{
@@ -723,6 +137,7 @@ namespace hpl {
 		}
 		if(alChannels==3)
 		{
+			aInternalFormat = GL_RGB;
 			if(sType == "tga")
 			{
 				aFormat = GL_BGR;
@@ -734,10 +149,9 @@ namespace hpl {
 		}
 		if(alChannels==1)
 		{
+			aInternalFormat = GL_ALPHA;
 			aFormat = GL_ALPHA;
 		}
 	}
-
-	//-----------------------------------------------------------------------
 
 }

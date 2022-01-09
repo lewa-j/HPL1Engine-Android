@@ -102,14 +102,14 @@ namespace hpl {
 	typedef std::list<iGpuProgram *> tGpuProgramList;
 	typedef tGpuProgramList::iterator tGpuProgramListIt;
 
-	enum eColorDataFormat
+	enum class eColorDataFormat
 	{
-		eColorDataFormat_RGB,
-		eColorDataFormat_RGBA,
-		eColorDataFormat_ALPHA,
-		eColorDataFormat_BGR,
-		eColorDataFormat_BGRA,
-		eColorDataFormat_LastEnum
+		RGB,
+		RGBA,
+		ALPHA,
+		BGR,
+		BGRA,
+		LastEnum
 	};
 
 	//---------------------------------------

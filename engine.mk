@@ -36,6 +36,7 @@ sources/impl/PhysicsJointHingeNewton.cpp \
 sources/impl/PhysicsJointScrewNewton.cpp \
 sources/impl/PhysicsJointSliderNewton.cpp \
 sources/impl/LowLevelGraphicsGL.cpp \
+sources/impl/TextureGL.cpp \
 sources/impl/GLSLShader.cpp \
 sources/impl/GLSLProgram.cpp \
 sources/impl/VertexBufferGLES.cpp \

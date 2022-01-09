@@ -305,7 +305,7 @@ namespace hpl {
 		if(mbVideoFrameReady)
 		{
 			DrawFrameToBuffer();
-			apTexture->SetPixels2D(0,0,mvSize,eColorDataFormat_RGB,mpFrameBuffer);
+			apTexture->SetPixels2D(0,0,mvSize,eColorDataFormat::RGB,mpFrameBuffer);
 			mbVideoFrameReady = false;
 		}
 	}

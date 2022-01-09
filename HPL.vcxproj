@@ -232,6 +232,7 @@
     <ClInclude Include="include\impl\SDLPixelFormat.h" />
     <ClInclude Include="include\impl\SDLTexture.h" />
     <ClInclude Include="include\impl\SqScript.h" />
+    <ClInclude Include="include\impl\TextureGL.h" />
     <ClInclude Include="include\impl\tinyXML\tinystr.h" />
     <ClInclude Include="include\impl\tinyXML\tinyxml.h" />
     <ClInclude Include="include\impl\VertexBufferGLES.h" />
@@ -496,6 +497,7 @@
     <ClCompile Include="sources\impl\SDLGameSetup.cpp" />
     <ClCompile Include="sources\impl\SDLTexture.cpp" />
     <ClCompile Include="sources\impl\SqScript.cpp" />
+    <ClCompile Include="sources\impl\TextureGL.cpp" />
     <ClCompile Include="sources\impl\tinyXml\tinystr.cpp" />
     <ClCompile Include="sources\impl\tinyXml\tinyxml.cpp" />
     <ClCompile Include="sources\impl\tinyXml\tinyxmlerror.cpp" />
