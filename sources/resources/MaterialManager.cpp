@@ -303,37 +303,27 @@ namespace hpl {
 			eTextureAnimMode animMode = GetAnimMode(cString::ToString(pTexChild->Attribute("AnimMode"),"None"));
 			float fFrameTime = cString::ToFloat(pTexChild->Attribute("AnimFrameTime"),1.0f);
 
-			if(sFile=="")
+			if (sFile == "")
 			{
 				continue;
 			}
 
-			if(animMode != eTextureAnimMode_None)
+			if (animMode != eTextureAnimMode_None)
 			{
-				pTex = mpResources->GetTextureManager()->CreateAnim2D(sFile,bMipMaps,bCompress,
-																		eTextureType_Normal,
-																		mlTextureSizeLevel);
+				pTex = mpResources->GetTextureManager()->CreateAnim2D(sFile, bMipMaps, bCompress,
+					eTextureType_Normal, mlTextureSizeLevel);
 			}
 			else
 			{
-				if(target == eTextureTarget_2D)
+				if (target == eTextureTarget_2D)
 				{
-					pTex = mpResources->GetTextureManager()->Create2D(sFile,bMipMaps,bCompress,
-																		eTextureType_Normal,
-																		mlTextureSizeLevel);
+					pTex = mpResources->GetTextureManager()->Create2D(sFile, bMipMaps, bCompress,
+						eTextureType_Normal, mlTextureSizeLevel);
 				}
-				else if(target == eTextureTarget_1D)
+				else if (eTextureTarget_CubeMap)
 				{
-					// HACKHACK create 2d wvwn if 1d requesed
-					pTex = mpResources->GetTextureManager()->Create2D(sFile,bMipMaps,bCompress,
-																			eTextureType_Normal,
-																			mlTextureSizeLevel);
-				}
-				else if(eTextureTarget_CubeMap)
-				{
-					pTex = mpResources->GetTextureManager()->CreateCubeMap(sFile,bMipMaps,bCompress,
-																			eTextureType_Normal,
-																			mlTextureSizeLevel);
+					pTex = mpResources->GetTextureManager()->CreateCubeMap(sFile, bMipMaps, bCompress,
+						eTextureType_Normal, mlTextureSizeLevel);
 				}
 			}
 
@@ -371,9 +361,9 @@ namespace hpl {
 	eTextureTarget cMaterialManager::GetTarget(const tString& asType)
 	{
 		if(cString::ToLowerCase(asType) == "cube") return eTextureTarget_CubeMap;
-		else if(cString::ToLowerCase(asType) == "1D") return eTextureTarget_1D;
-		else if(cString::ToLowerCase(asType) == "2D") return eTextureTarget_2D;
-		else if(cString::ToLowerCase(asType) == "3D") return eTextureTarget_3D;
+		else if(cString::ToLowerCase(asType) == "1d" 
+			|| cString::ToLowerCase(asType) == "2d") return eTextureTarget_2D;
+		else if(cString::ToLowerCase(asType) == "3d") return eTextureTarget_3D;
 
 		return eTextureTarget_2D;
 	}

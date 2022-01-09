@@ -36,8 +36,6 @@ namespace hpl
 				bool abCompress)
 	: iTexture(asName,"GL",apPxlFmt,apLowLevelGraphics,aType,abUseMipMaps, aTarget, abCompress)
 	{
-		if(mTarget == eTextureTarget_1D)
-			mTarget = eTextureTarget_2D;
 		mbContainsData = false;
 
 		//Cubemap does not like mipmaps
@@ -563,20 +561,20 @@ namespace hpl
 
 	void cAndroidTexture::PostCreation(GLenum aGLTarget)
 	{
-		if(mbUseMipMaps && mTarget != eTextureTarget_Rect)
+		if (mbUseMipMaps && mTarget != eTextureTarget_Rect)
 		{
-			if(mFilter == eTextureFilter_Bilinear)
+			if (mFilter == eTextureFilter_Bilinear)
 				glTexParameteri(aGLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 			else
 				glTexParameteri(aGLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		}
-		else{
+		else {
 			glTexParameteri(aGLTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		}
 		glTexParameteri(aGLTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(aGLTarget,GL_TEXTURE_WRAP_S,GL_REPEAT);
-		glTexParameteri(aGLTarget,GL_TEXTURE_WRAP_T,GL_REPEAT);
-		glTexParameteri(aGLTarget,GL_TEXTURE_WRAP_R,GL_REPEAT);
+		glTexParameteri(aGLTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(aGLTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(aGLTarget, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
 		mbContainsData = true;
 	}

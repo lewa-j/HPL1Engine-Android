@@ -264,12 +264,7 @@ namespace hpl {
 			Warning("Texture '%s' does not have a pow2 size!\n",msName.c_str());
 		}
 
-		if(mTarget == eTextureTarget_1D)
-		{
-			glTexImage1D(GLTarget, 0, lChannels, mlWidth,0,format,
-							GL_UNSIGNED_BYTE, apPixelData);
-		}
-		else if(mTarget == eTextureTarget_2D)
+		if(mTarget == eTextureTarget_2D)
 		{
 			glTexImage2D(GLTarget, 0, lChannels, mlWidth, mlHeight,
 						0, format, GL_UNSIGNED_BYTE, apPixelData);
@@ -282,11 +277,7 @@ namespace hpl {
 
 		if(mbUseMipMaps && mTarget != eTextureTarget_Rect && mTarget != eTextureTarget_3D)
 		{
-			if(mTarget == eTextureTarget_1D)
-				gluBuild1DMipmaps(GLTarget,lChannels,mlWidth,
-				format, GL_UNSIGNED_BYTE, apPixelData);
-			else
-				gluBuild2DMipmaps(GLTarget,lChannels,mlWidth, mlHeight,
+			gluBuild2DMipmaps(GLTarget,lChannels,mlWidth, mlHeight,
 				format, GL_UNSIGNED_BYTE, apPixelData);
 		}
 
@@ -651,22 +642,14 @@ namespace hpl {
 		//Clear error flags
 		while(glGetError()!=GL_NO_ERROR);
 
-		if(mTarget == eTextureTarget_1D)
-			glTexImage1D(GLTarget, 0, lChannels, mlWidth,0,format,
-			GL_UNSIGNED_BYTE, pPixelSrc);
-		else
-			glTexImage2D(GLTarget, 0, lChannels, mlWidth, mlHeight,
+		glTexImage2D(GLTarget, 0, lChannels, mlWidth, mlHeight,
 			0, format, GL_UNSIGNED_BYTE, pPixelSrc);
 
 		if(glGetError()!=GL_NO_ERROR) return false;
 
 		if(mbUseMipMaps && mTarget != eTextureTarget_Rect)
 		{
-			if(mTarget == eTextureTarget_1D)
-				gluBuild1DMipmaps(GLTarget,lChannels,mlWidth,
-				format, GL_UNSIGNED_BYTE, pPixelSrc);
-			else
-				gluBuild2DMipmaps(GLTarget,lChannels,mlWidth, mlHeight,
+			gluBuild2DMipmaps(GLTarget,lChannels,mlWidth, mlHeight,
 				format, GL_UNSIGNED_BYTE, pPixelSrc);
 		}
 

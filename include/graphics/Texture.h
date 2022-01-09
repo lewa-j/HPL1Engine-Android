@@ -39,7 +39,6 @@ namespace hpl {
 
 	enum eTextureTarget
 	{
-		eTextureTarget_1D,
 		eTextureTarget_2D,
 		eTextureTarget_Rect,
 		eTextureTarget_CubeMap,
@@ -48,7 +47,6 @@ namespace hpl {
 	};
 
 	//-----------------------------------------
-
 
 	enum eTextureWrap
 	{

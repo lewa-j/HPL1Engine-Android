@@ -68,14 +68,6 @@ namespace hpl {
 
 	//-----------------------------------------------------------------------
 
-	iTexture* cTextureManager::Create1D(const tString& asName,bool abUseMipMaps, bool abCompress,
-									eTextureType aType, unsigned int alTextureSizeLevel)
-	{
-		return CreateFlatTexture(asName,abUseMipMaps,abCompress,aType, eTextureTarget_1D,alTextureSizeLevel);
-	}
-
-	//-----------------------------------------------------------------------
-
 	iTexture* cTextureManager::Create2D(const tString& asName,bool abUseMipMaps,bool abCompress,
 									eTextureType aType, unsigned int alTextureSizeLevel, eTextureTarget aTarget)
 	{

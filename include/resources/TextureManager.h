@@ -38,14 +38,11 @@ namespace hpl {
 	class cTextureManager : public iResourceManager
 	{
 	public:
-		cTextureManager(cGraphics* apGraphics,cResources *apResources);
+		cTextureManager(cGraphics *apGraphics, cResources *apResources);
 		~cTextureManager();
 
-		iTexture* Create1D(const tString& asName,bool abUseMipMaps, bool abCompress=false, eTextureType aType=eTextureType_Normal,
-							unsigned int alTextureSizeLevel=0);
-
-		iTexture* Create2D(const tString& asName,bool abUseMipMaps, bool abCompress=false, eTextureType aType=eTextureType_Normal,
-							unsigned int alTextureSizeLevel=0, eTextureTarget aTarget= eTextureTarget_2D);
+		iTexture *Create2D(const tString &asName, bool abUseMipMaps, bool abCompress = false, eTextureType aType = eTextureType_Normal,
+			unsigned int alTextureSizeLevel = 0, eTextureTarget aTarget = eTextureTarget_2D);
 
 		/**
 		 * Creates an animated texture. The name must be [name].[ext]. And then the textures in the animtion must
@@ -56,26 +53,26 @@ namespace hpl {
 		 * \param aType
 		 * \return
 		 */
-		iTexture* CreateAnim2D(const tString& asName,bool abUseMipMaps, bool abCompress=false, eTextureType aType=eTextureType_Normal,
-								unsigned int alTextureSizeLevel=0);
+		iTexture *CreateAnim2D(const tString &asName, bool abUseMipMaps, bool abCompress = false, eTextureType aType = eTextureType_Normal,
+			unsigned int alTextureSizeLevel = 0);
 
-		iTexture* CreateCubeMap(const tString& asName,bool abUseMipMaps, bool abCompress=false, eTextureType aType=eTextureType_Normal,
-								unsigned int alTextureSizeLevel=0);
+		iTexture *CreateCubeMap(const tString &asName, bool abUseMipMaps, bool abCompress = false, eTextureType aType = eTextureType_Normal,
+			unsigned int alTextureSizeLevel = 0);
 
 
-		iTexture* CreateAttenuation(const tString& asFallOffName);
+		iTexture *CreateAttenuation(const tString &asFallOffName);
 
-		void Destroy(iResourceBase* apResource);
-		void Unload(iResourceBase* apResource);
+		void Destroy(iResourceBase *apResource);
+		void Unload(iResourceBase *apResource);
 
 		void Update(float afTimeStep);
 
 	private:
-		iTexture* CreateFlatTexture(const tString& asName,bool abUseMipMaps,
-									bool abCompress, eTextureType aType, eTextureTarget aTarget,
-									unsigned int alTextureSizeLevel);
+		iTexture *CreateFlatTexture(const tString &asName, bool abUseMipMaps,
+			bool abCompress, eTextureType aType, eTextureTarget aTarget,
+			unsigned int alTextureSizeLevel);
 
-		iTexture* FindTexture2D(const tString &asName, tString &asFilePath);
+		iTexture *FindTexture2D(const tString &asName, tString &asFilePath);
 
 		tTextureAttenuationMap m_mapAttenuationTextures;
 
@@ -83,8 +80,8 @@ namespace hpl {
 
 		tStringVec mvCubeSideSuffixes;
 
-		cGraphics* mpGraphics;
-		cResources* mpResources;
+		cGraphics *mpGraphics = nullptr;
+		cResources *mpResources = nullptr;
 	};
 
 };
